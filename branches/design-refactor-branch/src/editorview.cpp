@@ -18,6 +18,7 @@
  */
 
 
+
 #include "editorview.h"
 #include "keymetainfo.h"
 #include "errno.h"
@@ -29,6 +30,14 @@ using namespace std;
 #include <qlistview.h>
 #include <qevent.h>
 #include <qsplitter.h>
+#include <qlineedit.h>
+#include <qtextedit.h>
+#include <qradiobutton.h>
+#include <qpushbutton.h>
+#include <qaction.h>
+
+//#include <magic.h>
+#include "xdgmime/xdgmime.h"
 
 extern "C"
 {
@@ -48,16 +57,109 @@ EditorView::EditorView ( EditorController *econtroller )
 	show();
 }
 
-void EditorView::update (  )
+
+void EditorView::update ( ::Key *current  )
 {
-	std::cout << "update" << std::endl;
+	if ( !KeyMetaInfo::canWrite ( current ) )
+		lockGui ( false );
+	else
+		lockGui ( true );
+	
+	clearGui ( );
+	
+	if ( KeyMetaInfo::canRead ( current ) ) 
+		showKey ( current );
+		
+	updateActions ( current );
+}
+
+void EditorView::clearGui ( )
+{
+	radioUndefined->setChecked ( true );
+	keyNam->clear ( );
+	keyValue->clear ( );
+	keyComment->clear ( );
+	//TODO there are more
+}
+
+void EditorView::lockGui ( bool lock )
+{
+	keyValue->setReadOnly ( !lock );
+	keyComment->setReadOnly ( !lock );
+	editButton->setEnabled ( lock );
+}
+
+void EditorView::updateActions ( const ::Key *current )
+{
+	if ( !KeyMetaInfo::canWrite ( current ) )
+	{
+		newAction->setEnabled ( false );
+		deleteAction->setEnabled ( false );
+	}
+	else
+	{
+		deleteAction->setEnabled ( true );
+		if ( keyGetType ( current ) == KEY_TYPE_DIR )
+			newAction->setEnabled ( true );
+	}
+}
+
+void EditorView::showKey ( ::Key * current )
+{	
+	if ( current )
+	{
+		keyNam->setText ( QString ( current->key ) );
+		keyLength->setText ( QString ( ).setNum ( keyGetValueSize ( current ) ) );
+		
+		switch ( keyGetType ( current ) )
+		{
+			case KEY_TYPE_STRING: radioString->setChecked ( true ); break;
+			case KEY_TYPE_BINARY: radioBinary->setChecked ( true ); break;
+			case KEY_TYPE_DIR: radioDirectory->setChecked ( true ); break;
+			case KEY_TYPE_LINK: radioLink->setChecked ( true ); break;
+			default:	radioUndefined->setChecked ( true );
+		}
+		
+		if ( keyGetType ( current ) == KEY_TYPE_STRING )
+		{
+			char buf [ 300 ];
+			if ( keyGetString ( current, buf, 300 ) ) 
+			{
+				keyValue->setText ( buf );
+			}
+		}
+		else if ( keyGetType ( current ) == KEY_TYPE_BINARY || keyGetType ( current ) == KEY_TYPE_UNDEFINED ) 
+		{
+			char buf [ keyGetValueSize ( current ) ];
+			kdbGetValue ( current->key, buf, keyGetValueSize ( current ) );
+			
+			const char *mime = xdg_mime_get_mime_type_for_data (buf, keyGetValueSize ( current ) );
+			
+			keyValue->setText ( mime );
+			
+			/*magic_t mag = magic_open ( MAGIC_CHECK | MAGIC_MIME | MAGIC_PRESERVE_ATIME );
+			magic_load ( mag, "/usr/share/misc/file/magic" );
+			
+			const char * mime = magic_buffer ( mag, buf, keyGetValueSize ( current ) );
+			
+			//cout << "magic string is " << strlen ( mime ) << " " << mime << endl;
+			
+			keyValue->setText ( mime );
+			//delete mime;
+			
+			magic_close ( mag );*/
+		}
+	}
+	else
+	{
+		
+	}
 }
 
 void EditorView::updateKeyTree ( bool firstTime )
 {
 	if (firstTime)
 	{
-		std::cout << "first time" << std::endl;
 		openedKeys.clear();
 		
 		KeySet *roots = ksNew ( );
@@ -86,6 +188,10 @@ void EditorView::updateKeyTree ( bool firstTime )
 			
 			k = ksNext ( roots );
 		}
+	}
+	else
+	{
+		
 	}
 }
 
@@ -174,7 +280,7 @@ void EditorView::saveState ( )
 	kdbSetValueByParent ( guiKeyPrefix , "x", QString ( ).setNum ( x ( ) ) );
 	kdbSetValueByParent ( guiKeyPrefix , "y", QString ( ).setNum ( y ( ) ) );
 	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "left", QString ( ).setNum ( splitter->sizes()[0]) );
-	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "rigth", QString ( ).setNum ( splitter->sizes()[1]) );
+	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "right", QString ( ).setNum ( splitter->sizes()[1]) );
 }
 
 void EditorView::restoreState ( )

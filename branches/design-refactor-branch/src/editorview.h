@@ -22,6 +22,11 @@
 
 #include <qvaluelist.h>
 
+extern "C"
+{
+	#include <kdb.h>
+}
+
 #include "editorviewui.h"
 
 class EditorController;
@@ -35,7 +40,7 @@ class EditorView : public EditorViewUI
 		void saveState ( );
 		void restoreState ( );
 	public slots:
-		void update (  );
+		void update ( ::Key * current );
 		
 	signals:
 		void keySelected ( const QString &key );
@@ -45,9 +50,14 @@ class EditorView : public EditorViewUI
 		void propagateKeyChange ( QListViewItem *item );
 		
 	private:
+		void showKey ( ::Key *key );
+		void clearGui ( );
+		void lockGui ( bool lock );
+		void updateActions ( const ::Key *current );
 		QString keyName ( const QListViewItem *item ) const;
 		void updateKeyTree ( bool firstTime = false );
 		void closeEvent ( QCloseEvent * e );
+		
 		
 	private:
  		EditorController *controller;
