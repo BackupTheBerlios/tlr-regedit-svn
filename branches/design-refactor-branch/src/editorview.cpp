@@ -25,6 +25,7 @@
 using namespace std;
 
 #include <qlistview.h>
+#include <qevent.h>
 
 extern "C"
 {
@@ -38,6 +39,8 @@ EditorView::EditorView ( EditorController *econtroller )
 	
 	EditorViewUI::connect (keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
 	EditorViewUI::connect (keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), this, SLOT ( closeKeyDir ( QListViewItem * ) ) );
+	
+	restoreState ( );
 	
 	show();
 }
@@ -83,11 +86,9 @@ void EditorView::updateKeyTree ( bool firstTime )
 
 void EditorView::openKeyDir ( QListViewItem *item )
 {
-	cout << "servus " << keyName ( item ) << endl;
 	if ( item->firstChild ( ) -> text ( 0 ) == "dummy" )
 	{
 		delete item->firstChild ( );
-		cout << "found dummy delete it" << endl;
 	}
 	else
 		cout << "implementation error no dummy found" << endl;
@@ -107,7 +108,7 @@ void EditorView::openKeyDir ( QListViewItem *item )
 	{
 		QString absolutName ( child->key );
 		QString name = absolutName.right ( absolutName.length() - absolutName.findRev ( RG_KEY_DELIM ) - 1 );
-		cout << name << endl;
+
 		QListViewItem *childItem = new QListViewItem ( item, name );
 		childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
 		
@@ -123,6 +124,7 @@ void EditorView::openKeyDir ( QListViewItem *item )
 
 void EditorView::closeKeyDir ( QListViewItem *item )
 {
+	
 	//TODO implement
 }
 
@@ -145,4 +147,79 @@ QString EditorView::keyName ( const QListViewItem * item ) const
 
         return key;
 
+}
+
+void EditorView::closeEvent ( QCloseEvent * e )
+{
+	saveState ( );
+	e->accept ( );
+}
+
+void EditorView::saveState ( )
+{
+	QString guiKeyPrefix ( "user/sw/kdbe/gui/" );
+	::Key *width = keyNew ( guiKeyPrefix + "width", KEY_SWITCH_END );
+        ::Key *height = keyNew ( guiKeyPrefix + "height", KEY_SWITCH_END );
+        ::Key *x = keyNew ( guiKeyPrefix + "x", KEY_SWITCH_END );
+        ::Key *y = keyNew ( guiKeyPrefix + "y", KEY_SWITCH_END );
+	
+        
+
+        kdbGetKey ( width );
+        keySetString ( width, QString ( ).setNum ( this->width ( ) ) );
+        keySetComment ( width, "This is where regedit stores the width of the window" );
+        kdbSetKey ( width );
+        keyDel ( width );
+
+        kdbGetKey ( height );
+        keySetString ( height, QString ( ).setNum ( this->height ( ) ) );
+        keySetComment ( height, "This is where regedit stores the height of the window" );
+        kdbSetKey ( height );
+        keyDel ( height );
+
+        kdbGetKey ( x );
+        keySetString ( x, QString().setNum(this->x ( ) ) );
+        keySetComment ( x, "This is where regedit stores the x position of the window" );
+        kdbSetKey ( x );
+        keyDel ( x );
+
+        kdbGetKey ( y );
+        keySetString ( y,  QString ( ).setNum ( this->y ( ) ) );
+        keySetComment ( y, "This is where regedit stores the y position of the window" );
+        kdbSetKey ( y );
+        keyDel ( y );
+}
+
+void EditorView::restoreState ( )
+{
+	QString guiKeyPrefix ( "user/sw/kdbe/gui/" );
+	
+	char buf[300];
+	
+	::Key *width = keyNew ( guiKeyPrefix + "width", KEY_SWITCH_END );
+	kdbGetKey ( width );
+	keyGetString ( width, buf, 300 );
+	int vwidth = atoi ( buf );
+	
+	::Key *height = keyNew ( guiKeyPrefix + "height", KEY_SWITCH_END );
+	kdbGetKey ( height );
+	keyGetString ( height, buf, 300 );
+	int vheight = atoi ( buf );
+	
+	
+        ::Key *x = keyNew ( guiKeyPrefix + "x", KEY_SWITCH_END );
+	kdbGetKey ( x );
+	keyGetString ( x, buf, 300 );
+	int vx = atoi ( buf );
+	
+        ::Key *y = keyNew ( guiKeyPrefix + "y", KEY_SWITCH_END );
+	kdbGetKey ( y );
+	keyGetString ( y, buf, 300 );
+	int vy = atoi ( buf );
+	
+	move ( vx, vy );
+	resize ( vwidth, vheight );
+	
+	//int vy = atoi ( kdbGetKey ( §
+	//TODO restore window state from registry
 }

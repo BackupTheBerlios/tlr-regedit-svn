@@ -25,6 +25,7 @@
 #include "editorviewui.h"
 
 class EditorController;
+class QCloseEvent;
 
 class EditorView : public EditorViewUI
 {
@@ -47,6 +48,7 @@ class EditorView : public EditorViewUI
 	private:
 		QString keyName ( const QListViewItem *item ) const;
 		void updateKeyTree ( bool firstTime = false );
+		void closeEvent ( QCloseEvent * e );
 		
 	private:
  		EditorController *controller;
