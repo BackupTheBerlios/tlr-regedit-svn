@@ -45,9 +45,11 @@ public slots:
 	virtual bool execute();
 	virtual bool unexecute();
 private:
-	void delRecursive ( ::Key *key );
+	void appendRecu ( ::Key *key, KeySet *ks );
 private:
-	KeySet *all;
+	KeySet* all;
+	QListViewItem *item;
+	QListViewItem *parent;
 };
 
 #endif

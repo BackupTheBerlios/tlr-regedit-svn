@@ -27,10 +27,25 @@
 using namespace std;
 
 KeyRemoveCommand::KeyRemoveCommand ( EditorController *con, KeySet *ks, const char *name ) 
- : Command ( con, ks, name), all ( 0 )
+ : Command ( con, ks, name)
 {
+	all = ksNew ( );
 	
+	ksRewind ( ks );
+	
+	::Key *key = ksNext ( ks );
+	
+	while ( key )
+	{
+		appendRecu ( key, all );
+		//ksAppend ( all, key );
+		key = ksNext ( ks );
+	}
+	item = controller ( )->getView ( )->keyTree->currentItem ( );
+	parent = item->parent ( );
+
 }
+
 
 
 KeyRemoveCommand::~KeyRemoveCommand()
@@ -38,72 +53,62 @@ KeyRemoveCommand::~KeyRemoveCommand()
 	
 }
 
-bool KeyRemoveCommand::execute( )
+void KeyRemoveCommand::appendRecu ( ::Key *key, KeySet *set )
 {
-	if ( all )
+	KeySet *temp = ksNew ( );
+	kdbGetKeyChildKeys ( key, temp, KDB_O_INACTIVE | KDB_O_DIR );
+	
+	::Key *tempKey = ksNext ( temp );
+	while ( tempKey ) 
 	{
-		ksDel ( all );
+		appendRecu ( tempKey, set );
+		tempKey = ksNext ( temp );
 	}
 	
-	all = ksNew ( );
-		
-	EditorView *view = controller ( )->getView ( );
-	KeySet *ks = subject ( );
-	ksRewind ( ks );
-	::Key *key = ksNext ( ks );
+	::Key *dup = keyNew ( key->key, KEY_SWITCH_END );
 	
-	while ( key )
-	{
-		delRecursive ( key );	
-		key = ksNext ( ks );
-	}
-	
-	view->removeItem ( view->keyTree->currentItem ( ) );
-	
+	keyDup ( key, dup );
+	ksAppend ( all, dup );
 }
 
-bool KeyRemoveCommand::unexecute( )
+bool KeyRemoveCommand::execute( )
 {
-	EditorView *view = controller ( )->getView ( );
 	ksRewind ( all );
 	::Key *key = ksNext ( all );
 	
 	while ( key )
 	{
-		//view->
-		cout << "undoing remove of key " << key->key << endl;
+		if ( kdbRemove ( key->key ) )
+			perror ( QString ( key->key ) + " removing key" );
+			
 		key = ksNext ( all );
 	}
+	
+	if ( item )
+		parent->takeItem ( item );
+	else
+		cout << "item is null" << endl;
 }
 
-void KeyRemoveCommand::delRecursive ( ::Key *key )
+bool KeyRemoveCommand::unexecute( )
 {
-	KeySet *childKeys = ksNew ( );
-	kdbGetKeyChildKeys ( key, childKeys, KDB_O_DIR | KDB_O_INACTIVE );
 	
-	//ksAppend ( all, key );
-	//cout << "doing remove of key" << key->key << endl;
+	ksRewind ( all );
+	::Key *key = ksNext ( all );
 	
-	if ( ksGetSize ( childKeys ) )
+	while ( key )
 	{
-		cout << "removing " << ksGetSize ( childKeys ) << " childs " << endl;
-		ksRewind ( childKeys );
-		::Key *temp = ksNext ( childKeys );
-		
-		while ( temp )
+		if ( kdbSetKey ( key ) )
 		{
-			delRecursive ( temp );
-			temp = ksNext ( childKeys );
+			perror ( "remove command undo " );
 		}
+		else
+			cout << "undoing remove of key " << key->key << endl;
+			
+		key = ksNext ( all );
 	}
-
-	cout << "doing remove of key" << key->key << endl;
-	/*if ( kdbRemove ( key->key ) )
-	{
-		perror ( "removing key" );
-	}*/
-	
-	
-	//ksDel ( childKeys );
+	parent->insertItem ( item );
 }
+
+
 
