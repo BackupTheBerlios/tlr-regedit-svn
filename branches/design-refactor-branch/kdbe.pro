@@ -4,7 +4,6 @@
 # Target is a subdirs project 
 
 QMAKESPEC = linux-g++
-
 !system( pkg-config --version > /dev/null ) {
 	error ( "install the pkg-config software found at http://www.freedesktop.org" )
 }
@@ -22,4 +21,4 @@ CONFIG += debug \
           thread \
           x11 
 TEMPLATE = subdirs 
-SUBDIRS += src/xdgmime src 
+SUBDIRS += src/xdgmime src icons
