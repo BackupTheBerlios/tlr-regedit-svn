@@ -13,7 +13,7 @@ SoftwareVersion: 0.3
 # for instance if it includes DSOs or python/perl modules
 # InterfaceVersion: 0.0
 
-PackageVersion: 1
+PackageVersion: 2
 
 [Description]
 The Linux Registry Editor was designed to be the graphical equivalent to the rg command. It shows you all the values of the keys including the type, comment, uid, gid, acces mode and acces times. It allows you to edit some of the attributes mentioned above.
