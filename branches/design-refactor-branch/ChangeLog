@@ -1,3 +1,10 @@
+* Sunday Jan 31 2005
+	refined the uml diagrams. added a sequence diagram.
+	added some new files to materialize my ideas and thoughts
+
+* Friday Jan 28 2005
+	added some test to the qmake project file
+	
 * Thursday Dec 30 2004
 	removed some unnecessary kdbOpens and kdbCloses
 	update actions if a newly selected key is not visible
