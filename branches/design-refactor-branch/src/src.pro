@@ -3,8 +3,13 @@
 # Unterverzeichnis relativ zum Projektverzeichnis: ./src
 # Das Target ist eine Anwendung:  kdbe
 
+INSTALLS += kdbe 
+kdbe.files += kdbe 
+kdbe.path = /usr/bin/ 
 FORMS += editorviewui.ui \
-         newkeywizardui.ui 
+         newkeywizardui.ui \
+         keycommentui.ui 
+IDLS += keycommentui.ui 
 HEADERS += editorview.h \
            editorcontroller.h \
            keymetainfo.h \
@@ -12,7 +17,8 @@ HEADERS += editorview.h \
            command.h \
            keyaddcommand.h \
            keymodifycommand.h \
-           keyremovecommand.h 
+           keyremovecommand.h \
+           keycomment.h 
 SOURCES += main.cpp \
            editorview.cpp \
            editorcontroller.cpp \
@@ -21,7 +27,8 @@ SOURCES += main.cpp \
            command.cpp \
            keyaddcommand.cpp \
            keymodifycommand.cpp \
-           keyremovecommand.cpp 
+           keyremovecommand.cpp \
+           keycomment.cpp 
 LIBS += $$system(pkg-config --libs elektra) -lmagic -L./xdgmime/ -lxdgmime
 TARGET = kdbe
 CONFIG += debug \
@@ -29,8 +36,3 @@ warn_on \
 qt \
 thread
 TEMPLATE = app subdirs
-
-kdbe.path = /usr/bin/
-kdbe.files = kdbe
-
-INSTALLS += kdbe
