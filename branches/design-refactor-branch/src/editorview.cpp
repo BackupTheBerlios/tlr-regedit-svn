@@ -83,12 +83,42 @@ void EditorView::updateKeyTree ( bool firstTime )
 
 void EditorView::openKeyDir ( QListViewItem *item )
 {
+	cout << "servus " << keyName ( item ) << endl;
 	if ( item->firstChild ( ) -> text ( 0 ) == "dummy" )
+	{
 		delete item->firstChild ( );
+		cout << "found dummy delete it" << endl;
+	}
 	else
 		cout << "implementation error no dummy found" << endl;
 	
-	//TODO implement
+	::Key *toOpen = keyNew ( keyName ( item ) );
+	kdbGetKey ( toOpen );
+	openedKeys.push_back ( toOpen->key );
+	
+	KeySet *childs = ksNew ( );
+	kdbGetKeyChildKeys ( toOpen, childs, KDB_O_DIR | KDB_O_STATONLY | KDB_O_INACTIVE );
+	ksSort ( childs );
+	ksRewind ( childs );
+	
+	::Key *child = ksNext ( childs );
+	
+	while ( child )
+	{
+		QString absolutName ( child->key );
+		QString name = absolutName.right ( absolutName.length() - absolutName.findRev ( RG_KEY_DELIM ) - 1 );
+		cout << name << endl;
+		QListViewItem *childItem = new QListViewItem ( item, name );
+		childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
+		
+		if ( KeyMetaInfo::hasChildKeys ( child ) )
+		{
+			QListViewItem *dummy = new QListViewItem ( childItem, "dummy" );
+			childItem->insertItem ( dummy );
+		}
+		
+		child = ksNext ( childs );
+	}
 }
 
 void EditorView::closeKeyDir ( QListViewItem *item )
@@ -98,5 +128,21 @@ void EditorView::closeKeyDir ( QListViewItem *item )
 
 void EditorView::propagteKeyChange ( QListViewItem *item )
 {
+	//TODO implement
+}
+
+QString EditorView::keyName ( const QListViewItem * item ) const
+{
+	
+	QString key = item->text(0);
+        QListViewItem *parent = item->parent();
+
+        while (parent != 0)
+        {
+                key = parent->text(0) + RG_KEY_DELIM + key;
+                parent = parent->parent();
+        }
+
+        return key;
 
 }

@@ -45,7 +45,7 @@ class EditorView : public EditorViewUI
 		void propagteKeyChange ( QListViewItem *item );
 		
 	private:
-		QString keyName ( const QListViewItem &item ) const;
+		QString keyName ( const QListViewItem *item ) const;
 		void updateKeyTree ( bool firstTime = false );
 		
 	private:
