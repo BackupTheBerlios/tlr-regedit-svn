@@ -26,6 +26,7 @@ using namespace std;
 
 #include <qlistview.h>
 #include <qevent.h>
+#include <qsplitter.h>
 
 extern "C"
 {
@@ -37,8 +38,9 @@ EditorView::EditorView ( EditorController *econtroller )
 {
 	updateKeyTree ( true );
 	
-	EditorViewUI::connect (keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
-	EditorViewUI::connect (keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), this, SLOT ( closeKeyDir ( QListViewItem * ) ) );
+	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
+	connect ( keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), this, SLOT ( closeKeyDir ( QListViewItem * ) ) );
+	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), this, SLOT ( propagateKeyChange ( QListViewItem * ) ) );
 	
 	restoreState ( );
 	
@@ -70,7 +72,7 @@ void EditorView::updateKeyTree ( bool firstTime )
 			QListViewItem *item  = new QListViewItem ( keyTree, k->key);
 			item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
 			keyTree->insertItem ( item );
-			openedKeys.push_back ( k->key );
+			//openedKeys.push_back ( k->key );
 			
 			if (KeyMetaInfo::hasChildKeys ( k ) )
 			{
@@ -81,7 +83,6 @@ void EditorView::updateKeyTree ( bool firstTime )
 			k = ksNext ( roots );
 		}
 	}
-	//TODO run through the openedKey list and add QListViewItems
 }
 
 void EditorView::openKeyDir ( QListViewItem *item )
@@ -124,13 +125,33 @@ void EditorView::openKeyDir ( QListViewItem *item )
 
 void EditorView::closeKeyDir ( QListViewItem *item )
 {
+	openedKeys.erase ( openedKeys.find ( keyName ( item ) ) );
+	QValueList<QListViewItem *> items;
 	
-	//TODO implement
+	QListViewItem *child = item->firstChild ( );
+	
+	while ( child )
+	{
+		items.push_back ( child );
+		child = child->nextSibling ( );
+	}
+	
+	QValueList<QListViewItem *>::iterator rit = items.begin ( );
+	
+	while (rit != items.end ( ) )
+	{
+		delete *rit;
+		++rit;
+	}
+	
+	QListViewItem *dummy = new QListViewItem ( item,  "dummy" );
+	item->insertItem ( dummy );
+	
 }
 
-void EditorView::propagteKeyChange ( QListViewItem *item )
+void EditorView::propagateKeyChange ( QListViewItem *item )
 {
-	//TODO implement
+	cout << "key " << keyName ( item ) << " was selected " << endl;
 }
 
 QString EditorView::keyName ( const QListViewItem * item ) const
@@ -158,36 +179,13 @@ void EditorView::closeEvent ( QCloseEvent * e )
 void EditorView::saveState ( )
 {
 	QString guiKeyPrefix ( "user/sw/kdbe/gui/" );
-	::Key *width = keyNew ( guiKeyPrefix + "width", KEY_SWITCH_END );
-        ::Key *height = keyNew ( guiKeyPrefix + "height", KEY_SWITCH_END );
-        ::Key *x = keyNew ( guiKeyPrefix + "x", KEY_SWITCH_END );
-        ::Key *y = keyNew ( guiKeyPrefix + "y", KEY_SWITCH_END );
 	
-        
-
-        kdbGetKey ( width );
-        keySetString ( width, QString ( ).setNum ( this->width ( ) ) );
-        keySetComment ( width, "This is where regedit stores the width of the window" );
-        kdbSetKey ( width );
-        keyDel ( width );
-
-        kdbGetKey ( height );
-        keySetString ( height, QString ( ).setNum ( this->height ( ) ) );
-        keySetComment ( height, "This is where regedit stores the height of the window" );
-        kdbSetKey ( height );
-        keyDel ( height );
-
-        kdbGetKey ( x );
-        keySetString ( x, QString().setNum(this->x ( ) ) );
-        keySetComment ( x, "This is where regedit stores the x position of the window" );
-        kdbSetKey ( x );
-        keyDel ( x );
-
-        kdbGetKey ( y );
-        keySetString ( y,  QString ( ).setNum ( this->y ( ) ) );
-        keySetComment ( y, "This is where regedit stores the y position of the window" );
-        kdbSetKey ( y );
-        keyDel ( y );
+	kdbSetValueByParent ( guiKeyPrefix , "width", QString ( ).setNum ( width ( ) ) );
+	kdbSetValueByParent ( guiKeyPrefix , "height", QString ( ).setNum ( height ( ) ) );
+	kdbSetValueByParent ( guiKeyPrefix , "x", QString ( ).setNum ( x ( ) ) );
+	kdbSetValueByParent ( guiKeyPrefix , "y", QString ( ).setNum ( y ( ) ) );
+	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "left", QString ( ).setNum ( splitter->sizes()[0]) );
+	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "rigth", QString ( ).setNum ( splitter->sizes()[1]) );
 }
 
 void EditorView::restoreState ( )
@@ -196,30 +194,29 @@ void EditorView::restoreState ( )
 	
 	char buf[300];
 	
-	::Key *width = keyNew ( guiKeyPrefix + "width", KEY_SWITCH_END );
-	kdbGetKey ( width );
-	keyGetString ( width, buf, 300 );
+	kdbGetValueByParent ( guiKeyPrefix, "width", buf, 300 );
 	int vwidth = atoi ( buf );
 	
-	::Key *height = keyNew ( guiKeyPrefix + "height", KEY_SWITCH_END );
-	kdbGetKey ( height );
-	keyGetString ( height, buf, 300 );
+	kdbGetValueByParent ( guiKeyPrefix, "height", buf, 300 );
 	int vheight = atoi ( buf );
 	
 	
-        ::Key *x = keyNew ( guiKeyPrefix + "x", KEY_SWITCH_END );
-	kdbGetKey ( x );
-	keyGetString ( x, buf, 300 );
+        kdbGetValueByParent ( guiKeyPrefix, "x", buf, 300 );
 	int vx = atoi ( buf );
 	
-        ::Key *y = keyNew ( guiKeyPrefix + "y", KEY_SWITCH_END );
-	kdbGetKey ( y );
-	keyGetString ( y, buf, 300 );
+        kdbGetValueByParent ( guiKeyPrefix, "y", buf, 300 );
 	int vy = atoi ( buf );
+	
+	QValueList<int> splittersizes;
+	
+	kdbGetValueByParent ( guiKeyPrefix + "splitter/", "left", buf, 300 );
+	splittersizes.push_back ( atoi ( buf ) );
+	
+	kdbGetValueByParent ( guiKeyPrefix + "splitter/", "right", buf, 300 );
+	splittersizes.push_back ( atoi ( buf ) );
+	
+	splitter->setSizes ( splittersizes );
 	
 	move ( vx, vy );
 	resize ( vwidth, vheight );
-	
-	//int vy = atoi ( kdbGetKey ( §
-	//TODO restore window state from registry
 }

@@ -43,7 +43,7 @@ class EditorView : public EditorViewUI
 	private slots:
 		void openKeyDir ( QListViewItem *item );
 		void closeKeyDir ( QListViewItem *item );
-		void propagteKeyChange ( QListViewItem *item );
+		void propagateKeyChange ( QListViewItem *item );
 		
 	private:
 		QString keyName ( const QListViewItem *item ) const;
