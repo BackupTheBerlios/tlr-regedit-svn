@@ -56,7 +56,7 @@ public:
 	~MainWidgetImpl();
 	bool canUndo();
 	bool canRedo();
-	::Key *getSelected();
+	char *getSelected();
 	mode_t getSelectedAccess();
 	void showInStatusBar(QString str);
 	QPixmap dirIcon;
@@ -88,7 +88,7 @@ private:
 	
 	QPopupMenu keyPopupMenu;
 	bool ignoreTextChanges;
-	::Key *selected;
+	char *selected;
 	mode_t selectedAccess;	
 	MainWindowImpl *parent;
 	

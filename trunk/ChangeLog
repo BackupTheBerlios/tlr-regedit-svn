@@ -3,6 +3,8 @@
 	use pkg-config instead of hardcoded linking informations
 	now kdbOpen is called once at startup and kdbClose called once
 	at exiting. 
+	changed the global selected key to the name of the key not the key
+	instance itself
 	
 * Monday Aug 9 2004 
 	Undo/Redo implemented. should work, but not much tested. 

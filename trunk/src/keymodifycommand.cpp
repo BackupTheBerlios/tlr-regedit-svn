@@ -32,9 +32,11 @@ using namespace std;
 KeyModifyCommand::KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name)
  : Command(mainWidget, name), item(mainWidget->keyTree->currentItem())
 {
-	kdbOpen();
 	
-	::Key *selected = this->mainWidget()->getSelected();
+	::Key *selected = new ::Key;
+	keyInit(selected);
+	keySetName(selected, this->mainWidget()->getSelected());
+	kdbGetKey(selected);
 	
 	oldKey = new ::Key;
 	keyInit(oldKey);
@@ -75,7 +77,6 @@ KeyModifyCommand::KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name)
 			break;
 	}
 	
-	kdbClose();
 }
 
 

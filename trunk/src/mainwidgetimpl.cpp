@@ -257,12 +257,14 @@ void MainWidgetImpl::showKeyValues(bool update)
 	
 	char *buffer;
 	
-	if (keyGetNameSize(selected))
+	char *keyname = getSelected();
+	::Key *selectedKey = new ::Key;
+	keySetName(selectedKey, keyname);
+	kdbGetKey(selectedKey);
+	
+	if (keyGetNameSize(selectedKey))
 	{
-		buffer = new char[keyGetNameSize(selected)];
-		keyGetName(selected, buffer, keyGetNameSize(selected));
-		keyName->setText(QString(buffer).section(RG_KEY_DELIM, -1));
-		delete buffer;
+		keyName->setText(QString(keyname).section(RG_KEY_DELIM, -1));
 	}
 	
 	if (selected == 0)
@@ -272,13 +274,13 @@ void MainWidgetImpl::showKeyValues(bool update)
 		return;
 	}
 	
-	if (keyGetUID(selected) != getuid())
+	if (keyGetUID(selectedKey) != getuid())
 		editButton->setEnabled(false);
 	
 	if (typeCombo->count() - COMBO_POS_DIR)
 		typeCombo->removeItem(COMBO_POS_DIR);
 	
-	switch (keyGetType(selected))
+	switch (keyGetType(selectedKey))
 	{
 		case KEY_TYPE_BINARY: 
 			typeCombo->setCurrentItem(COMBO_POS_BIN);
@@ -313,17 +315,17 @@ void MainWidgetImpl::showKeyValues(bool update)
 			cout << "none of the types set" << endl;
 	}
 	
-	if (keyGetDataSize(selected))
+	if (keyGetDataSize(selectedKey))
 	{
-		buffer = new char[keyGetDataSize(selected)];
-		int size = keyGetDataSize(selected);
-		switch (keyGetType(selected))
+		buffer = new char[keyGetDataSize(selectedKey)];
+		int size = keyGetDataSize(selectedKey);
+		switch (keyGetType(selectedKey))
 		{
 			case KEY_TYPE_BINARY: 
-				keyGetBinary(selected, buffer, size);
+				keyGetBinary(selectedKey, buffer, size);
 				break;
 			case KEY_TYPE_STRING:
-				keyGetString(selected, buffer, size);
+				keyGetString(selectedKey, buffer, size);
 				break;
 			case KEY_TYPE_DIR:
 				break;
@@ -339,27 +341,27 @@ void MainWidgetImpl::showKeyValues(bool update)
 		delete buffer;
 	}
 
-	if (keyGetCommentSize(selected))
+	if (keyGetCommentSize(selectedKey))
 	{
-		buffer = new char[keyGetCommentSize(selected)];
-		keyGetComment(selected, buffer, keyGetCommentSize(selected));
+		buffer = new char[keyGetCommentSize(selectedKey)];
+		keyGetComment(selectedKey, buffer, keyGetCommentSize(selectedKey));
 		keyComment->setText(buffer);
 		delete buffer;
 	}
 	
 	QDateTime dt;
 	
-	dt.setTime_t(keyGetATime(selected));
+	dt.setTime_t(keyGetATime(selectedKey));
 	keyATime->setText(dt.toString());
 
-	dt.setTime_t(keyGetMTime(selected));
+	dt.setTime_t(keyGetMTime(selectedKey));
 	keyMTime->setText(dt.toString());
 	
-	dt.setTime_t(keyGetCTime(selected));
+	dt.setTime_t(keyGetCTime(selectedKey));
 	keyCTime->setText(dt.toString());
 	
-	struct passwd *pwd = getpwuid(keyGetUID(selected));
-	struct group *grp = getgrgid(keyGetGID(selected));
+	struct passwd *pwd = getpwuid(keyGetUID(selectedKey));
+	struct group *grp = getgrgid(keyGetGID(selectedKey));
 	
 	userID->setText(pwd->pw_name);
 	
@@ -410,23 +412,22 @@ void MainWidgetImpl::setWidgetsEnabled(bool enabled)
 }
  
 void MainWidgetImpl::changeSelected(QListViewItem *item)
-{
-	//kdbOpen();
-	if (!item)
-		return;
+{	
+	delete selected;
 	
-	if (selected)
+	if (!item)
 	{
-		keyClose(selected);
-		delete selected;
+		return;
 	}
 	
-	selected = new ::Key;
 	
-	keyInit(selected);
-	keySetName(selected, strdup(getKeyNameFromItem(item)));
+	selected = strdup(getKeyNameFromItem(item));
 	
-	if (kdbGetKey(selected))
+	::Key *selectedKey = new ::Key;
+	keyInit(selectedKey);
+	keySetName(selectedKey, selected);
+
+	if (kdbGetKey(selectedKey))
 	{
 		showInStatusBar(strerror(errno));
 		delete selected;
@@ -435,13 +436,15 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 		return;
 	}
 	
-	selectedAccess = keyGetAccess(selected);
 	
+	selectedAccess = keyGetAccess(selectedKey);
+	keyClose(selectedKey);
+	delete selectedKey;
 	emit keyChanged();
 	
 }
 
-::Key * MainWidgetImpl::getSelected()
+char * MainWidgetImpl::getSelected()
 {
 	return selected;
 }
@@ -567,7 +570,8 @@ void MainWidgetImpl::deleteKey()
 	if (!selected)
 		return;
 	
-	KeyRemoveCommand *cmd = new KeyRemoveCommand(this, QString("remove command: ") + selected->key);
+	KeyRemoveCommand *cmd = new KeyRemoveCommand(this, QString("remove command: ") + selected);
+	
 	cmd->execute();
 	pushUndo(cmd);
 	clearRedoStack();
@@ -582,7 +586,8 @@ void MainWidgetImpl::addNewKey()
 	NewKeyDialogImpl *newDialog = new NewKeyDialogImpl(getKeyNameFromItem(keyTree->currentItem()), this);
 	if (newDialog->exec())
 	{
-		KeyAddCommand *cmd = new KeyAddCommand(newDialog, this, QString("add command: ") + selected->key);
+		KeyAddCommand *cmd = new KeyAddCommand(newDialog, this, QString("add command: ") + selected
+		);
 		cmd->execute();
 		pushUndo(cmd);
 		clearRedoStack();

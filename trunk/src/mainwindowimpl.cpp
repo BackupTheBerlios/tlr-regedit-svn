@@ -192,7 +192,11 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 void MainWindowImpl::updateActions( )
 {
 	//cout << "updating actions" << endl;
-	::Key *selected = mainWidget->getSelected();
+	char * keyname = mainWidget->getSelected();
+	::Key *selected = new ::Key;
+	keyInit(selected);
+	keySetName(selected, keyname);
+	kdbGetKey(selected);
 	
 	if (!selected)
 	{

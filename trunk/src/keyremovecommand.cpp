@@ -26,7 +26,11 @@ KeyRemoveCommand::KeyRemoveCommand(MainWidgetImpl *mainWidget, const char *name)
  : Command(mainWidget, name), item(mainWidget->keyTree->currentItem())
 {
 	key = new ::Key;
-	keyDup(mainWidget->getSelected(), key);
+	::Key *oldKey = new ::Key;
+	keyInit(oldKey);
+	keySetName(oldKey, mainWidget->getSelected());
+	kdbGetKey(oldKey);
+	keyDup(oldKey, key);
 }
 
 
