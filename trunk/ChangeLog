@@ -1,0 +1,25 @@
+* Wednesday 21 July 2004
+	applied the GPL as license
+	added spec file and compile.sh (maybe not functional because of the source layout change)
+	fixed type updating bug
+	check first system namespace for iconDir
+	
+* Tuesday 20 July 2004
+	restructured source code put all *.cpp and *.h into src
+	updated the build scripts to build with the new structure
+	
+* Monday 19 July 2004
+	added a qmake project file (if you have no cmake)
+	added a new dialog to add new keys 
+
+* Wednesday 14 July 2004
+	enabled deleting of keys. tested a little bit; so far no issues
+
+* Tuesday 13 July 2004
+	updated the gui
+		- added a type combobox to the value
+		- repositioned timestamps 
+		- made the comments bigger (thanx avi)
+		- fixed an issue with cmake
+		
+	do NOT use cmake 2.0.2 - QT_WRAP_UI is not working

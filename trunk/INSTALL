@@ -1,0 +1,33 @@
+TOC
+	1. cmake
+	2. qmake
+	3. icon support
+
+1. CMAKE:
+WARNING: do not use cmake 2.0.2 it has a bug which is critical for building 
+regedit. 
+
+this package uses cmake (http://www.cmake.org) for generating Makefiles:
+
+use an external build dir, otherwise cmake will polute the sourcedir with lots
+of files:
+
+	tar -xzf regedit-<version>.tar.gz
+	mkdir build
+	cd build
+	cmake ../regedit
+	make
+	./regedit 
+
+2. QMAKE:
+	tar -xzf regedit-<version>.tar.gz
+	mkdir build
+	cd build
+	qmake ../regedit/regedit.pro
+	make
+	./regedit
+
+3. ICON SUPPORT
+	after the first start of regedit a key named user/sw/regedit/gui/iconDir
+	is created. point this key to the path of the regedit/icons directory. 
+	
