@@ -43,8 +43,6 @@ KeyRemoveCommand::~KeyRemoveCommand()
 
 bool KeyRemoveCommand::execute( )
 {
-	kdbOpen();
-		
 	char *name = new char[keyGetNameSize(key)];
 	keyGetName(key, name, keyGetNameSize(key));
 	
@@ -55,13 +53,11 @@ bool KeyRemoveCommand::execute( )
 	}
 	
 	item->setVisible(false);
-	kdbClose();
 	return true;
 }
 
 bool KeyRemoveCommand::unexecute( )
 {
-	kdbOpen();
 	if (kdbSetKey(key))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
@@ -69,7 +65,6 @@ bool KeyRemoveCommand::unexecute( )
 	}
 	
 	item->setVisible(true);
-	kdbClose();
 	return true;
 }
 
