@@ -1,3 +1,32 @@
+2005-03-14 08:25  gregorburger
+
+	* branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/keyaddcommand.cpp,
+	  branches/design-refactor-branch/src/keyaddcommand.h,
+	  branches/design-refactor-branch/src/keymodifycommand.cpp,
+	  branches/design-refactor-branch/src/keyremovecommand.cpp: bug fix
+	  in remove key undo; remove of debug output
+
+2005-03-11 12:21  gregorburger
+
+	* branches/design-refactor-branch/kdbe.kdevelop,
+	  branches/design-refactor-branch/kdbe.kdevelop.pcs,
+	  branches/design-refactor-branch/kdbe.pro,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/keyaddcommand.cpp,
+	  branches/design-refactor-branch/src/keymodifycommand.cpp,
+	  branches/design-refactor-branch/src/keyremovecommand.cpp,
+	  branches/design-refactor-branch/src/newkeywizard.cpp,
+	  branches/design-refactor-branch/src/src.pro: bug fix
+
+2005-03-11 08:16  gregorburger
+
+	* branches/design-refactor-branch/ChangeLog,
+	  branches/design-refactor-branch/INSTALL,
+	  branches/design-refactor-branch/TODO,
+	  branches/design-refactor-branch/kdbe.kdevelop.pcs: update of
+	  project files
+
 2005-03-11 08:13  gregorburger
 
 	* branches/design-refactor-branch/src/editorcontroller.cpp,
