@@ -417,6 +417,7 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	if (!item)
 	{
+		emit keyChanged();
 		return;
 	}
 	
@@ -433,6 +434,7 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 		delete selected;
 		selected = 0;
 		selectedAccess = 0;
+		emit keyChanged();
 		return;
 	}
 	
@@ -474,9 +476,6 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
 /**
  *pops up the kontextmenu 
  *gets called when the user rightclickes an item in the treeview (SIGNAL: rightButtonClicked(QListViewItem *item, QPos &pos, int b))
- *
- *TODO use icons
- *TODO refine the menu
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
@@ -486,7 +485,6 @@ void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 /**
  * undos changes made by the user 
  * gets called when the user hits the revokeButton 
- * TODO find better name for revoke probably undo?
  */
 void MainWidgetImpl::revokeChanges()
 {	
@@ -509,9 +507,10 @@ void MainWidgetImpl::applyChanges()
 	{
 		pushUndo(cmd);
 		clearRedoStack();
-		emit keyChanged();	
+		
 		applyButton->setEnabled(false);
 		revokeButton->setEnabled(false);
+		emit keyChanged();	
 	}
 }
 
@@ -533,8 +532,9 @@ void MainWidgetImpl::changeAccessMode()
 		if (perm->ow->isChecked()) selectedAccess |= S_IWOTH; else selectedAccess &= ~S_IWOTH;
 		if (perm->ox->isChecked()) selectedAccess |= S_IXOTH; else selectedAccess &= ~S_IXOTH;
 		
-		emit keyChanged();
+		
 		keyAttributesChanged("");
+		emit keyChanged();
 	}
 }
 
