@@ -20,6 +20,7 @@
 #include "keymetainfo.h"
 #include <iostream>
 
+#include <sys/stat.h>
 
 bool KeyMetaInfo::hasChildKeys ( const QString & key )
 {
@@ -57,28 +58,34 @@ QPixmap KeyMetaInfo::getIcon ( const Key * key )
 {
 	Key *iconKey = 0;
 	
-	std::cout << (int) keyGetType ( key ) << std::endl;
-	
-	switch ( keyGetType ( key ) )
+	if ( canRead ( key ) )
 	{
-		case KEY_TYPE_DIR:
-			iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/dir", KEY_SWITCH_END );
-			break;
-		case KEY_TYPE_STRING:
-			iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/string", KEY_SWITCH_END );
-			break;
-		case KEY_TYPE_BINARY:
-			iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/binary", KEY_SWITCH_END );
-			break;
-		case KEY_TYPE_LINK:
-			iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/link", KEY_SWITCH_END );
-			break;
-		case KEY_TYPE_UNDEFINED:
-			iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/undefined", KEY_SWITCH_END );
-			break;
-		default:
-			//should not happen
-			std::cout << "getIconSet: should not happen" << std::endl;
+		
+		switch ( keyGetType ( key ) )
+		{
+			case KEY_TYPE_DIR:
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/dir", KEY_SWITCH_END );
+				break;
+			case KEY_TYPE_STRING:
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/string", KEY_SWITCH_END );
+				break;
+			case KEY_TYPE_BINARY:
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/binary", KEY_SWITCH_END );
+				break;
+			case KEY_TYPE_LINK:
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/link", KEY_SWITCH_END );
+				break;
+			case KEY_TYPE_UNDEFINED:
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/undefined", KEY_SWITCH_END );
+				break;
+			default:
+				//should not happen
+				std::cout << "getIconSet: should not happen" << std::endl;
+		}
+	}
+	else
+	{
+		iconKey = keyNew ( QString ( SYS_PREFIX ) + "icons/noaccess", KEY_SWITCH_END );
 	}
 	
 	kdbGetKey ( iconKey );
@@ -96,6 +103,31 @@ QPixmap KeyMetaInfo::getIcon ( const Key * key )
 		std::cout << iconKey->key << std::endl;
 	}
 	return pixm;
+}
+
+bool KeyMetaInfo::canRead ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	bool temp = canRead ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+bool KeyMetaInfo::canRead ( const ::Key * key )
+{
+	mode_t mode = keyGetAccess ( key );
+	
+	if ( mode & S_IROTH )
+		return true;
+	
+	if (mode & S_IRGRP && keyGetGID ( key ) == getgid ( ) )
+		return true;
+	
+	if (mode & S_IRUSR && keyGetUID ( key ) == getuid ( ) )
+		return true;
+		
+	return false;
 }
 
 

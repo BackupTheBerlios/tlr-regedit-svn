@@ -37,6 +37,9 @@ class KeyMetaInfo
 		static QPixmap getIcon ( const QString & key );
 		static QPixmap getIcon ( const ::Key * key );
 		
+		static bool canRead ( const QString & key );
+		static bool canRead ( const ::Key * key );
+		
 	private:
 
 };
