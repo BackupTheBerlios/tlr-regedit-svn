@@ -3,6 +3,17 @@
 # Subdir relative project main directory: .
 # Target is a subdirs project 
 
+!system( pkg-config --version > /dev/null ) {
+	error ( "install the pkg-config software found at http://www.freedesktop.org" )
+}
+
+!system( pkg-config --exists elektra ) {
+	error ("install the elektra software found at elektra.sf.net")
+}
+else {
+	message ( found elektra version $$system( pkg-config --modversion elektra ) )
+}
+
 CONFIG += debug \
           warn_on \
           qt \
