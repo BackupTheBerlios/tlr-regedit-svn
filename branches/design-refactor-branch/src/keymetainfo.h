@@ -40,7 +40,11 @@ class KeyMetaInfo
 		static bool canRead ( const QString & key );
 		static bool canRead ( const ::Key * key );
 		
+		static bool canWrite ( const QString & key );
+		static bool canWrite ( const ::Key * key );
+		
 	private:
+
 
 };
 

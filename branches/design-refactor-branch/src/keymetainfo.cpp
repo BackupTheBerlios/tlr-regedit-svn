@@ -130,4 +130,28 @@ bool KeyMetaInfo::canRead ( const ::Key * key )
 	return false;
 }
 
+bool KeyMetaInfo::canWrite ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	bool temp = canWrite ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+bool KeyMetaInfo::canWrite ( const ::Key * key )
+{
+	mode_t mode = keyGetAccess ( key );
+	
+	if ( mode & S_IWOTH )
+		return true;
+	
+	if (mode & S_IWGRP && keyGetGID ( key ) == getgid ( ) )
+		return true;
+	
+	if (mode & S_IWUSR && keyGetUID ( key ) == getuid ( ) )
+		return true;
+		
+	return false;
+}
 
