@@ -1,12 +1,13 @@
 Name: regedit
-Version: 0.2
-Release: 1
-Source:    http://registry.sf.net/%{name}-%{version}.tar.gz
+Version: 0.2.1
+Release: 2
+Source0:    http://members.aon.at/gregorburger/%{name}-%{version}.tar.gz
+Source1:    regedit.desktop
 Group:     System Environment/Libraries
 Copyright: GPL
 Vendor: Gregor Burger <gregor.burger@aon.at>
 Packager: Avi Alkalay <avi@unix.sh>
-URL: http://registry.sf.net
+URL: http://www.livejournal.com/users/gregorburger/
 BuildRoot:   %{_tmppath}/%{name}-%{version}-build
 BuildRequires: registry-devel
 Requires: registry
@@ -22,9 +23,12 @@ qmake regedit.pro
 make
 
 %install
-strip regedit
-find regedit | cpio -pdvm $RPM_BUILD_ROOT/usr/bin
-find icons | grep \.png | cpio -pdvm $RPM_BUILD_ROOT/usr/share/lib/regedit
+strip src/regedit
+mkdir -p $RPM_BUILD_ROOT/usr/bin
+cp src/regedit $RPM_BUILD_ROOT/usr/bin
+find icons | grep -v .svn | grep \.png | cpio -pdvm $RPM_BUILD_ROOT/usr/share/lib/regedit
+mkdir -p $RPM_BUILD_ROOT/usr/share/applications/
+cp %{SOURCE1} $RPM_BUILD_ROOT/usr/share/applications/
 
 
 %clean
@@ -43,7 +47,15 @@ rg set system/sw/regedit/gui/iconDir "/usr/share/lib/regedit/icons"
 %defattr(-,root,root,0755)
 /usr/bin/*
 /usr/share/lib/regedit
+/usr/share/applications/*
 
 %changelog
+* Sat Jul 24 2004 Avi Alkalay <avi@unix.sh> 0.2.1-2
+- Added desktop file, to get an icon in the apps menu, under System Tools
+- Improvements to the spec file
 
+* Tue Jul 20 2004 Avi Alkalay <avi@unix.sh> 0.2.1-1
+- Updated to 0.2.1 and a qmake build
 
+* Fri Jul 16 2004 Avi Alkalay <avi@unix.sh> 0.2
+- First package with a manual build
