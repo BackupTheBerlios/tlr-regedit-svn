@@ -25,5 +25,6 @@ EditorController::EditorController ( )
 {
 	view = new EditorView ( this );
 	qApp->setMainWidget ( view );
-	connect ( this, SIGNAL ( notifiyView () ), view, SLOT ( update ( ) ) );
+	connect ( this, SIGNAL ( notifyView () ), view, SLOT ( update ( ) ) );
+	emit notifyView ( );
 }
