@@ -72,7 +72,6 @@ void EditorView::updateKeyTree ( bool firstTime )
 			QListViewItem *item  = new QListViewItem ( keyTree, k->key);
 			item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
 			keyTree->insertItem ( item );
-			//openedKeys.push_back ( k->key );
 			
 			if (KeyMetaInfo::hasChildKeys ( k ) )
 			{
@@ -151,6 +150,10 @@ void EditorView::closeKeyDir ( QListViewItem *item )
 
 void EditorView::propagateKeyChange ( QListViewItem *item )
 {
+	char buf[300];
+	::Key *bin = keyNew ( "system/sw/kdbe/icons/binary", KEY_SWITCH_END );
+	kdbGetKey ( bin );
+	cout << (int) keyGetType ( bin ) << endl;
 	cout << "key " << keyName ( item ) << " was selected " << endl;
 }
 

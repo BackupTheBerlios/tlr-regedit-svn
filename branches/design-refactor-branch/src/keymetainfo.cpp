@@ -56,7 +56,9 @@ QPixmap KeyMetaInfo::getIcon ( const QString & key )
 QPixmap KeyMetaInfo::getIcon ( const Key * key )
 {
 	Key *iconKey = 0;
-		
+	
+	std::cout << (int) keyGetType ( key ) << std::endl;
+	
 	switch ( keyGetType ( key ) )
 	{
 		case KEY_TYPE_DIR:
