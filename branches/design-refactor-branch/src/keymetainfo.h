@@ -46,6 +46,15 @@ class KeyMetaInfo
 		static bool isRoot ( const QString & key );
 		static bool isRoot ( const ::Key * key );
 		
+		static QString getOwner ( const QString & key );
+		static QString getOwner ( const ::Key * key );
+		
+		static QString getGroup ( const QString & key );
+		static QString getGroup ( const ::Key * key );
+		
+		static QString getAccess ( const QString & key );
+		static QString getAccess ( const ::Key * key );
+		
 	private:
 
 

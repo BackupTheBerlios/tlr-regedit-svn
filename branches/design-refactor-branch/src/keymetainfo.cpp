@@ -22,6 +22,9 @@
 using namespace std;
 
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 
 bool KeyMetaInfo::hasChildKeys ( const QString & key )
 {
@@ -188,4 +191,77 @@ bool KeyMetaInfo::isRoot ( const ::Key * key )
 		oneRoot = ksNext ( roots );
 	}
 	return false;
+}
+
+QString KeyMetaInfo::getOwner ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	QString temp = getOwner ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+QString KeyMetaInfo::getOwner ( const ::Key * key )
+{
+	struct passwd *pwd = getpwuid ( keyGetUID ( key ) );
+	QString name ( pwd->pw_name );
+	//delete pwd;
+	return name;
+}
+
+
+QString KeyMetaInfo::getGroup ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	QString temp = getGroup ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+QString KeyMetaInfo::getGroup ( const ::Key * key )
+{
+	struct group * grp = getgrgid ( keyGetGID ( key ) );
+	QString group ( grp->gr_name );
+	//delete grp;
+	return group;
+}
+
+
+QString KeyMetaInfo::getAccess ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	QString temp = getAccess ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+
+QString KeyMetaInfo::getAccess ( const ::Key * key )
+{
+	mode_t mode = keyGetAccess ( key );
+
+        char *readable = new char[10];
+
+        if (S_ISDIR(mode))
+                readable[0]='d';
+        else
+                if (S_ISLNK(mode)) readable[0]='l';
+                        else readable[0]='-';
+        readable[1] = mode & S_IRUSR ? 'r' : '-';
+        readable[2] = mode & S_IWUSR ? 'w' : '-';
+        readable[3] = mode & S_IXUSR ? 'x' : '-';
+        readable[4] = mode & S_IRGRP ? 'r' : '-';
+        readable[5] = mode & S_IWGRP ? 'w' : '-';
+        readable[6] = mode & S_IXGRP ? 'x' : '-';
+        readable[7] = mode & S_IROTH ? 'r' : '-';
+        readable[8] = mode & S_IWOTH ? 'w' : '-';
+        readable[9] = mode & S_IXOTH ? 'x' : '-';
+        readable[10]= 0;
+	
+	QString tmp ( readable );
+	delete readable;
+	return tmp;
 }
