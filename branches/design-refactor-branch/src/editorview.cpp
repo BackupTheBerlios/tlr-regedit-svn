@@ -20,6 +20,8 @@
 
 #include "editorview.h"
 #include "keymetainfo.h"
+#include "errno.h"
+#include "string.h"
 
 #include <iostream>
 using namespace std;
@@ -39,7 +41,6 @@ EditorView::EditorView ( EditorController *econtroller )
 	updateKeyTree ( true );
 	
 	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
-	connect ( keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), this, SLOT ( closeKeyDir ( QListViewItem * ) ) );
 	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), this, SLOT ( propagateKeyChange ( QListViewItem * ) ) );
 	
 	restoreState ( );
@@ -60,7 +61,11 @@ void EditorView::updateKeyTree ( bool firstTime )
 		openedKeys.clear();
 		
 		KeySet *roots = ksNew ( );
-		kdbGetRootKeys ( roots );
+		if ( kdbGetRootKeys ( roots ) )
+		{
+			perror ( "opening roots" );
+		}
+		
 		
 		ksSort ( roots );
 		ksRewind ( roots );
@@ -86,6 +91,9 @@ void EditorView::updateKeyTree ( bool firstTime )
 
 void EditorView::openKeyDir ( QListViewItem *item )
 {
+	if ( openedKeys.contains ( keyName ( item ) ) ) //allready opened
+		return;
+		
 	if ( item->firstChild ( ) -> text ( 0 ) == "dummy" )
 	{
 		delete item->firstChild ( );
@@ -98,7 +106,13 @@ void EditorView::openKeyDir ( QListViewItem *item )
 	openedKeys.push_back ( toOpen->key );
 	
 	KeySet *childs = ksNew ( );
-	kdbGetKeyChildKeys ( toOpen, childs, KDB_O_DIR | KDB_O_STATONLY | KDB_O_INACTIVE );
+	if ( kdbGetKeyChildKeys ( toOpen, childs, KDB_O_DIR  | KDB_O_INACTIVE ) )
+	{
+		perror ( "opening key tree" );
+	}
+	
+	keyDel ( toOpen );
+	
 	ksSort ( childs );
 	ksRewind ( childs );
 	
@@ -106,6 +120,7 @@ void EditorView::openKeyDir ( QListViewItem *item )
 	
 	while ( child )
 	{
+
 		QString absolutName ( child->key );
 		QString name = absolutName.right ( absolutName.length() - absolutName.findRev ( RG_KEY_DELIM ) - 1 );
 
@@ -120,41 +135,12 @@ void EditorView::openKeyDir ( QListViewItem *item )
 		
 		child = ksNext ( childs );
 	}
-}
-
-void EditorView::closeKeyDir ( QListViewItem *item )
-{
-	openedKeys.erase ( openedKeys.find ( keyName ( item ) ) );
-	QValueList<QListViewItem *> items;
-	
-	QListViewItem *child = item->firstChild ( );
-	
-	while ( child )
-	{
-		items.push_back ( child );
-		child = child->nextSibling ( );
-	}
-	
-	QValueList<QListViewItem *>::iterator rit = items.begin ( );
-	
-	while (rit != items.end ( ) )
-	{
-		delete *rit;
-		++rit;
-	}
-	
-	QListViewItem *dummy = new QListViewItem ( item,  "dummy" );
-	item->insertItem ( dummy );
-	
+	ksDel ( childs );
 }
 
 void EditorView::propagateKeyChange ( QListViewItem *item )
 {
-	char buf[300];
-	::Key *bin = keyNew ( "system/sw/kdbe/icons/binary", KEY_SWITCH_END );
-	kdbGetKey ( bin );
-	cout << (int) keyGetType ( bin ) << endl;
-	cout << "key " << keyName ( item ) << " was selected " << endl;
+	emit keySelected ( keyName ( item ) );
 }
 
 QString EditorView::keyName ( const QListViewItem * item ) const
