@@ -1,25 +1,4 @@
 TODO List for regedit:
 	
-	* implement deleting of keys	(what about deleting whole dirs recursively)
-	* implement adding new keys	(done)
-	* reflect type of key in tree with icons (done with icon limitations)
-	* implement updating keys	(implemented - type updates missing, needed?)
-	* rethink gui placement of time stamps (done; updated position in gui; it does'nt use that much place than before)
-	  michael suggested that time stamps are not used that often for placing it at toplevel of the gui
-	* implement setting the type of a key (binary or string)
-	* implement object 
-	* implement uid gid checking showing real values (user name, group name) not integers (done)
-	* use the registry to store window attributes (done)
-	* implement undo/redo (IMPORTANT!!!!)
-	  maybe: store a KeySet of deleted/inserted keys
-	* overthink deleting/inserting of keys
-	  seems to be strange that deleting and inserting of keys is done without applying
-	  maybe: use a global save button; replace apply/revoke with global save/undo redo
-	* make regedit autodetect where the iconDir should point to. can be made through
-	  getabspath(getcwd() + (argv[0] - "regedit"))
-	* XML import/export of subtrees
-	* check first for app settings in system/sw/regedit/... and then in user/sw/regedit/... (done)
-	* find a way to look at other users keys (user:otheruser/key/)
-	
-	  
-
+	* XML import/export of subtrees (NOT DONE)
+	* find a way to look at other users keys (user:otheruser/key/) (NOT DONE)
