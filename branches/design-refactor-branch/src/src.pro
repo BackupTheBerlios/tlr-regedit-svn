@@ -12,14 +12,11 @@ CONFIG += debug \
 TEMPLATE = app 
 FORMS += editorviewui.ui
       
-HEADERS += iobserver.h \
-           observable.h \
-           editorview.h \
+HEADERS += editorview.h \
            editorcontroller.h \
 	   keymetainfo.h
 
-SOURCES += observable.cpp \
-           main.cpp \
+SOURCES += main.cpp \
            editorview.cpp \
            editorcontroller.cpp \
 	   keymetainfo.cpp
