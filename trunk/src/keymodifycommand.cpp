@@ -91,16 +91,13 @@ KeyModifyCommand::~KeyModifyCommand()
 bool KeyModifyCommand::execute()
 {
 	registryOpen();
-	cout << "sel" << mainWidget()->getSelected() << endl;
 	if (registrySetKey(newKey))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		mainWidget()->showKeyValues(true);
 		return false;
 	}
-	cout << "sel" << mainWidget()->getSelected() << endl;
 	item->setPixmap(0, newIcon);
-	cout << "sel" << mainWidget()->getSelected() << endl;
 	mainWidget()->changeSelected(item);
 	return true;
 }

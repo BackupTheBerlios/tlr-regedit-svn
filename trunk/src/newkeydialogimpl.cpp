@@ -84,7 +84,6 @@ void NewKeyDialogImpl::updateValue(const QString &nvalue)
 
 void NewKeyDialogImpl::updateType(int id)
 {
-	cout << "new type: " << id << endl;
 	this->setEnabled(true);
 	switch (id)
 	{

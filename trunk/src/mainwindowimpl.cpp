@@ -198,7 +198,6 @@ void MainWindowImpl::updateActions( )
 		return;
 	}
 	
-	cout << mainWidget->getSelected() << endl;
 	
 	if (mainWidget->canRedo())
 		redo->setEnabled(true);

@@ -32,7 +32,6 @@ using namespace std;
 KeyAddCommand::KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidget, const char *name)
  : Command(mainWidget, name), newDialog(dialog)
 {
-	cout << "servus" << endl;
 	key = new ::Key;
 	keyInit(key);
 		
