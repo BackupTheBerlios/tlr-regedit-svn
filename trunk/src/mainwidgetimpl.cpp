@@ -874,9 +874,9 @@ void MainWidgetImpl::undo()
 	//if (undoStack.remove())	cout << "removed first element" << endl;
 	cmd->unexecute();
 	redoStack.push(cmd);
-	//changeSelected(keyTree->currentItem());
+	changeSelected(keyTree->currentItem());
 	//showKeyValues();
-	emit keyChanged();
+	//emit keyChanged();
 }
 
 void MainWidgetImpl::redo() 
@@ -891,9 +891,9 @@ void MainWidgetImpl::redo()
 	//redoStack.remove();
 	cmd->execute();
 	undoStack.push(cmd);
-	//changeSelected(keyTree->currentItem());
+	changeSelected(keyTree->currentItem());
 	//showKeyValues();
-	emit keyChanged();
+	//emit keyChanged();
 }
 
 void MainWidgetImpl::clearRedoStack()

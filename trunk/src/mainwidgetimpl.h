@@ -51,7 +51,6 @@ Q_OBJECT
 public:
 	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
 	~MainWidgetImpl();
-	void showKeyValues(bool update = false);
 	bool canUndo();
 	bool canRedo();
 	::Key *getSelected();
@@ -61,6 +60,7 @@ signals:
 	void keyChanged();
 	
 public slots:
+	void showKeyValues(bool update = false);
 	void updateKeyTree();
 	void undo();
 	void redo();
