@@ -1,3 +1,7 @@
+* Sunday 25 July 2004
+	added autopackage spec file
+	released autopackage package
+
 * Wednesday 21 July 2004
 	applied the GPL as license
 	added spec file and compile.sh (maybe not functional because of the source layout change)
