@@ -30,5 +30,6 @@ extern "C"
 const QString keyPrefix = "user/sw/regedit";
 
 void checkKeyMake(Key *key, u_int8_t type);
+QString getIconDir();
 
 #endif 

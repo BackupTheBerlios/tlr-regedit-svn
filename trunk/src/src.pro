@@ -3,18 +3,22 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  regedit
 
-TEMPLATE = app
-CONFIG += qt debug thread
-TARGET = regedit
-LIBS += -lregistry
+FORMS += mainwidget.ui \
+         newdialog.ui \
+         permissiondialog.ui 
+IDLS += permissiondialog.ui 
+HEADERS += newkeydialogimpl.h \
+           mainwidgetimpl.h \
+           mainwindowimpl.h \
+           regedit_globals.h \
+           permissiondialogimpl.h 
 SOURCES += newkeydialogimpl.cpp \
            main.cpp \
            mainwidgetimpl.cpp \
            mainwindowimpl.cpp \
-	   regedit_globals.cpp
-HEADERS += newkeydialogimpl.h \
-           mainwidgetimpl.h \
-           mainwindowimpl.h \
-	   regedit_globals.h
-FORMS += mainwidget.ui \
-         newdialog.ui 
+           regedit_globals.cpp \
+           permissiondialogimpl.cpp 
+TEMPLATE = app
+CONFIG += qt debug thread
+TARGET = regedit
+LIBS += -lregistry

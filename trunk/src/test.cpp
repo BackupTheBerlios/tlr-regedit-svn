@@ -23,31 +23,64 @@ extern "C"
 }
 
 #include <iostream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+/**
+ * 
+ * @param argc 
+ * @param argv 
+ * @return 
+ */
+#include <stdio.h>
+#include <errno.h>
+
 
 using namespace std;
 
 int main(int argc, char *argv)
 {
 
-	for (int i = 0; i < 100; i++)
+	//for (int i = 0; i < 100; i++)
 	{
 		registryOpen();
 		
 		::Key key;
 		keyInit(&key);
 		
-		cout << i << "th test : ";
+		//cout << i << "th test : ";
 		
-		if (i % 2)
+		//if (i % 2)
 		{
-			key.key = "user/example/asdf";
-			cout << registryGetKey(&key) << keyGetFlag(&key)<< endl;
+			char * name = "user/ex/temp";
+			keySetName(&key, name);
+			if (registryStatKey(&key))
+				perror("stating key");
+			
+			if (registryGetKey(&key))
+				perror("getting key");
+				
+			mode_t mode = keyGetAccess(&key);
+			
+			if (mode & S_IRUSR)
+				cout << "can read" << endl;
+			if (mode & S_IWUSR)
+				cout << "can write" << endl;
+			if (mode & S_IXUSR)
+				cout << "can exec" << endl;
+				
+			if (mode & S_IXGRP)
+				cout << "group can execute" << endl;
+			
+			if (keyIsInitialized(&key))
+				cout << "initialized" << endl;
+			//cout << registryGetKey(&key) << keyGetFlag(&key)<< endl;
 		}
-		else
+		/*else
 		{
 			key.key = "user/example";
 			cout << registryGetKey(&key) << endl;
-		}
+		}*/
 		
 		registryClose();
 	}

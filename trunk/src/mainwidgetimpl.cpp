@@ -18,11 +18,14 @@
  */
 
 #include "mainwidgetimpl.h"
+#include "mainwindowimpl.h"
 #include "newkeydialogimpl.h"
+#include "permissiondialogimpl.h"
 #include "regedit_globals.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
 #include <iostream>
@@ -31,6 +34,7 @@
 
 using namespace std;
 
+#include <qmainwindow.h>
 #include <qlistview.h>
 #include <qlabel.h>
 #include <qlineedit.h>
@@ -43,6 +47,7 @@ using namespace std;
 #include <qclipboard.h>
 #include <qapplication.h>
 #include <qaction.h>
+#include <qstatusbar.h>
 
 /**
  *the main constructor
@@ -51,12 +56,11 @@ using namespace std;
  */
 
 MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl) 
-	: MainWidget(parent, name, fl), dirIcon(QPixmap("icons/folder.png")), stringIcon(QPixmap("icons/txt.png")), 
-	  binaryIcon(QPixmap("icons/binary.png"))
+	: MainWidget(parent, name, fl), ignoreTextChanges(false), selected(0), selectedAccess(0), parent( (MainWindowImpl *) parentWidget())
 {
 	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
 	
-	connect(keyTree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(showKeyValues(QListViewItem*)));
+	connect(keyTree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(changeSelected(QListViewItem*)));
 	connect(keyTree, SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)), this, SLOT(showItemMenu(QListViewItem*, const QPoint &, int)));
 	
 	connect(keyName, SIGNAL(textChanged(const QString &)), this, SLOT(keyAttributesChanged(const QString &)));
@@ -67,6 +71,9 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	connect(revokeButton, SIGNAL(clicked()), this, SLOT(revokeChanges()));
 	connect(applyButton, SIGNAL(clicked()), this, SLOT(applyChanges()));
 	
+	connect(editButton, SIGNAL(clicked()), this, SLOT(changeAccessMode()));	
+	
+	setWidgetsEnabled(false);
 	setUpGui();
 	updateKeyTree();
 }
@@ -74,45 +81,21 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 
 
 void MainWidgetImpl::setUpGui()
-{
-	registryOpen();
-	
+{	
 	keyTree->setTreeStepSize(12);
 	
-	::Key iconDir;
-	
-	keyInit(&iconDir);
-	
-	keySetName(&iconDir, "system/sw/regedit/gui/iconDir");
-	
-	int ret = registryGetKey(&iconDir);
-	
-	if (ret)
+	if (getIconDir() != QString::null)
 	{
-		cout << "using user namespace iconDir" << endl;
-		keyClose(&iconDir);
-		keyInit(&iconDir);
-		keySetName(&iconDir, "user/sw/regedit/gui/iconDir");
-		checkKeyMake(&iconDir, RG_KEY_TYPE_STRING);
-	}
-	else
-		cout << "using system namespace iconDir" << endl;
-	
-	if (keyGetDataSize(&iconDir))
-	{
-		char *buf = new char[keyGetDataSize(&iconDir)];
-		
-		keyGetString(&iconDir, buf, keyGetDataSize(&iconDir));
-		QString prefix(buf);
+		QString prefix(getIconDir());
 		binaryIcon = QPixmap(prefix + "/binary.png");
 		dirIcon = QPixmap(prefix + "/folder.png");
 		stringIcon = QPixmap(prefix + "/txt.png");
-		linkIcon = QPixmap(prefix +"/link.pnt");
+		linkOverlay = QPixmap(prefix +"/link.png");
+		lockOverlay = QPixmap(prefix + "/lockoverlay.png");
+		deniedIcon = QPixmap(prefix + "/stop_2.png");
+		if (binaryIcon.isNull())
+			cout << "icon is null" << endl;
 	}
-	
-	keyClose(&iconDir);
-	
-	registryClose();
 }
 
 void MainWidgetImpl::updateKeyTree()
@@ -123,7 +106,6 @@ void MainWidgetImpl::updateKeyTree()
 	ksInit(&roots);
 	
 	registryGetRootKeys(&roots);
-	
 	::Key *mover;
 	
 	mover = roots.start;
@@ -132,13 +114,14 @@ void MainWidgetImpl::updateKeyTree()
 	{
 		QListViewItem *item = new QListViewItem(keyTree, mover->key);
 		fillUpKeyTree(mover, item);
+		
 		switch (keyGetType(mover))
 		{
 			case RG_KEY_TYPE_DIR:
-				item->setPixmap(0, dirIcon);
+				item->setPixmap(0, dirIcon);	
 				break;
 			case RG_KEY_TYPE_LINK:
-				item->setPixmap(0, linkIcon);
+				item->setPixmap(0, linkOverlay);
 				break;
 			case RG_KEY_TYPE_STRING:
 				item->setPixmap(0, stringIcon);
@@ -151,11 +134,6 @@ void MainWidgetImpl::updateKeyTree()
 	
 	ksClose(&roots);
 	registryClose();
-}
-
-MainWidgetImpl::~MainWidgetImpl()
-{
-	
 }
 
 /**
@@ -175,51 +153,64 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 	
 	while (mover)
 	{
-		if (item == 0)
-			cout << "i have no parent" << endl;	
-		
-		/*char *name = new char[keyGetNameSize(mover)];
-		keyGetKeyName(mover, name, keyGetNameSize(mover));*/
 		
 		QListViewItem *subItem = new QListViewItem(item, QString(mover->key).section(RG_KEY_DELIM, -1));
 		
-		switch (keyGetType(mover))
+		int type = keyGetType(mover);
+		bool isDir = false;
+			
+		if (type)
 		{
-			case RG_KEY_TYPE_DIR:
-				subItem->setPixmap(0, dirIcon);
-				break;
-			case RG_KEY_TYPE_LINK:
-				subItem->setPixmap(0, linkIcon);
-				break;
-			case RG_KEY_TYPE_STRING:
-				subItem->setPixmap(0, stringIcon);
-				break;
-			case RG_KEY_TYPE_BINARY:
-				subItem->setPixmap(0, binaryIcon);
+	
+			switch (type)
+			{
+				case RG_KEY_TYPE_DIR:
+					subItem->setPixmap(0, dirIcon);
+					isDir = true;
+					break;
+				case RG_KEY_TYPE_LINK:
+					subItem->setPixmap(0, linkOverlay);
+					break;
+				case RG_KEY_TYPE_STRING:
+					subItem->setPixmap(0, stringIcon);
+					break;
+				case RG_KEY_TYPE_BINARY:
+					subItem->setPixmap(0, binaryIcon);
+					break;
+				default:
+					cout << "should not happen: type Is:" << type << endl;
+					cout << mover->key << endl;
+			}
+		}
+		else
+		{
+			subItem->setPixmap(0, deniedIcon);
+			/*cout << mover->key << endl;
+			perror("fillUpKeyTree");*/
 		}
 		
-		
-		
-		fillUpKeyTree(mover, subItem); 
+		if (isDir)
+			fillUpKeyTree(mover, subItem); 
+			
 		mover = mover->next;
 	}
 	ksClose(&keys);
 }
 
-/**
- * filles up the textfields with the values of the selected key
- * gets called when the user clickes a key in the treeview
- * TODO permission checking is implemented rudimentary
- */
-void MainWidgetImpl::showKeyValues(QListViewItem *item)
+MainWidgetImpl::~MainWidgetImpl()
 {
-	if (item == 0)
-		return;
 	
+}
+ 
+
+void MainWidgetImpl::showKeyValues(bool update)
+{
 	ignoreTextChanges = true;
 	
 	revokeButton->setEnabled(false);
 	applyButton->setEnabled(false);
+	
+	setWidgetsEnabled(true);
 		
 	keyName->clear();
 	keyValue->clear();
@@ -227,49 +218,40 @@ void MainWidgetImpl::showKeyValues(QListViewItem *item)
 	
 	userID->clear();
 	groupID->clear();
-	accessMode->clear();
+	permission->clear();
 	
 	keyATime->clear();
 	keyMTime->clear();
 	keyCTime->clear();
 	
-	registryOpen();
 	
-	::Key key;
 	
-	keyInit(&key);	
-	char *name = strdup(getKeyNameFromItem(item));
-	
-	keySetName(&key, name);
-
-	int ret = registryGetKey(&key);
-	
-	if (ret)
-	{		
-		perror("open key");
-		
-		keyValue->setEnabled(false);
-		keyName->setEnabled(false);
-	}
-	else
-	{
-		keyValue->setEnabled(true);
-		keyName->setEnabled(true);
-	}
+	if (!update)
+		parent->statusBar()->clear();
 	
 	char *buffer;
 	
-	if (keyGetNameSize(&key))
+	if (keyGetNameSize(selected))
 	{
-		buffer = (char *) malloc(keyGetNameSize(&key));
-		keyGetName(&key, buffer, keyGetNameSize(&key));
+		buffer = new char[keyGetNameSize(selected)];
+		keyGetName(selected, buffer, keyGetNameSize(selected));
 		keyName->setText(QString(buffer).section(RG_KEY_DELIM, -1));
+		delete buffer;
 	}
+	
+	if (selected == 0)
+	{
+		parent->statusBar()->message("permission denied");
+		setWidgetsEnabled(false);
+		return;
+	}
+	
+	
 	
 	if (typeCombo->count() - COMBO_POS_DIR)
 		typeCombo->removeItem(COMBO_POS_DIR);
 	
-	switch (keyGetType(&key))
+	switch (keyGetType(selected))
 	{
 		case RG_KEY_TYPE_BINARY: 
 			typeCombo->setCurrentItem(COMBO_POS_BIN);
@@ -304,72 +286,134 @@ void MainWidgetImpl::showKeyValues(QListViewItem *item)
 			cout << "none of the types set" << endl;
 	}
 	
-	if (keyGetDataSize(&key))
+	if (keyGetDataSize(selected))
 	{
-		buffer = (char *) malloc(keyGetDataSize(&key));
-		int size = keyGetDataSize(&key);
-		switch (keyGetType(&key))
+		buffer = new char[keyGetDataSize(selected)];
+		int size = keyGetDataSize(selected);
+		switch (keyGetType(selected))
 		{
 			case RG_KEY_TYPE_BINARY: 
-				keyGetBinary(&key, buffer, size);
-				
+				keyGetBinary(selected, buffer, size);
 				break;
 			case RG_KEY_TYPE_STRING:
-				keyGetString(&key, buffer, size);
-				
+				keyGetString(selected, buffer, size);
 				break;
 			case RG_KEY_TYPE_DIR:
-				
 				break;
 			case RG_KEY_TYPE_LINK:
-				
 				break;
 			case RG_KEY_TYPE_UNDEFINED:
-				
 				break;
 			default:
 				buffer = "";
 				cout << "none of the types set" << endl;
 		}
 		keyValue->setText(buffer);
+		delete buffer;
 	}
-	
-	
-	if (keyGetCommentSize(&key))
+
+	if (keyGetCommentSize(selected))
 	{
-		buffer = (char *) malloc(keyGetCommentSize(&key));
-		keyGetComment(&key, buffer, keyGetCommentSize(&key));
+		buffer = new char[keyGetCommentSize(selected)];
+		keyGetComment(selected, buffer, keyGetCommentSize(selected));
 		keyComment->setText(buffer);
+		delete buffer;
 	}
-	
 	
 	QDateTime dt;
 	
-	dt.setTime_t(keyGetATime(&key));
+	dt.setTime_t(keyGetATime(selected));
 	keyATime->setText(dt.toString());
 
-	dt.setTime_t(keyGetMTime(&key));
+	dt.setTime_t(keyGetMTime(selected));
 	keyMTime->setText(dt.toString());
 	
-	dt.setTime_t(keyGetCTime(&key));
+	dt.setTime_t(keyGetCTime(selected));
 	keyCTime->setText(dt.toString());
 	
-	struct passwd *pwd = getpwuid(keyGetUID(&key));
-	struct group *grp = getgrgid(keyGetGID(&key));
+	struct passwd *pwd = getpwuid(keyGetUID(selected));
+	struct group *grp = getgrgid(keyGetGID(selected));
 	
 	userID->setText(pwd->pw_name);
 	
 	groupID->setText(grp->gr_name);
 	
-	accessMode->setText(QString().setNum(key.access));
+	mode_t mode = selectedAccess;
 	
-	keyClose(&key);
+	char *readable = new char[10];
 	
-	free(name);
-	registryClose();
+	if (S_ISDIR(mode)) 
+		readable[0]='d';
+	else 
+		if (S_ISLNK(mode)) readable[0]='l';
+			else readable[0]='-';
+	readable[1] = mode & S_IRUSR ? 'r' : '-';
+	readable[2] = mode & S_IWUSR ? 'w' : '-';
+	readable[3] = mode & S_IXUSR ? 'x' : '-';
+	readable[4] = mode & S_IRGRP ? 'r' : '-';
+	readable[5] = mode & S_IWGRP ? 'w' : '-';
+	readable[6] = mode & S_IXGRP ? 'x' : '-';
+	readable[7] = mode & S_IROTH ? 'r' : '-';
+	readable[8] = mode & S_IWOTH ? 'w' : '-';
+	readable[9] = mode & S_IXOTH ? 'x' : '-';
+	readable[10]= 0;
+	
+	permission->setText(readable);
+	delete readable;
 	
 	ignoreTextChanges = false;
 }
+
+void MainWidgetImpl::setWidgetsEnabled(bool enabled)
+{
+	keyName->setEnabled(enabled);
+	keyValue->setEnabled(enabled);
+	keyComment->setEnabled(enabled);
+	typeCombo->setEnabled(enabled);
+	keyATime->setEnabled(enabled);
+	keyMTime->setEnabled(enabled);
+	keyCTime->setEnabled(enabled);
+	
+	userID->setEnabled(enabled);
+	groupID->setEnabled(enabled);
+	permission->setEnabled(enabled);
+	editButton->setEnabled(enabled);
+	
+}
+ 
+void MainWidgetImpl::changeSelected(QListViewItem *item)
+{
+	if (item == 0)
+		return;
+	
+	if (selected != 0)
+	{
+		keyClose(selected);
+		delete selected;
+	}
+	
+	selected = new ::Key;
+	
+	keyInit(selected);
+	keySetName(selected, strdup(getKeyNameFromItem(item)));
+	
+	if (registryStatKey(selected))
+	{
+		parent->statusBar()->message(strerror(errno));
+		selectedAccess = 0;
+	}
+	else
+		selectedAccess = keyGetAccess(selected);
+	
+	if (registryGetKey(selected))
+	{
+		selected = 0;
+		selectedAccess = 0;
+	}
+	
+	showKeyValues();
+}
+
 
 /**
  * returns the full keyname from an item in the treeview
@@ -392,11 +436,12 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
  *pops up the kontextmenu 
  *gets called when the user rightclickes an item in the treeview (SIGNAL: rightButtonClicked(QListViewItem *item, QPos &pos, int b))
  *
- *TODO use icons 
+ *TODO use icons
  *TODO refine the menu
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
+	b = 0;	//suppress warnings
 	if (item == 0)
 		return;
 	
@@ -487,26 +532,47 @@ void MainWidgetImpl::applyChanges()
 			break;
 		case COMBO_POS_DIR:
 			keySetType(&oldKey, RG_KEY_TYPE_DIR);
-			keyTree->currentItem()->setPixmap(0, dirIcon);
+			//keyTree->currentItem()->setPixmap(0, dirIcon);
 			break;
 		case COMBO_POS_LNK:
 			keySetType(&oldKey, RG_KEY_TYPE_LINK);
-			keyTree->currentItem()->setPixmap(0, linkIcon);
+			//keyTree->currentItem()->setPixmap(0, linkOverlay);
 			break;
 		case COMBO_POS_STR:
 			keySetType(&oldKey, RG_KEY_TYPE_STRING);
-			keyTree->currentItem()->setPixmap(0, stringIcon);
+			//keyTree->currentItem()->setPixmap(0, stringIcon);
 			break;
 		case COMBO_POS_BIN:
 			keySetType(&oldKey, RG_KEY_TYPE_BINARY);
-			keyTree->currentItem()->setPixmap(0, binaryIcon);
+			//keyTree->currentItem()->setPixmap(0, binaryIcon);
 			break;
 	}
 	
 	int ret = registrySetKey(&oldKey);
 	
-	if (ret)
-		perror("applying key changes");
+	if (ret)		
+		parent->statusBar()->message(strerror(errno));
+	else
+	{	
+		switch (typeCombo->currentItem())
+		{
+			case COMBO_POS_UND:
+				//keyTree->currentItem()->setPixmap(0, undefinedIcon);
+				break;
+			case COMBO_POS_DIR:
+				keyTree->currentItem()->setPixmap(0, dirIcon);
+				break;
+			case COMBO_POS_LNK:
+				keyTree->currentItem()->setPixmap(0, linkOverlay);
+				break;
+			case COMBO_POS_STR:
+				keyTree->currentItem()->setPixmap(0, stringIcon);
+				break;
+			case COMBO_POS_BIN:
+				keyTree->currentItem()->setPixmap(0, binaryIcon);
+				break;
+		}
+	}
 	
 	keyClose(&oldKey);
 	
@@ -514,7 +580,13 @@ void MainWidgetImpl::applyChanges()
 	
 	applyButton->setEnabled(false);
 	revokeButton->setEnabled(false);
-	showKeyValues(keyTree->currentItem());
+	showKeyValues(true);
+}
+
+void MainWidgetImpl::changeAccessMode()
+{
+	PermissionDialogImpl *perm = new PermissionDialogImpl(selectedAccess, this, "The Change Permission Dailog");
+	perm->exec();
 }
 
 void MainWidgetImpl::commentAttributeChanged()
@@ -527,6 +599,7 @@ void MainWidgetImpl::commentAttributeChanged()
  */
 void MainWidgetImpl::keyAttributesChanged(const QString &p)
 {
+	p.length();	//suppress warnings
 	if (ignoreTextChanges)
 		return;
 	applyButton->setEnabled(true);
@@ -535,6 +608,7 @@ void MainWidgetImpl::keyAttributesChanged(const QString &p)
 
 void MainWidgetImpl::keyTypeChanged(int id)
 {
+	id = 0;		//suppress warnings
 	keyAttributesChanged("");
 }
 
@@ -628,7 +702,7 @@ void MainWidgetImpl::addNewKey()
 				item->setPixmap(0, binaryIcon);
 				break;
 			case RG_KEY_TYPE_LINK:
-				item->setPixmap(0, linkIcon);
+				item->setPixmap(0, linkOverlay);
 				break;
 		}
 		
@@ -646,7 +720,7 @@ void MainWidgetImpl::addNewKey()
 					break;
 				case RG_KEY_TYPE_LINK:
 					keySetLink(&key, strdup(newDialog->getValue()));
-					item->setPixmap(0, linkIcon);
+					item->setPixmap(0, linkOverlay);
 					break;
 			}
 		}

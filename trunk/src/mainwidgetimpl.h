@@ -39,6 +39,7 @@ extern "C"
 
 class QCloseEvent;
 class QListViewItem;
+class MainWindowImpl;
 
 class MainWidgetImpl : public MainWidget
 {
@@ -53,20 +54,28 @@ private:
 	
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
 	void setUpGui();
+	void setWidgetsEnabled(bool enabled);
 	bool ignoreTextChanges;
+	::Key *selected;
+	mode_t selectedAccess;
 	
+	QPixmap dirIcon;
 	QPixmap stringIcon;
 	QPixmap binaryIcon;
-	QPixmap linkIcon;
-	QPixmap dirIcon;
+	QPixmap linkOverlay;
+	QPixmap lockOverlay;
+	QPixmap deniedIcon;
+	MainWindowImpl *parent;
 	
 private slots:
-	void showKeyValues(QListViewItem *selected);
+	void showKeyValues(bool update = false);
+	void changeSelected(QListViewItem *item);
 	QString getKeyNameFromItem(QListViewItem *item);
 	void showItemMenu(QListViewItem *item, const QPoint &p, int b);
-	void keyAttributesChanged(const QString &s);
+	void keyAttributesChanged(const QString &s); 
 	void commentAttributeChanged();
 	void keyTypeChanged(int id);
+	void changeAccessMode();
 	void addNewKey();
 	void addNewDir();
 	void copyNameToClipboard();

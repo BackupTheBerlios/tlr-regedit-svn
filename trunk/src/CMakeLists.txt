@@ -8,7 +8,7 @@ ADD_EXECUTABLE(regedit main.cpp mainwindowimpl.cpp mainwidgetimpl.cpp newkeydial
 TARGET_LINK_LIBRARIES(regedit registry ${QT_LIBRARIES})
 
 ADD_EXECUTABLE(list list.cpp)
-TARGET_LINK_LIBRARIES(list registry)
+TARGET_LINK_LIBRARIES(list registry) 
 
 ADD_EXECUTABLE(test test.cpp)
 TARGET_LINK_LIBRARIES(test registry)

@@ -33,6 +33,9 @@ using namespace std;
 #include <qtoolbar.h>
 #include <qpushbutton.h>
 #include <qevent.h>
+#include <qaction.h>
+#include <qkeysequence.h>
+#include <qstatusbar.h>
 
 MainWindowImpl::MainWindowImpl (QWidget *parent, const char *name, WFlags fl)
 : QMainWindow(parent, name, fl)
@@ -40,37 +43,56 @@ MainWindowImpl::MainWindowImpl (QWidget *parent, const char *name, WFlags fl)
 	mainWidget = new MainWidgetImpl(this, "The Main Widget");
 	setCentralWidget(mainWidget);
 	centralWidget()->show();
-	show();
 	setUpGui();
+	
+	show();
 }
 
+/**
+ * 
+ */
 void MainWindowImpl::setUpGui()
 {
+	statusBar()->clear();
 	//editToolBar = new QToolBar(this, "The Main Windows ToolBar");
+	//editToolBar->setLabel("edit Commands");
+	
+	QString iconDir(getIconDir());
+	
+	QPixmap reload(iconDir + "/reload.png");
+	
+	if (reload.isNull())
+		cout << "icon Null" << endl;
+	
+	//QAction *refresh = new QAction(QIconSet(reload), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
+	
+	//refresh->addTo(editToolBar);
+	
 	registryOpen();
+	
 	::Key width;
 	::Key height;
 	::Key x;
 	::Key y;
-	::Key splitter;
+	//::Key splitter;
 	
 	keyInit(&width);
 	keyInit(&height);
 	keyInit(&x);
 	keyInit(&y);
-	keyInit(&splitter);
+	//keyInit(&splitter);
 	
 	keySetName(&width, strdup(keyPrefix + "/gui/width")); 
 	keySetName(&height, strdup(keyPrefix + "/gui/height"));
 	keySetName(&x, strdup(keyPrefix + "/gui/x"));
 	keySetName(&y, strdup(keyPrefix + "/gui/y"));
-	keySetName(&splitter, strdup(keyPrefix + "/gui/splitter"));
+	//keySetName(&splitter, strdup(keyPrefix + "/gui/splitter"));
 	
 	checkKeyMake(&width, RG_KEY_TYPE_STRING);
 	checkKeyMake(&height, RG_KEY_TYPE_STRING);
 	checkKeyMake(&x, RG_KEY_TYPE_STRING);
 	checkKeyMake(&y, RG_KEY_TYPE_STRING);
-	checkKeyMake(&splitter, RG_KEY_TYPE_STRING);
+	//checkKeyMake(&splitter, RG_KEY_TYPE_STRING);
 	
 	int vwidth = this->width();
 	int vheight = this->height();
@@ -118,7 +140,6 @@ void MainWindowImpl::setUpGui()
 
 void MainWindowImpl::closeEvent(QCloseEvent *e)
 {
-	cout << "preparing for closing" << endl;
 	registryOpen();
 	
 	::Key width;
@@ -126,7 +147,6 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 	::Key x;
 	::Key y;
 	QString guiKeyPrefix =  keyPrefix+"/gui/";
-	cout << guiKeyPrefix << endl;
 	
 	keyInit(&width);
 	keyInit(&height);
@@ -141,21 +161,25 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 	
 	registryGetKey(&width);
 	keySetString(&width, strdup(QString().setNum(this->width())));
+	keySetComment(&width, "This is where regedit stores the width of the window");
 	registrySetKey(&width);
 	keyClose(&width);
 	
 	registryGetKey(&height);
 	keySetString(&height, strdup(QString().setNum(this->height())));
+	keySetComment(&height, "This is where regedit stores the height of the window");
 	registrySetKey(&height);
 	keyClose(&height);
 	
 	registryGetKey(&x);
 	keySetString(&x, strdup(QString().setNum(this->x())));
+	keySetComment(&x, "This is where regedit stores the x position of the window");
 	registrySetKey(&x);
 	keyClose(&x);
 	
 	registryGetKey(&y);
 	keySetString(&y, strdup(QString().setNum(this->y())));
+	keySetComment(&y, "This is where regedit stores the y position of the window");
 	registrySetKey(&y);
 	keyClose(&y);
 	

@@ -1,22 +1,31 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="3" >
+ <DocsAndViews NumberOfDocuments="8" >
   <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/main.cpp" >
-   <View0 line="18" Type="???" >
-    <AdditionalSettings Top="2" Width="928" Attach="1" Height="534" Left="2" MinMaxMode="0" />
-   </View0>
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.h" >
-   <View0 line="26" Type="???" >
-    <AdditionalSettings Top="2" Width="1200" Attach="1" Height="786" Left="2" MinMaxMode="0" />
-   </View0>
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
-   <View0 line="21" Type="???" >
-    <AdditionalSettings Top="2" Width="1200" Attach="1" Height="685" Left="2" MinMaxMode="0" />
-   </View0>
+   <View0 line="55" Type="Source" />
   </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.cpp" >
+   <View0 line="213" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.h" >
+   <View0 Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="man:/usr/man/man2/stat.2.gz" >
+   <View0 Type="Documentation" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:/usr/include/registry.h" >
+   <View0 Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/test.cpp" >
+   <View0 line="49" Type="Source" />
+  </Doc7>
  </DocsAndViews>
  <pluginList>
   <kdevbookmarks>
@@ -28,6 +37,8 @@
   <kdevvalgrind>
    <executable path="" params="/usr/share/apps/karamba/themes/test.theme" />
    <valgrind path="/usr/bin/valgrind" params="" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
   </kdevvalgrind>
   <kdevdebugger>
    <breakpointList/>
