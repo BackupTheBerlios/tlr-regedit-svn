@@ -476,15 +476,25 @@ void EditorView::restoreState ( )
 	QValueList<int> splittersizes;
 	
 	kdbGetValueByParent ( guiKeyPrefix + "splitter/", "left", buf, 300 );
-	splittersizes.push_back ( atoi ( buf ) );
+	int left = atoi ( buf );
+	
 	
 	kdbGetValueByParent ( guiKeyPrefix + "splitter/", "right", buf, 300 );
-	splittersizes.push_back ( atoi ( buf ) );
+	int right = atoi ( buf );
 	
-	splitter->setSizes ( splittersizes );
+	if ( left != 0 && right != 0 )
+	{
+		splittersizes.push_back ( left );
+		splittersizes.push_back ( right );
+		
+		splitter->setSizes ( splittersizes );
+	}
 	
-	move ( vx, vy );
-	resize ( vwidth, vheight );
+	if ( vx != 0 && vy != 0 )
+		move ( vx, vy );
+		
+	if ( vwidth != 0 && vheight != 0 )
+		resize ( vwidth, vheight );
 	
 	openedKeys.clear ( );
 	
