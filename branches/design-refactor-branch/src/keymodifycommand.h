@@ -35,8 +35,7 @@ class KeyModifyCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name = 0);
-
+    KeyModifyCommand ( EditorController *con, KeySet *ks, const char *name );
     ~KeyModifyCommand();
     
 public slots:

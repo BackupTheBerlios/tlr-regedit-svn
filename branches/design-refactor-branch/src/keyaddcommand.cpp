@@ -18,8 +18,8 @@
  */
 
 #include "keyaddcommand.h"
-#include "mainwidgetimpl.h"
-#include "newkeydialogimpl.h"
+#include "editorview.h"
+#include "editorcontroller.h"
 
 #include <errno.h>
 #include <string.h>
@@ -29,89 +29,51 @@
 using namespace std;
 
 
-KeyAddCommand::KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidget, const char *name)
- : Command(mainWidget, name), newDialog(dialog)
+KeyAddCommand::KeyAddCommand ( EditorController *con, KeySet *ks, const char *name)
+ : Command(con, ks, name)
 {
-	key = new ::Key;
-	keyInit(key);
-		
-	keySetType(key, newDialog->getType());
-		
-	if (newDialog->getName().length())
-		keySetName(key, strdup(newDialog->getName()));
-		
-	if (newDialog->getComment().length())
-		keySetComment(key, strdup(newDialog->getComment()));
-	father = mainWidget->keyTree->currentItem();
+	
 }
 
 
 KeyAddCommand::~KeyAddCommand()
 {
-	keyClose(key);
-	delete key;
-	delete item;
+	
 }
 
 bool KeyAddCommand::execute()
 {
-	if (kdbSetKey(key))
+	EditorView *view = controller ( )->getView ( );
+	KeySet *keys = subject ( ); 
+	
+	cout << "adding " << ksGetSize ( keys ) << " new Keys" << endl;
+	
+	view->openKeyDir ( view->keyTree->currentItem ( ) );
+	
+	ksRewind ( keys );
+	::Key *key = ksNext ( keys );
+	while ( key )
 	{
-		mainWidget()->showInStatusBar(strerror(errno));
-		return false;
+		view->addItem ( view->keyTree->currentItem ( ), key );
+		key = ksNext ( keys );
 	}
-	else
-	{
-		item = genItemForKey();
-		//mainWidget()->keyTree->setSelected(item, true);
-		kdbSetKey(key);
-		return true;
-	}
+	kdbSetKeys ( keys );
 }
 
 bool KeyAddCommand::unexecute()
 {
-	char *name = new char[keyGetNameSize(key)];
-	keyGetName(key, name, keyGetNameSize(key));
-	if (kdbRemove(name))
-	{
-		mainWidget()->showInStatusBar(strerror(errno));
-		return false;
-	}
-	else
-	{
-		delete item;
-		kdbRemove(key->key);
-		//item->setVisible(false);
-		return true;
-		
-	}
-}
-
-QListViewItem *KeyAddCommand::genItemForKey()
-{
-	QListViewItem *temp = new QListViewItem(father, newDialog->getName().section(RG_KEY_DELIM, -1));
-	//temp->setVisible(false);
-		
-	int vlength = newDialog->getValue().length();
+	EditorView *view = controller ( )->getView ( );
+	KeySet *keys = subject ( );
+	ksRewind ( keys );
 	
-	switch (newDialog->getType())
+	::Key *key = ksNext ( keys );
+	
+	while ( key )
 	{
-		case KEY_TYPE_STRING:
-			temp->setPixmap(0, mainWidget()->stringIcon);
-			if (vlength) keySetString(key, strdup(newDialog->getValue()));
-			break;
-		case KEY_TYPE_BINARY:
-			temp->setPixmap(0, mainWidget()->binaryIcon);
-			if (vlength) keySetBinary(key, strdup(newDialog->getValue()), vlength);
-			break;
-		case KEY_TYPE_LINK:
-			temp->setPixmap(0, mainWidget()->linkOverlay);
-			if (vlength) keySetLink(key, strdup(newDialog->getValue()));
-			break;
-		case KEY_TYPE_DIR:
-			temp->setPixmap(0, mainWidget()->dirIcon);
-			break;
+		QListViewItem * item = view->getItem( key->key );
+		if ( item )
+			delete item;
+		kdbRemove ( key->key );
+		key = ksNext ( keys );
 	}
-	return temp;
 }

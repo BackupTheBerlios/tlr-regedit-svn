@@ -18,65 +18,92 @@
  */
 
 #include "keyremovecommand.h"
-#include "mainwidgetimpl.h"
+#include "editorview.h"
+#include "editorcontroller.h"
 
 #include <qlistview.h>
 
 #include <iostream>
 using namespace std;
 
-KeyRemoveCommand::KeyRemoveCommand(MainWidgetImpl *mainWidget, const char *name)
- : Command(mainWidget, name), icon(*mainWidget->keyTree->currentItem()->pixmap(0))
+KeyRemoveCommand::KeyRemoveCommand ( EditorController *con, KeySet *ks, const char *name ) 
+ : Command ( con, ks, name), all ( 0 )
 {
-	key = new ::Key;
-	this->name = strdup(mainWidget->keyTree->currentItem()->text(0));
-	cout << "deleting " << this->name << endl;
 	
-	father = strdup(mainWidget->keyTree->currentItem()->parent()->text(0));
-	keyInit(key);
-	keySetName(key, mainWidget->getSelected());
-	kdbGetKey(key);
 }
 
 
 KeyRemoveCommand::~KeyRemoveCommand()
 {
-	keyClose(key);
-	delete key;
-	delete name;
+	
 }
 
 bool KeyRemoveCommand::execute( )
 {
-	char *namee = new char[keyGetNameSize(key)];
-	keyGetName(key, namee, keyGetNameSize(key));
-	
-	if (kdbRemove(namee))
+	if ( all )
 	{
-		mainWidget()->showInStatusBar(strerror(errno));
-		
-		return false;
+		ksDel ( all );
 	}
 	
-	delete namee;
-	delete mainWidget()->keyTree->currentItem();
-	return true;
+	all = ksNew ( );
+		
+	EditorView *view = controller ( )->getView ( );
+	KeySet *ks = subject ( );
+	ksRewind ( ks );
+	::Key *key = ksNext ( ks );
+	
+	while ( key )
+	{
+		delRecursive ( key );	
+		key = ksNext ( ks );
+	}
+	
+	view->removeItem ( view->keyTree->currentItem ( ) );
+	
 }
 
 bool KeyRemoveCommand::unexecute( )
 {
-	if (kdbSetKey(key))
+	EditorView *view = controller ( )->getView ( );
+	ksRewind ( all );
+	::Key *key = ksNext ( all );
+	
+	while ( key )
 	{
-		cout << strerror(errno) << endl;
-		mainWidget()->showInStatusBar(strerror(errno));
-		return false;
+		//view->
+		cout << "undoing remove of key " << key->key << endl;
+		key = ksNext ( all );
 	}
-	cout << "undeleting " << name << endl;
-	//cout << "father is " << father->text(0) << endl;
-	QListViewItem *fatherItem = mainWidget()->keyTree->findItem(father, 0, Qt::ExactMatch);
-	QListViewItem *item = new QListViewItem(fatherItem, name);
-	item->setPixmap(0, icon);
-	return true;
 }
 
+void KeyRemoveCommand::delRecursive ( ::Key *key )
+{
+	KeySet *childKeys = ksNew ( );
+	kdbGetKeyChildKeys ( key, childKeys, KDB_O_DIR | KDB_O_INACTIVE );
+	
+	//ksAppend ( all, key );
+	//cout << "doing remove of key" << key->key << endl;
+	
+	if ( ksGetSize ( childKeys ) )
+	{
+		cout << "removing " << ksGetSize ( childKeys ) << " childs " << endl;
+		ksRewind ( childKeys );
+		::Key *temp = ksNext ( childKeys );
+		
+		while ( temp )
+		{
+			delRecursive ( temp );
+			temp = ksNext ( childKeys );
+		}
+	}
+
+	cout << "doing remove of key" << key->key << endl;
+	/*if ( kdbRemove ( key->key ) )
+	{
+		perror ( "removing key" );
+	}*/
+	
+	
+	//ksDel ( childKeys );
+}
 

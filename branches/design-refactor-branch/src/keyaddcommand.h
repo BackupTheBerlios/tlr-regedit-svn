@@ -22,11 +22,6 @@
 
 #include <command.h>
 
-extern "C"
-{
-	#include <kdb.h>
-}
-
 /**
 @author Gregor Burger
 */
@@ -37,7 +32,7 @@ class KeyAddCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidget, const char *name = 0);
+    KeyAddCommand ( EditorController *con, KeySet *ks, const char *name = 0);
 
     ~KeyAddCommand();
     
@@ -46,12 +41,7 @@ public slots:
 	virtual bool unexecute();
 	
 private:
-	::Key *key;
-	NewKeyDialogImpl *newDialog;
-	QListViewItem *item, *father;
-	//MainWidgetImpl *mainWidget;
 	
-	QListViewItem *genItemForKey();
 };
 
 #endif

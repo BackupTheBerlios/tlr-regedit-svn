@@ -22,18 +22,24 @@
 
 #include <qobject.h>
 
+extern "C"
+{
+	#include <kdb.h>
+}
 /**
 @author Gregor Burger
 */
-class MainWidgetImpl;
+
+class EditorController;
 
 class Command : public QObject
 {
 Q_OBJECT
 public:
-	Command(MainWidgetImpl *mainWidget, const char *name = 0);
-	virtual ~Command();
-	MainWidgetImpl *mainWidget();
+	Command(EditorController *controller, KeySet *ks, const char *name = 0);
+	virtual ~Command ( );
+	EditorController *controller() { return _controller; }
+	KeySet *subject ( ) { return _subject; }
 signals:
 	void commandPerformed();
 	
@@ -41,7 +47,8 @@ public slots:
 	virtual bool execute() = 0;
 	virtual bool unexecute() = 0;
 private:
-	MainWidgetImpl *m_mainWidget;
+	EditorController *_controller;
+	KeySet *_subject;
 };
 
 #endif

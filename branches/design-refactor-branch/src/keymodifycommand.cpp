@@ -18,7 +18,6 @@
  */
 
 #include "keymodifycommand.h"
-#include "mainwidgetimpl.h"
 
 #include <qlistview.h>
 #include <qpixmap.h>
@@ -29,90 +28,26 @@
 #include <iostream>
 using namespace std;
 
-KeyModifyCommand::KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name)
- : Command(mainWidget, name), item(mainWidget->keyTree->currentItem())
+KeyModifyCommand::KeyModifyCommand ( EditorController *con, KeySet *ks, const char *name )
+ : Command ( con, ks, name )
 {
-	
-	::Key *selected = new ::Key;
-	keyInit(selected);
-	keySetName(selected, this->mainWidget()->getSelected());
-	kdbGetKey(selected);
-	
-	oldKey = new ::Key;
-	keyInit(oldKey);
-	keyDup(selected,  oldKey);
-	
-	newKey = new ::Key;
-	keyInit(newKey);
-	keyDup(selected, newKey);
-	
-	oldIcon = new QPixmap(*item->pixmap(0));
-	
-	char *comment = strdup(mainWidget->keyComment->text());
-	keySetComment(newKey, comment);
-	
-	char *value = strdup(mainWidget->keyValue->text());
-	keySetString(newKey, value);
-	
-	keySetAccess(newKey, mainWidget->getSelectedAccess());
-	
-	keySetType(newKey, mainWidget->types[mainWidget->typeCombo->currentItem()]);
-	
-	switch (mainWidget->typeCombo->currentItem())
-	{
-		case COMBO_POS_UND:
-			//keyTree->currentItem()->setPixmap(0, undefinedIcon);
-			break;
-		case COMBO_POS_DIR:
-			newIcon = new QPixmap(mainWidget->dirIcon);
-			break;
-		case COMBO_POS_LNK:
-			newIcon = new QPixmap(mainWidget->linkOverlay);
-			break;
-		case COMBO_POS_STR:
-			newIcon = new QPixmap(mainWidget->stringIcon);
-			break;
-		case COMBO_POS_BIN:
-			newIcon = new QPixmap(mainWidget->binaryIcon);
-			break;
-	}
 	
 }
 
 
 KeyModifyCommand::~KeyModifyCommand()
 {
-	keyClose(oldKey);
-	delete oldKey;
 	
-	keyClose(newKey);
-	delete newKey;
 }
 
 bool KeyModifyCommand::execute()
 {
-	if (kdbSetKey(newKey))
-	{
-		mainWidget()->showInStatusBar(strerror(errno));
-		mainWidget()->showKeyValues(true);
-		return false;
-	}
-	item->setPixmap(0, *newIcon);
-	mainWidget()->changeSelected(item);
-	return true;
+	
 }
 
 bool KeyModifyCommand::unexecute()
 {
-	if (kdbSetKey(oldKey))
-	{
-		mainWidget()->showInStatusBar(strerror(errno));
-		mainWidget()->showKeyValues(true);
-		return false;
-	}
-	item->setPixmap(0, *oldIcon);
-	mainWidget()->changeSelected(item);
-	return true;
+	
 }
 
 

@@ -18,21 +18,28 @@
  */
 
 #include "command.h"
-#include "mainwidgetimpl.h"
+#include "editorcontroller.h"
 
-Command::Command(MainWidgetImpl *mainWidget, const char *name) : QObject (mainWidget, name), m_mainWidget(mainWidget)
+Command::Command(EditorController *con, KeySet *ks, const char *name) 
+	: QObject (con, name), _controller ( con )
 {
+	ksRewind ( ks );
+	::Key *walker = ksNext ( ks );
+	_subject = ksNew ( );
+	
+	while ( walker )
+	{
+		::Key *key = keyNew ( walker->key, KEY_SWITCH_END );
+		keyDup ( walker, key );
+		ksAppend ( _subject, key );
+		walker = ksNext ( ks ); 
+	}
 }
 
 
 Command::~Command()
 {
-
-}
-
-MainWidgetImpl * Command::mainWidget()
-{
-	return m_mainWidget;
+	ksDel ( _subject );
 }
 
 

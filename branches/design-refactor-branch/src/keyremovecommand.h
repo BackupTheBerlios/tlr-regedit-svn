@@ -37,19 +37,17 @@ class KeyRemoveCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyRemoveCommand(MainWidgetImpl *parent, const char *name = 0);
+    KeyRemoveCommand ( EditorController *con, KeySet *ks, const char *name );
 
     ~KeyRemoveCommand();
     
 public slots:
 	virtual bool execute();
 	virtual bool unexecute();
-    
 private:
-	::Key *key;
-	char *name;
-	QPixmap icon;
-	char *father;
+	void delRecursive ( ::Key *key );
+private:
+	KeySet *all;
 };
 
 #endif
