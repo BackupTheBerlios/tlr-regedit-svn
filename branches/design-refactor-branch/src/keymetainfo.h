@@ -43,6 +43,9 @@ class KeyMetaInfo
 		static bool canWrite ( const QString & key );
 		static bool canWrite ( const ::Key * key );
 		
+		static bool isRoot ( const QString & key );
+		static bool isRoot ( const ::Key * key );
+		
 	private:
 
 

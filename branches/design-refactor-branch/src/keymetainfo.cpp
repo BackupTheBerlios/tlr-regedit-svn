@@ -164,3 +164,28 @@ bool KeyMetaInfo::canWrite ( const ::Key * key )
 	return false;
 }
 
+bool KeyMetaInfo::isRoot ( const QString & key )
+{
+	::Key *subject = keyNew ( key, KEY_SWITCH_END );
+	kdbGetKey ( subject );
+	bool temp = isRoot ( subject );
+	keyDel ( subject );
+	return temp;
+}
+
+bool KeyMetaInfo::isRoot ( const ::Key * key )
+{
+	KeySet *roots = ksNew ( );
+	kdbGetRootKeys ( roots );
+	ksRewind ( roots);
+	
+	::Key *oneRoot = ksNext ( roots );
+	
+	while ( oneRoot )
+	{
+		if ( !strcmp ( oneRoot->key, key->key ) )
+			return true;
+		oneRoot = ksNext ( roots );
+	}
+	return false;
+}
