@@ -11,13 +11,15 @@ CONFIG += debug \
           thread 
 TEMPLATE = app subdirs 
 FORMS += editorviewui.ui \
-	newkeywizard.ui
+	newkeywizardui.ui
       
 HEADERS += editorview.h \
            editorcontroller.h \
-	   keymetainfo.h
+	   keymetainfo.h \
+	   newkeywizard.h
 
 SOURCES += main.cpp \
            editorview.cpp \
            editorcontroller.cpp \
-	   keymetainfo.cpp
+	   keymetainfo.cpp \
+	   newkeywizard.cpp

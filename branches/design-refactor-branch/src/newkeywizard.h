@@ -17,41 +17,23 @@
  *
  */
  
-#ifndef EDITORCONTROLLER_H
-#define EDITORCONTROLLER_H
+#ifndef NEWKEYWIZARD_H
+#define NEWKEYWIZARD_H
 
-#include <qobject.h>
+#include "newkeywizardui.h"
 
 extern "C"
 {
 	#include <kdb.h>
 }
 
-class EditorView;
+class QWidget;
 
-class EditorController : public QObject
+class NewKeyWizard : public NewKeyWizardUI
 {
 	Q_OBJECT
-	
 public:
-	EditorController ( );
-	QString current ( ) const;
-	::Key * currentKey ( ) const;
-	
-public slots:
-	void changeCurrent ( const QString & key );
-	
-	void newKey ( );
-	void delKey ( );
-	void modifyKey ( );
-
-signals:
-	void notifyView( ::Key *current );
-
-private:
-	::Key *_current;
-	EditorView *view;
-	
+	NewKeyWizard ( ::Key *top, QWidget *parent );
 };
 
 #endif

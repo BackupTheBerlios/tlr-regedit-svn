@@ -19,12 +19,80 @@
 
 #include "editorcontroller.h"
 #include "editorview.h"
-#include "qapplication.h"
+#include "newkeywizard.h"
+
+#include <qapplication.h>
+#include <qdialog.h>
+#include <errno.h>
+#include <stdio.h>
+#include <iostream>
+#include <qaction.h>
+
+using namespace std;
 
 EditorController::EditorController ( )
+	: _current ( 0 )
 {
 	view = new EditorView ( this );
 	qApp->setMainWidget ( view );
-	connect ( this, SIGNAL ( notifyView () ), view, SLOT ( update ( ) ) );
-	emit notifyView ( );
+	connect ( this, SIGNAL ( notifyView ( ::Key * ) ), view, SLOT ( update ( ::Key * ) ) );
+	connect ( view, SIGNAL ( keySelected ( const QString &) ), this, SLOT ( changeCurrent ( const QString & ) ) );
+	
+	connect ( view->newAction, SIGNAL ( activated ( ) ), this, SLOT ( newKey ( ) ) );
+	connect ( view->deleteAction, SIGNAL ( activated ( ) ), this, SLOT ( delKey ( ) ) );
+	connect ( view->modifyAction, SIGNAL ( activated ( ) ), this, SLOT ( modifyKey ( ) ) );
+	
+	emit notifyView ( 0 );
+	
+}
+
+::Key * EditorController::currentKey ( ) const
+{
+	return _current;
+}
+
+QString EditorController::current ( ) const
+{
+	if ( _current )
+		return QString ( _current->key );
+	else
+		return QString ( "" );
+}
+
+void EditorController::newKey ( )
+{
+	NewKeyWizard wiz( _current, view );
+	if ( wiz.exec ( ) == QDialog::Accepted )
+	{
+		cout << "yes" << endl;
+	} 
+	else
+		cout << "no" << endl;
+	
+}
+
+void EditorController::delKey ( )
+{
+	
+}
+
+void EditorController::modifyKey ( )
+{
+	
+}
+
+void EditorController::changeCurrent ( const QString & key )
+{
+	if ( _current )
+		keyDel ( _current );
+		
+	_current = keyNew ( key, KEY_SWITCH_END );
+	if ( kdbGetKey ( _current ) )
+	{
+		perror ( "setting current key" );
+		keyDel ( _current );
+		_current = 0;
+	}
+	
+	emit notifyView ( _current );
 }
