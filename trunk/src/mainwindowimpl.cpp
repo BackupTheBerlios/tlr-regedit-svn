@@ -49,7 +49,7 @@ using namespace std;
  *
  */
 
-MainWindowImpl::MainWindowImpl(QWidget *parent, const char *name, WFlags fl) 
+MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl) 
 	: MainWidget(parent, name, fl), dirIcon(QPixmap("icons/folder.png")), stringIcon(QPixmap("icons/txt.png")), 
 	  binaryIcon(QPixmap("icons/binary.png")), keyPrefix("user/sw/regedit")
 {
@@ -142,7 +142,7 @@ MainWindowImpl::MainWindowImpl(QWidget *parent, const char *name, WFlags fl)
 }
 
 
-void MainWindowImpl::setUpGui()
+void MainWidgetImpl::setUpGui()
 {
 	::Key width;
 	::Key height;
@@ -211,7 +211,7 @@ void MainWindowImpl::setUpGui()
 	}*/
 }
 
-MainWindowImpl::~MainWindowImpl()
+MainWidgetImpl::~MainWidgetImpl()
 {
 	
 }
@@ -221,7 +221,7 @@ MainWindowImpl::~MainWindowImpl()
  * only called once by the constructor
  * can later be called by other functions to implement a refresh functionality
  */
-void MainWindowImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
+void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 {
 	KeySet keys;
 	
@@ -269,7 +269,7 @@ void MainWindowImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
  * gets called when the user clickes a key in the treeview
  * TODO permission checking is implemented rudimentary
  */
-void MainWindowImpl::showKeyValues(QListViewItem *item)
+void MainWidgetImpl::showKeyValues(QListViewItem *item)
 {
 	if (item == 0)
 		return;
@@ -434,7 +434,7 @@ void MainWindowImpl::showKeyValues(QListViewItem *item)
 /**
  * returns the full keyname from an item in the treeview
  */
-QString MainWindowImpl::getKeyNameFromItem(QListViewItem *item)
+QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
 {
 	QString key = item->text(0);
 	QListViewItem *parent = item->parent();
@@ -455,7 +455,7 @@ QString MainWindowImpl::getKeyNameFromItem(QListViewItem *item)
  *TODO use icons 
  *TODO refine the menu
  */
-void MainWindowImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
+void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
 	if (item == 0)
 		return;
@@ -507,7 +507,7 @@ void MainWindowImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
  * gets called when the user hits the revokeButton 
  * TODO find better name for revoke probably undo?
  */
-void MainWindowImpl::revokeChanges()
+void MainWidgetImpl::revokeChanges()
 {	
 	revokeButton->setEnabled(false);
 	applyButton->setEnabled(false);
@@ -517,7 +517,7 @@ void MainWindowImpl::revokeChanges()
  * writes back the changes into the registry made by the user
  * gets called when the user hits the apply button
  */
-void MainWindowImpl::applyChanges()
+void MainWidgetImpl::applyChanges()
 {
 	registryOpen();
 	::Key oldKey;
@@ -577,7 +577,7 @@ void MainWindowImpl::applyChanges()
 	showKeyValues(keyTree->currentItem());
 }
 
-void MainWindowImpl::commentAttributeChanged()
+void MainWidgetImpl::commentAttributeChanged()
 {
 	keyAttributesChanged(keyComment->text());
 }
@@ -585,7 +585,7 @@ void MainWindowImpl::commentAttributeChanged()
 /**
  * 
  */
-void MainWindowImpl::keyAttributesChanged(const QString &p)
+void MainWidgetImpl::keyAttributesChanged(const QString &p)
 {
 	if (ignoreTextChanges)
 		return;
@@ -593,7 +593,7 @@ void MainWindowImpl::keyAttributesChanged(const QString &p)
 	revokeButton->setEnabled(true);
 }
 
-void MainWindowImpl::keyTypeChanged(int id)
+void MainWidgetImpl::keyTypeChanged(int id)
 {
 	keyAttributesChanged("");
 }
@@ -602,7 +602,7 @@ void MainWindowImpl::keyTypeChanged(int id)
 /**
  * delete a key
  */
-void MainWindowImpl::deleteKey()
+void MainWidgetImpl::deleteKey()
 {
 	QString name = getKeyNameFromItem(keyTree->currentItem());
 	registryOpen();
@@ -619,7 +619,7 @@ void MainWindowImpl::deleteKey()
 	registryClose();
 }
 
-void MainWindowImpl::addNewDir()
+void MainWidgetImpl::addNewDir()
 {
 	bool ok;
 	
@@ -659,7 +659,7 @@ void MainWindowImpl::addNewDir()
 	}
 }
 
-void MainWindowImpl::addNewKey()
+void MainWidgetImpl::addNewKey()
 {
 	NewKeyDialogImpl *newDialog = new NewKeyDialogImpl(getKeyNameFromItem(keyTree->currentItem()), this);
 	if (newDialog->exec())
@@ -723,7 +723,7 @@ void MainWindowImpl::addNewKey()
 	}
 }
 
-void MainWindowImpl::closeEvent(QCloseEvent *e)
+void MainWidgetImpl::closeEvent(QCloseEvent *e)
 {
 	registryOpen();
 	::Key width;
@@ -769,7 +769,7 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 }
 
 
-void MainWindowImpl::checkKeyMake(::Key *key, u_int8_t type)
+void MainWidgetImpl::checkKeyMake(::Key *key, u_int8_t type)
 {	
 	int ret = registryGetKey(key);
 	
@@ -780,7 +780,7 @@ void MainWindowImpl::checkKeyMake(::Key *key, u_int8_t type)
 	}	
 }
 
-void MainWindowImpl::copyNameToClipboard()
+void MainWidgetImpl::copyNameToClipboard()
 {
 	QClipboard *cp = QApplication::clipboard();
 	QString entry;
@@ -789,7 +789,7 @@ void MainWindowImpl::copyNameToClipboard()
 	cp->setText(entry, QClipboard::Clipboard);
 }
 
-void MainWindowImpl::copyValueToClipboard()
+void MainWidgetImpl::copyValueToClipboard()
 {
 	registryOpen();
 	char *name = strdup(getKeyNameFromItem(keyTree->currentItem()));

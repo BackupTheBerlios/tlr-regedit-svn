@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MAINWINDOWIMPL_H
-#define MAINWINDOWIMPL_H
+#ifndef MAINWIDGETIMPL_H
+#define MAINWIDGETIMPL_H
 
 
 extern "C"
@@ -40,12 +40,12 @@ extern "C"
 class QCloseEvent;
 class QListViewItem;
 
-class MainWindowImpl : public MainWidget
+class MainWidgetImpl : public MainWidget
 {
 Q_OBJECT
 public:
-	MainWindowImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
-	~MainWindowImpl();
+	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
+	~MainWidgetImpl();
 	
 private:
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
