@@ -1,19 +1,16 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="4" >
+ <DocsAndViews NumberOfDocuments="3" >
   <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/tlr-regedit/trunk/src/command.h" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/tlr-regedit/trunk/src/keymodifycommand.cpp" >
-   <View0 line="112" Type="Source" />
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/tlr-regedit/trunk/src/keymodifycommand.h" >
    <View0 line="49" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/opt/qt/include/qpixmap.h" >
-   <View0 line="79" Type="Source" />
-  </Doc3>
  </DocsAndViews>
  <pluginList>
   <kdevbookmarks>

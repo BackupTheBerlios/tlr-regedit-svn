@@ -4,7 +4,7 @@
 # Das Target ist eine Anwendung:  regedit
 
 LIBS += $$system(pkg-config --libs elektra) 
-TARGET = regedit 
+TARGET = kdbe 
 CONFIG += debug \
           warn_on \
           qt \

@@ -1,4 +1,4 @@
-Name: regedit
+Name: kdbe
 Version: 0.3
 Release: 1
 Source0:    http://members.aon.at/gregorburger/%{name}-%{version}.tar.gz
@@ -8,44 +8,44 @@ Vendor: Gregor Burger <gregor.burger@aon.at>
 Packager: Avi Alkalay <avi@unix.sh>
 URL: http://www.livejournal.com/users/gregorburger/
 BuildRoot:   %{_tmppath}/%{name}-%{version}-build
-BuildRequires: registry-devel
-Requires: registry
-Summary: A GUI to edit Linux Registry keys
+BuildRequires: elektra-devel
+Requires: elektra
+Summary: A GUI to edit the Elektra Key Database
 
 %description
-A GUI to edit Linux Registry keys, based on QT
+A GUI to edit Elektra Key Database, based on QT
 
 %prep
-%setup -n regedit
+%setup -n kdbe
 %build
-qmake regedit.pro
+qmake kdbe.pro
 make
 
 %install
-strip src/regedit
+strip src/kdbe
 mkdir -p $RPM_BUILD_ROOT/usr/bin
 cp src/regedit $RPM_BUILD_ROOT/usr/bin
-find icons | grep -v .svn | grep \.png | cpio -pdvm $RPM_BUILD_ROOT/usr/share/lib/regedit
+find icons | grep -v .svn | grep \.png | cpio -pdvm $RPM_BUILD_ROOT/usr/share/lib/kdbe
 mkdir -p $RPM_BUILD_ROOT/usr/share/applications/
-cp regedit.desktop $RPM_BUILD_ROOT/usr/share/applications/
+cp kdbe.desktop $RPM_BUILD_ROOT/usr/share/applications/
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT/*
-rm -rf $RPM_BUILD_DIR/regedit
+rm -rf $RPM_BUILD_DIR/kdbe
 
 
 
 
 %post
 # Set the icons directory for myself
-rg set system/sw/regedit/gui/iconDir "/usr/share/lib/regedit/icons"
+rg set system/sw/kdbe/gui/iconDir "/usr/share/lib/kdbe/icons"
 
 
 %files
 %defattr(-,root,root,0755)
 /usr/bin/*
-/usr/share/lib/regedit
+/usr/share/lib/kdbe
 /usr/share/applications/*
 
 %changelog

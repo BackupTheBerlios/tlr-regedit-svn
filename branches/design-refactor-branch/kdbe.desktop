@@ -1,12 +1,12 @@
 [Desktop Entry]
-Name=Registry Editor
+Name=Elektra Editor
 Name[pt]=Editor do Registro
 Name[pt_BR]=Editor do Registro
-Comment=GUI to edit the Linux Registry
+Comment=GUI to edit the Elektra Key Database
 Comment[pt]=Editor grafico do Linux Registry
 Comment[pt_BR]=Editor grafico do Linux Registry
 Icon=system-config-kickstart.png
-Exec=/usr/bin/regedit
+Exec=/usr/bin/kdbe
 Type=Application
 Terminal=false
 Encoding=UTF-8
