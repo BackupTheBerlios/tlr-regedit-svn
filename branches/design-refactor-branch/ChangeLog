@@ -1,3 +1,51 @@
+2005-03-11 08:13  gregorburger
+
+	* branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/editorcontroller.h,
+	  branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/keymodifycommand.cpp,
+	  branches/design-refactor-branch/src/keymodifycommand.h,
+	  branches/design-refactor-branch/src/newkeywizard.cpp,
+	  branches/design-refactor-branch/src/permissiondialog.ui,
+	  branches/design-refactor-branch/src/permissiondialogimpl.cpp,
+	  branches/design-refactor-branch/src/permissiondialogimpl.h,
+	  branches/design-refactor-branch/src/src.pro: remove old
+	  permissiondialog classes
+
+2005-03-11 08:13  gregorburger
+
+	* branches/design-refactor-branch/src/keymetainfo.cpp,
+	  branches/design-refactor-branch/src/keymetainfo.h: added getAccess
+	  from mode_t
+
+2005-03-11 08:11  gregorburger
+
+	* branches/design-refactor-branch/src/permissiondialog.cpp,
+	  branches/design-refactor-branch/src/permissiondialog.h,
+	  branches/design-refactor-branch/src/permissiondialogui.ui: adding
+	  permissiondialog classes
+
+2005-03-11 08:10  gregorburger
+
+	* branches/design-refactor-branch/src/usergroupdialog.cpp,
+	  branches/design-refactor-branch/src/usergroupdialog.h,
+	  branches/design-refactor-branch/src/usergroupdialogui.ui: adding
+	  UserDialog classes
+
+2005-03-08 19:25  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp: bugfix: do not
+	  set random values for the gui, if keys do not exist
+
+2005-03-08 15:55  gregorburger
+
+	* branches/design-refactor-branch/ChangeLog,
+	  branches/design-refactor-branch/kdbe.kdevelop,
+	  branches/design-refactor-branch/kdbe.kdevelop.pcs: project files
+	  update
+
 2005-03-08 15:53  gregorburger
 
 	* branches/design-refactor-branch/kdbe.pro: added icons to subdirs

@@ -1,46 +1,24 @@
 TOC
 	0. dependencies
-	1. cmake
-	2. qmake
-	3. icon support
+	1. qmake
+	
 
 0. DEPENDENCIES:
+
 this project needs, in order to work, following external libraries:	
 	1. the qt library; you can get it at http://www.trolltech.com
-	2. the linux registry; you can get it at http://registry.sourceforge.net
+	2. the key database; you can get it at http://elektra.sourceforge.net
 
 for building the linux registry you need:
 	1. the qt developement packages
+	4. the key database librarays
 	2. the gnu c compiler
 	3. the gnu make utility
 
-1. CMAKE:
-WARNING: do not use cmake 2.0.2 it has a bug which is critical for building 
-regedit. 
+1. QMAKE:
 
-this package uses cmake (http://www.cmake.org) for generating Makefiles:
-
-use an external build dir, otherwise cmake will polute the sourcedir with lots
-of files:
-
-	tar -xzf regedit-<version>.tar.gz
-	mkdir build
-	cd build
-	cmake ../regedit
+	tar -xzf kdbe-<version>.tar.gz
+	cd kdbe-<version>
+	qmake
 	make
-	./regedit 
-
-2. QMAKE:
-	tar -xzf regedit-<version>.tar.gz
-	mkdir build
-	cd build
-	qmake ../regedit/regedit.pro
-	make
-	./regedit
-
-3. ICON SUPPORT
-	if you have installed this software not whith a binary package then you 
-	need to set a key named user/sw/regedit/gui/iconDir. point this key to the 
-	path of the regedit/icons directory. you can find the icons at the sourcedir
-	under icons.  
-	
+	su -c "make install"
