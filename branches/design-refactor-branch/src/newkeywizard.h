@@ -51,6 +51,12 @@ private slots:
 	void checkBinaryKeyName ( const QString & );
 	void checkBinaryKeyFile ( );
 	
+	void keySelected ( int id = -1 );
+	void handleDestroy ( );
+	
+	void addComment ( );
+	void deleteKey ( );
+	
 	
 private:
 	::Key *parent;

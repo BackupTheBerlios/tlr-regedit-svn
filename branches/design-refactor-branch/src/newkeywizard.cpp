@@ -18,6 +18,7 @@
  */
  
 #include "newkeywizard.h"
+#include "keycomment.h"
 
 #include <iostream>
 
@@ -57,6 +58,9 @@ NewKeyWizard::NewKeyWizard ( ::Key *parentKey, QWidget *parentWidget )
 	connect ( anotherKeyButton, SIGNAL ( clicked ( ) ), SLOT ( backToStart ( ) ) );
 	connect ( chooseFile, SIGNAL ( clicked ( ) ), SLOT ( checkBinaryKeyFile ( ) ) );
 	connect ( binaryKeyName, SIGNAL ( textChanged ( const QString & ) ), SLOT ( checkBinaryKeyName ( const QString & ) ) );
+	connect ( groupNewKeys, SIGNAL ( pressed ( int ) ), SLOT ( keySelected( int ) ) );
+	connect ( addCommentButton, SIGNAL ( clicked ( ) ), SLOT ( addComment ( ) ) ) ;
+	connect ( deleteKeyButton, SIGNAL ( clicked ( ) ), SLOT ( deleteKey ( ) ) );
 }
 
 NewKeyWizard::~NewKeyWizard ( )
@@ -159,6 +163,15 @@ void NewKeyWizard::updateSummaryPage ( const QString & title )
 {
 	if ( title == "Summary" )
 	{
+		if ( ksGetSize ( newKeys ) )
+		{
+			finishButton ( ) ->setEnabled ( true );
+		}
+		else
+		{
+			finishButton ( )->setEnabled ( false );
+			return;
+		}
 		ksRewind ( newKeys );
 		::Key *temp = ksNext ( newKeys );
 		
@@ -178,6 +191,7 @@ void NewKeyWizard::updateSummaryPage ( const QString & title )
 		while ( temp )
 		{
 			QRadioButton *radio = new QRadioButton ( temp->key, groupNewKeys, QString ( "new key radio " ) + temp->key );
+			connect ( radio, SIGNAL ( destroyed ( ) ), SLOT ( handleDestroy ( ) ) );
 			groupNewKeysLayout->addWidget ( radio );
 			temp = ksNext ( newKeys );
 			radio->show ( );
@@ -231,4 +245,71 @@ void NewKeyWizard::checkBinaryKeyFile ( )
 	}
 	else
 		binaryKeyNameSet = false;
+}
+
+void NewKeyWizard::keySelected ( int id ) 
+{
+	cout << id << " selected " << endl;
+	bool enable = id >= 0;
+	
+	addCommentButton->setEnabled ( enable );
+	deleteKeyButton->setEnabled ( enable );
+}
+
+void NewKeyWizard::handleDestroy ( )
+{
+	keySelected ( -1 );
+}
+
+void NewKeyWizard::deleteKey ( )
+{
+	QString keyName =  groupNewKeys->selected ( )->text ( );
+	
+	KeySet *newSet = ksNew ( );
+	ksRewind ( newKeys );
+	::Key *key = ksNext ( newKeys );
+	
+	bool found = false;
+	
+	while ( key )
+	{
+		if ( QString ( key->key ) == keyName )
+		{
+			found = true;
+		}
+		else
+		{
+			::Key *temp = keyNew ( key->key, KEY_SWITCH_END );
+			keyDup ( key, temp );
+			ksAppend ( newSet , temp );
+		}
+		
+		key = ksNext ( newKeys );
+	}
+	
+	if ( found )
+	{
+		delete groupNewKeys->selected ( );
+		ksDel ( newKeys );
+		newKeys = newSet;
+	}
+	emit selected ( "Summary" );
+}
+
+void NewKeyWizard::addComment ( )
+{
+	KeyComment com ( this, "set key comment dialog" );
+	::Key *currentKey = ksLookupByName ( newKeys, groupNewKeys->selected ( )->text ( ), 0 );
+	com.comment->setText ( QString ( keyStealComment( currentKey ) ) );
+	
+	if ( com.exec ( ) == QDialog::Accepted )
+	{
+		
+		if ( currentKey ) 
+		{
+			keySetComment ( currentKey, com.comment->text ( ) );
+		}
+		else
+			cout << "can't find current key " << endl;
+	}
 }
