@@ -17,14 +17,29 @@
  *
  */
 
- #ifndef MAINWINDOWIMPL_H
- #define MAINWINDOWIMPL_H
+#ifndef MAINWINDOWIMPL_H
+#define MAINWINDOWIMPL_H
  
+#include <qmainwindow.h>
+
+class QWidget;
+class MainWidgetImpl;
+class QToolBar;
+class QCloseEvent;
  
- class MainWindowImpl : public QMainWindow
- {
- 	
+class MainWindowImpl : public QMainWindow
+{
+Q_OBJECT
+
+public:
+	MainWindowImpl(QWidget *parent = 0, const char *name = 0, WFlags f = WType_TopLevel);
+	
+private:
+	void setUpGui();
+	void closeEvent(QCloseEvent *e);
+	MainWidgetImpl *mainWidget;
+	QToolBar *editToolBar;
+	QToolBar *othersToolBar;
+};
  
- };
- 
- #endif
+#endif

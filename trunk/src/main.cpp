@@ -20,7 +20,7 @@
 #include <iostream>
 
 #include <qapplication.h>
-#include <mainwindowimpl.h>
+#include "mainwindowimpl.h"
 
 using namespace std;
 
@@ -28,9 +28,7 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);	
 	
-	MainWindowImpl *main = new MainWindowImpl();
-	
-	main->show();
+	MainWindowImpl *main = new MainWindowImpl(0, "The Main Window");
 	
 	app.setMainWidget(main);
 	

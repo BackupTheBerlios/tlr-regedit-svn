@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="3" >
@@ -9,12 +9,12 @@
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.h" >
    <View0 line="26" Type="???" >
-    <AdditionalSettings Top="2" Width="928" Attach="1" Height="526" Left="2" MinMaxMode="0" />
+    <AdditionalSettings Top="2" Width="1200" Attach="1" Height="786" Left="2" MinMaxMode="0" />
    </View0>
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
    <View0 line="21" Type="???" >
-    <AdditionalSettings Top="2" Width="928" Attach="1" Height="526" Left="2" MinMaxMode="0" />
+    <AdditionalSettings Top="2" Width="1200" Attach="1" Height="685" Left="2" MinMaxMode="0" />
    </View0>
   </Doc2>
  </DocsAndViews>

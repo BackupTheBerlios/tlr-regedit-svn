@@ -17,8 +17,9 @@
  *
  */
 
-#include "mainwindowimpl.h"
+#include "mainwidgetimpl.h"
 #include "newkeydialogimpl.h"
+#include "regedit_globals.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
@@ -51,11 +52,32 @@ using namespace std;
 
 MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl) 
 	: MainWidget(parent, name, fl), dirIcon(QPixmap("icons/folder.png")), stringIcon(QPixmap("icons/txt.png")), 
-	  binaryIcon(QPixmap("icons/binary.png")), keyPrefix("user/sw/regedit")
+	  binaryIcon(QPixmap("icons/binary.png"))
+{
+	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
+	
+	connect(keyTree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(showKeyValues(QListViewItem*)));
+	connect(keyTree, SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)), this, SLOT(showItemMenu(QListViewItem*, const QPoint &, int)));
+	
+	connect(keyName, SIGNAL(textChanged(const QString &)), this, SLOT(keyAttributesChanged(const QString &)));
+	connect(keyValue, SIGNAL(textChanged(const QString &)), this, SLOT(keyAttributesChanged(const QString &)));
+	connect(keyComment, SIGNAL(textChanged()), this, SLOT(commentAttributeChanged()));
+	connect(typeCombo, SIGNAL(activated (int)), this, SLOT(keyTypeChanged(int)));
+	
+	connect(revokeButton, SIGNAL(clicked()), this, SLOT(revokeChanges()));
+	connect(applyButton, SIGNAL(clicked()), this, SLOT(applyChanges()));
+	
+	setUpGui();
+	updateKeyTree();
+}
+
+
+
+void MainWidgetImpl::setUpGui()
 {
 	registryOpen();
 	
-	setUpGui();
+	keyTree->setTreeStepSize(12);
 	
 	::Key iconDir;
 	
@@ -90,14 +112,19 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	
 	keyClose(&iconDir);
 	
+	registryClose();
+}
+
+void MainWidgetImpl::updateKeyTree()
+{
+	registryOpen();
+	
 	KeySet roots;	
 	ksInit(&roots);
 	
 	registryGetRootKeys(&roots);
 	
 	::Key *mover;
-	
-	//keyInit(mover);
 	
 	mover = roots.start;
 	
@@ -124,91 +151,6 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	
 	ksClose(&roots);
 	registryClose();
-	
-	keyTree->setTreeStepSize(12);
-	
-	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
-	
-	connect(keyTree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(showKeyValues(QListViewItem*)));
-	connect(keyTree, SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)), this, SLOT(showItemMenu(QListViewItem*, const QPoint &, int)));
-	
-	connect(keyName, SIGNAL(textChanged(const QString &)), this, SLOT(keyAttributesChanged(const QString &)));
-	connect(keyValue, SIGNAL(textChanged(const QString &)), this, SLOT(keyAttributesChanged(const QString &)));
-	connect(keyComment, SIGNAL(textChanged()), this, SLOT(commentAttributeChanged()));
-	connect(typeCombo, SIGNAL(activated (int)), this, SLOT(keyTypeChanged(int)));
-	
-	connect(revokeButton, SIGNAL(clicked()), this, SLOT(revokeChanges()));
-	connect(applyButton, SIGNAL(clicked()), this, SLOT(applyChanges()));
-}
-
-
-void MainWidgetImpl::setUpGui()
-{
-	::Key width;
-	::Key height;
-	::Key x;
-	::Key y;
-	::Key splitter;
-	
-	keyInit(&width);
-	keyInit(&height);
-	keyInit(&x);
-	keyInit(&y);
-	keyInit(&splitter);
-	
-	keySetName(&width, strdup(keyPrefix + "/gui/width")); 
-	keySetName(&height, strdup(keyPrefix + "/gui/height"));
-	keySetName(&x, strdup(keyPrefix + "/gui/x"));
-	keySetName(&y, strdup(keyPrefix + "/gui/y"));
-	keySetName(&splitter, strdup(keyPrefix + "/gui/splitter"));
-	
-	checkKeyMake(&width, RG_KEY_TYPE_STRING);
-	checkKeyMake(&height, RG_KEY_TYPE_STRING);
-	checkKeyMake(&x, RG_KEY_TYPE_STRING);
-	checkKeyMake(&y, RG_KEY_TYPE_STRING);
-	checkKeyMake(&splitter, RG_KEY_TYPE_STRING);
-	
-	int vwidth = this->width();
-	int vheight = this->height();
-	int vx = this->x();
-	int vy = this->y();
-	
-	if (keyGetDataSize(&width))
-	{
-		char *w = new char[keyGetDataSize(&width)];
-		keyGetString(&width, w, keyGetDataSize(&width));
-		vwidth = atoi(w);
-	}
-	
-	if (keyGetDataSize(&height))
-	{
-		char *w = new char[keyGetDataSize(&height)];
-		keyGetString(&height, w, keyGetDataSize(&height));
-		vheight = atoi(w);
-	}
-	
-	if (keyGetDataSize(&x))
-	{
-		char *w = new char[keyGetDataSize(&x)];
-		keyGetString(&x, w, keyGetDataSize(&x));
-		vx = atoi(w);
-	}
-	
-	if (keyGetDataSize(&y))
-	{
-		char *w = new char[keyGetDataSize(&y)];
-		keyGetString(&y, w, keyGetDataSize(&y));
-		vy = atoi(w);
-	}
-	
-	move(vx, vy);
-	resize(vwidth, vheight);
-	
-	/*if (keyGetDataSize(&splitter))
-	{
-		char *w = new char[keyGetDataSize(&splitter)];
-		splitter->moveSplitter(atoi(keyGetString(&splitter, w, keyGetSize(&splitter), 
-	}*/
 }
 
 MainWidgetImpl::~MainWidgetImpl()
@@ -411,8 +353,6 @@ void MainWidgetImpl::showKeyValues(QListViewItem *item)
 	
 	dt.setTime_t(keyGetCTime(&key));
 	keyCTime->setText(dt.toString());
-	
-	
 	
 	struct passwd *pwd = getpwuid(keyGetUID(&key));
 	struct group *grp = getgrgid(keyGetGID(&key));
@@ -721,63 +661,6 @@ void MainWidgetImpl::addNewKey()
 		
 		registryClose();
 	}
-}
-
-void MainWidgetImpl::closeEvent(QCloseEvent *e)
-{
-	registryOpen();
-	::Key width;
-	::Key height;
-	::Key x;
-	::Key y;
-	QString guiKeyPrefix =  "user/sw/regedit/gui/";
-	
-	keyInit(&width);
-	keyInit(&height);
-	keyInit(&x);
-	keyInit(&y);
-	
-	
-	keySetName(&width, strdup(guiKeyPrefix + "width"));
-	keySetName(&height, strdup(guiKeyPrefix + "height"));
-	keySetName(&x, strdup(guiKeyPrefix + "x"));
-	keySetName(&y, strdup(guiKeyPrefix + "y"));
-	
-	registryGetKey(&width);
-	keySetString(&width, strdup(QString().setNum(this->width())));
-	registrySetKey(&width);
-	keyClose(&width);
-	
-	registryGetKey(&height);
-	keySetString(&height, strdup(QString().setNum(this->height())));
-	registrySetKey(&height);
-	keyClose(&height);
-	
-	registryGetKey(&x);
-	keySetString(&x, strdup(QString().setNum(this->x())));
-	registrySetKey(&x);
-	keyClose(&x);
-	
-	registryGetKey(&y);
-	keySetString(&y, strdup(QString().setNum(this->y())));
-	registrySetKey(&y);
-	keyClose(&y);
-	
-	registryClose();
-	
-	MainWidget::closeEvent(e);
-}
-
-
-void MainWidgetImpl::checkKeyMake(::Key *key, u_int8_t type)
-{	
-	int ret = registryGetKey(key);
-	
-	if (errno == RG_KEY_RET_NOTFOUND)
-	{
-		keySetType(key, type);
-		registrySetKey(key);
-	}	
 }
 
 void MainWidgetImpl::copyNameToClipboard()

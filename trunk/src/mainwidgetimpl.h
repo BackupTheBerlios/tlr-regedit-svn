@@ -43,21 +43,22 @@ class QListViewItem;
 class MainWidgetImpl : public MainWidget
 {
 Q_OBJECT
+
 public:
 	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
 	~MainWidgetImpl();
+	void updateKeyTree();
 	
 private:
+	
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
-	bool ignoreTextChanges;
-	void closeEvent(QCloseEvent *e);
-	void checkKeyMake(::Key *key, u_int8_t type);
 	void setUpGui();
+	bool ignoreTextChanges;
+	
 	QPixmap stringIcon;
 	QPixmap binaryIcon;
 	QPixmap linkIcon;
 	QPixmap dirIcon;
-	const QString keyPrefix;
 	
 private slots:
 	void showKeyValues(QListViewItem *selected);

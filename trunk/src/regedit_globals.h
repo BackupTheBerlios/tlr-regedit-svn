@@ -21,8 +21,14 @@
 #ifndef REGEDIT_H
 #define REGEDIT_H
 
-#if 0
-#define DEBUG
-#endif
+extern "C"
+{
+	#include <registry.h>
+}
+#include <qstring.h>
+
+const QString keyPrefix = "user/sw/regedit";
+
+void checkKeyMake(Key *key, u_int8_t type);
 
 #endif 
