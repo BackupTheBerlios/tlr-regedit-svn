@@ -1,8 +1,7 @@
 Name: regedit
-Version: 0.2.1
-Release: 2
+Version: 0.3
+Release: 1
 Source0:    http://members.aon.at/gregorburger/%{name}-%{version}.tar.gz
-Source1:    regedit.desktop
 Group:     System Environment/Libraries
 Copyright: GPL
 Vendor: Gregor Burger <gregor.burger@aon.at>
@@ -28,7 +27,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin
 cp src/regedit $RPM_BUILD_ROOT/usr/bin
 find icons | grep -v .svn | grep \.png | cpio -pdvm $RPM_BUILD_ROOT/usr/share/lib/regedit
 mkdir -p $RPM_BUILD_ROOT/usr/share/applications/
-cp %{SOURCE1} $RPM_BUILD_ROOT/usr/share/applications/
+cp regedit.desktop $RPM_BUILD_ROOT/usr/share/applications/
 
 
 %clean
@@ -50,6 +49,9 @@ rg set system/sw/regedit/gui/iconDir "/usr/share/lib/regedit/icons"
 /usr/share/applications/*
 
 %changelog
+* Tue Aug 10 2004 Avi Alkalay <avi@unix.sh> 0.3-1
+- Updated version
+
 * Sat Jul 24 2004 Avi Alkalay <avi@unix.sh> 0.2.1-2
 - Added desktop file, to get an icon in the apps menu, under System Tools
 - Improvements to the spec file
