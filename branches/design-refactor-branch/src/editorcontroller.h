@@ -22,8 +22,7 @@
 
 #include <qobject.h>
 #include <qptrstack.h>
-
-#include <command.h>
+#include "command.h"
 
 extern "C"
 {
@@ -40,6 +39,8 @@ public:
 	EditorController ( );
 	QString current ( ) const;
 	::Key * currentKey ( ) const;
+	EditorView *getView ( )	{ return view; };
+//	void addCommand ( Command *cmd );
 	
 public slots:
 	void changeCurrent ( const QString & key );

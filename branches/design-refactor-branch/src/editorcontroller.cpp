@@ -21,6 +21,11 @@
 #include "editorview.h"
 #include "newkeywizard.h"
 
+#include "command.h"
+#include "keyaddcommand.h"
+#include "keymodifycommand.h"
+#include "keyremovecommand.h"
+
 #include <errno.h>
 
 #include <qapplication.h>
@@ -45,6 +50,9 @@ EditorController::EditorController ( )
 	connect ( view->deleteAction, SIGNAL ( activated ( ) ), this, SLOT ( delKey ( ) ) );
 	connect ( view->modifyAction, SIGNAL ( activated ( ) ), this, SLOT ( modifyKey ( ) ) );
 	
+	connect ( view->undoAction, SIGNAL ( activated ( ) ), this, SLOT ( undo ( ) ) );
+	connect ( view->redoAction, SIGNAL ( activated ( ) ), this, SLOT ( redo ( ) ) );
+	
 	
 	emit notifyView ( 0 );
 	
@@ -63,26 +71,16 @@ QString EditorController::current ( ) const
 		return QString ( "" );
 }
 
+/**
+ * 
+ */
 void EditorController::newKey ( )
 {
 	NewKeyWizard wiz( _current, view );
 	if ( wiz.exec ( ) == QDialog::Accepted )
 	{
-		//TODO implement with undo/redo
-		KeySet *keys = wiz.getNewKeys ( );
-		
-		cout << "adding " << ksGetSize ( keys ) << " new Keys" << endl;
-		
-		view->openKeyDir ( view->keyTree->currentItem ( ) );
-		
-		ksRewind ( keys );
-		::Key *key = ksNext ( keys );
-		while ( key )
-		{
-			view->addItem ( view->keyTree->currentItem ( ), key );
-			key = ksNext ( keys );
-		}
-		kdbSetKeys ( keys );
+		Command *cmd = new KeyAddCommand ( this, wiz.getNewKeys(), "new key command " );
+		addCommand( cmd );
 	} 
 	else
 		cout << "no" << endl;
@@ -91,28 +89,13 @@ void EditorController::newKey ( )
 
 void EditorController::delKey ( )
 {
-	delRecursive ( _current );
-	view->removeItem ( view->keyTree->currentItem ( ) );
+	KeySet *ks = ksNew ( );
+	ksAppend ( ks, _current );
+	
+	addCommand( new KeyRemoveCommand ( this, ks, "keyremove command" ) );
 }
 
-void EditorController::delRecursive ( ::Key *key )
-{
-	KeySet *childKeys = ksNew ( );
-	kdbGetKeyChildKeys ( key, childKeys, KDB_O_DIR | KDB_O_INACTIVE );
-	
-	if ( ksGetSize ( childKeys ) )
-	{
-		ksRewind ( childKeys );
-		::Key *temp = ksNext ( childKeys );
-		delRecursive ( temp );
-		temp = ksNext ( childKeys );
-	}
-	
-	if ( kdbRemove ( key->key ) )
-		perror ( "removing key" );
-	
-	ksDel ( childKeys );
-}
+
 
 void EditorController::modifyKey ( )
 {
@@ -121,18 +104,42 @@ void EditorController::modifyKey ( )
 
 void EditorController::undo ( )
 {
+	if ( undoStack.isEmpty ( ) )
+	{
+		cout <<  "not able to undo" << endl;
+		return;
+	}
+	Command * cmd = undoStack.pop ( );
+	cmd->unexecute ( );
+	redoStack.push ( cmd );
 	
+	view->undoAction->setEnabled ( !undoStack.isEmpty ( ) );
+	view->redoAction->setEnabled ( true );
 }
 
 void EditorController::redo ( )
 {
-
+	if ( redoStack.isEmpty ( ) )
+	{
+		cout << "not able to redo" << endl;
+		return;
+	}
+	Command *cmd = redoStack.pop ( );
+	cmd->execute ( );
+	undoStack.push ( cmd );
+	
+	view->redoAction->setEnabled ( !redoStack.isEmpty ( ) );
+	view->undoAction->setEnabled ( true );
 }
 
 void EditorController::addCommand ( Command * cmd )
 {
 	redoStack.clear ( );
 	undoStack.push ( cmd );
+	view->undoAction->setEnabled ( true );
+	view->redoAction->setEnabled ( false );
+	cmd->execute ( );
+	emit notifyView( _current );
 }
 
 void EditorController::changeCurrent ( const QString & key )

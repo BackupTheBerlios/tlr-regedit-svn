@@ -52,6 +52,7 @@ EditorView::EditorView ( EditorController *econtroller )
 	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), SLOT ( openKeyDir ( QListViewItem * ) ) );
 	connect ( keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), SLOT ( closeKeyDir ( QListViewItem * ) ) );
 	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), SLOT ( propagateKeyChange ( QListViewItem * ) ) );
+	
 	connect ( reloadAction, SIGNAL ( activated ( ) ), SLOT ( updateKeyTree ( ) ) );
 	
 	restoreState ( );
@@ -186,23 +187,11 @@ void EditorView::updateKeyTree ( )
 	
 	while ( k )
 	{
-		/*bool dummy = false;
-		
-		if  ( KeyMetaInfo::hasChildKeys ( k ) )
-			dummy = true;
-		addItem ( k, dummy );*/
-		QListViewItem *item  = new QListViewItem ( keyTree, k->key);
-		item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
-		keyTree->insertItem ( item );
-		
-		if (KeyMetaInfo::hasChildKeys ( k ) )
-		{
-			QListViewItem *dummy = new QListViewItem ( item, "dummy" );
-			item->insertItem ( dummy );
-		}
-		
+		addRootItem( k );
 		k = ksNext ( roots );
 	}
+	
+	ksDel ( roots );
 
 	if ( temp.isEmpty ( ) )
 		return;
@@ -212,13 +201,16 @@ void EditorView::updateKeyTree ( )
 	while ( it != temp.end ( ) )
 	{
 		QListViewItem * item = getItem ( *it );
-		if ( *it == keyName ( item ) )
+		if ( item )
 		{
-			keyTree->setOpen ( item, true );
-			//cout << "ok" << endl;
+			if ( *it == keyName ( item ) )
+			{
+				keyTree->setOpen ( item, true );
+				//cout << "ok" << endl;
+			}
+			else
+				cout << "fuck " << keyName ( item ) << " != " << *it << endl;
 		}
-		else
-			cout << "fuck " << keyName ( item ) << " != " << *it << endl;
 		/*if ( item->isOpen ( ) )
 			cout << "not open" << endl;*/
 		//openKeyDir ( item );
@@ -267,12 +259,7 @@ void EditorView::openKeyDir ( QListViewItem *item )
 	
 	while ( child )
 	{
-		bool dummy = false;
-		
-		if ( KeyMetaInfo::hasChildKeys ( child ) )
-			dummy = true;
-			
-		addItem ( item, child, dummy );
+		addItem ( item, child);
 		 
 		child = ksNext ( childs );
 	}
@@ -284,22 +271,64 @@ void EditorView::closeKeyDir ( QListViewItem * item )
 	QListViewItem *parent = item->parent ( );
 	
 	::Key *key = keyNew ( keyName ( item ), KEY_SWITCH_END );
-	kdbGetKey ( key );
+	if ( kdbGetKey ( key ) )
+	{
+		perror ( "closeKeyDir : ");
+		return ;
+	}
+	
+	
+	
+	if ( !openedKeys.isEmpty ( ) )
+	{
+		KeySet *ks = ksNew ( );
+		kdbGetKeyChildKeys ( key, ks, KDB_O_RECURSIVE | KDB_O_DIR );
+		ksRewind ( ks );
+		::Key *temp = ksNext ( ks );
+		
+		while ( temp )
+		{
+			if ( keyGetType ( temp ) == KEY_TYPE_DIR )
+			{
+				cout << "removing key: " << temp->key << endl;
+				openedKeys.remove( temp->key );
+			}
+			temp = ksNext( ks );
+		}
+		openedKeys.remove( key->key );
+		ksDel ( ks );
+		/*
+		QValueList<QString>::iterator it = openedKeys.begin ( );
+		
+		while ( it != openedKeys.end ( ) )
+		{
+			cout << (*it) << endl;
+			if ( (*it).startsWith ( key->key ) )
+			{
+				cout << "removing " << (*it) << endl;
+				it  = openedKeys.remove ( it );
+			}
+			else
+				it++;
+		}
+		*/
+	}
+	
+// 	if ( parent )
+// 		keyTree->setCurrentItem ( parent );
+// 	else
+		keyTree->setCurrentItem ( 0 );
 	
 	delete item;
 	
-	QValueList<QString>::iterator it = openedKeys.begin ( );
-	
-	while ( it != openedKeys.end ( ) )
-	{
-		if ( (*it).startsWith ( key->key ) )
-			openedKeys.remove ( *it );
-	}
-	
-	if ( KeyMetaInfo::hasChildKeys ( key ) )
-		addItem ( parent, key, true );
+	if ( KeyMetaInfo::isRoot ( key ) )
+		addRootItem ( key );
 	else
-		addItem ( parent, key, false );
+		addItem ( parent, key );
+	
+	
+		
+	keyDel ( key );
 }
 
 void EditorView::propagateKeyChange ( QListViewItem *item )
@@ -323,7 +352,7 @@ QString EditorView::keyName ( const QListViewItem * item ) const
 
 }
  
-QListViewItem * EditorView::getItem ( const QString & keyName ) const
+QListViewItem * EditorView::getItem ( const QString & keyName )
 {
 	//cout << "getting " << keyName << endl;
 	QListViewItem *parent = keyTree->firstChild ( );
@@ -348,7 +377,14 @@ QListViewItem * EditorView::getItem ( const QString & keyName ) const
 			return 0;
 		}
 		while ( parent->text ( 0 ) != keyName.section ( RG_KEY_DELIM, i, i ) )
+		{
 			parent = parent->nextSibling ( );
+			if ( !parent )
+			{
+				cout << "parent null" << endl;
+				return 0;
+			}
+		}
 		if ( keyName.contains ( RG_KEY_DELIM )  == i ) 
 			break;
 		//cout << parent->text ( 0 ) << "/";
@@ -396,6 +432,8 @@ void EditorView::saveState ( )
 		kdbRemove ( key->key );
 		key = ksNext ( toDel );
 	}
+	
+	ksDel ( toDel );
 	
 	//kdbGetChild
 	
@@ -453,17 +491,30 @@ void EditorView::restoreState ( )
 	ksDel ( opened );
 }
 
-void EditorView::addItem ( QListViewItem *item, ::Key *child, bool dummy )
+void EditorView::addItem ( QListViewItem *item, ::Key *child )
 {
-	int bnlength = keyGetBaseNameSize ( child );
-	char baseName[bnlength];
-	keyGetBaseName ( child, baseName, bnlength );
+	//int bnlength = keyGetBaseNameSize ( child );
+	char baseName[300];
+	keyGetBaseName ( child, baseName, 300 );
 
 	QListViewItem *childItem = new QListViewItem ( item, baseName );
 	//childItem->setName ( child->key );
 	childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
 	
-	if ( dummy )
+	if ( KeyMetaInfo::hasChildKeys( child ) )
+	{
+		QListViewItem *dummy = new QListViewItem ( childItem, "dummy" );
+		childItem->insertItem ( dummy );
+	}
+}
+
+void EditorView::addRootItem ( ::Key *child )
+{
+	QListViewItem *childItem = new QListViewItem ( keyTree, child->key );
+	//childItem->setName ( child->key );
+	childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
+	
+	if ( KeyMetaInfo::hasChildKeys( child ) )
 	{
 		QListViewItem *dummy = new QListViewItem ( childItem, "dummy" );
 		childItem->insertItem ( dummy );
