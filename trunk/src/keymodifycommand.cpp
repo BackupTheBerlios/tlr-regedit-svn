@@ -91,7 +91,6 @@ KeyModifyCommand::~KeyModifyCommand()
 
 bool KeyModifyCommand::execute()
 {
-	kdbOpen();
 	if (kdbSetKey(newKey))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
@@ -105,7 +104,6 @@ bool KeyModifyCommand::execute()
 
 bool KeyModifyCommand::unexecute()
 {
-	kdbOpen();
 	if (kdbSetKey(oldKey))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
@@ -114,7 +112,6 @@ bool KeyModifyCommand::unexecute()
 	}
 	item->setPixmap(0, oldIcon);
 	mainWidget()->changeSelected(item);
-	kdbClose();
 	return true;
 }
 
