@@ -6,7 +6,6 @@
 FORMS += mainwidget.ui \
          newdialog.ui \
          permissiondialog.ui 
-IDLS += permissiondialog.ui 
 HEADERS += newkeydialogimpl.h \
            mainwidgetimpl.h \
            mainwindowimpl.h \
