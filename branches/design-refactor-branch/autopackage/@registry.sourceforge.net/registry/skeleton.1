@@ -1,0 +1,12 @@
+[Meta]
+RootName: @registry.sourceforge.net/registry
+DisplayName: The Linux Registry
+ShortName: registry
+Skeleton-Author: Gregor Burger <gregor.burger@aon.at>
+Skeleton-Version: 1
+
+[Notes]
+This skeleton does not set SOFTWARE_VERSIONS
+
+[Test]
+INTERFACE_VERSIONS=$( testForLib -i libregistry.so )

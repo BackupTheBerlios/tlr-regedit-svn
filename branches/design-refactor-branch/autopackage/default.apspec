@@ -1,0 +1,61 @@
+# -*-shell-script-*-
+
+[Meta]
+RootName: @tlr-regedit.berlios.de:$SOFTWAREVERSION
+DisplayName: The Linux Registry Editor
+ShortName: tlr-regedit
+Maintainer: The tlr-regedit Developers - tlr-regedit.berlios.de
+Packager: Gregor Burger <gregor.burger@aon.at>
+Summary: FooBar is an example program.
+SoftwareVersion: 0.3
+
+# Only uncomment InterfaceVersion if your package exposes interfaces to other software,
+# for instance if it includes DSOs or python/perl modules
+# InterfaceVersion: 0.0
+
+PackageVersion: 2
+
+[Description]
+The Linux Registry Editor was designed to be the graphical equivalent to the rg command. It shows you all the values of the keys including the type, comment, uid, gid, acces mode and acces times. It allows you to edit some of the attributes mentioned above.
+
+[BuildPrepare]
+
+if locateCommand apgcc; then
+	export CC=apgcc;
+	export CXX=apg++;
+fi
+qmake
+make CC=$CC CXX=$CXX
+ 
+
+[BuildUnprepare]
+unprepareBuild
+
+[Imports]
+import ./share/$SHORTNAME-$SOFTWAREVERSION/icons <<EOF
+$build_root/icons/*.png
+EOF
+
+import ./bin <<EOF
+$build_root/src/regedit
+EOF
+
+import ./share/applications <<EOF
+$build_root/regedit.desktop
+EOF
+
+
+[Prepare]
+require @trolltech.com/qt 3.1
+require @registry.sourceforge.net/registry 0.2
+
+[Install]
+# Put your installation script here
+installExe bin/*
+installDesktop "System Environment/Libraries" ./share/applications/regedit.desktop
+copyFiles share/$SHORTNAME-$SOFTWAREVERSION/icons $prefix/share/$SHORTNAME-$SOFTWAREVERSION/
+rg set system/sw/regedit/gui/iconDir $prefix/share/$SHORTNAME-$SOFTWAREVERSION/icons
+
+[Uninstall]
+# Usually just the following line is enough to uninstall everything
+uninstallFromLog

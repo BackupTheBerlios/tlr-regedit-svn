@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Registry Editor
+Name[pt]=Editor do Registro
+Name[pt_BR]=Editor do Registro
+Comment=GUI to edit the Linux Registry
+Comment[pt]=Editor grafico do Linux Registry
+Comment[pt_BR]=Editor grafico do Linux Registry
+Icon=system-config-kickstart.png
+Exec=/usr/bin/regedit
+Type=Application
+Terminal=false
+Encoding=UTF-8
+X-Desktop-File-Install-Version=0.4
+Categories=X-Red-Hat-Base;System;Application;
