@@ -19,6 +19,7 @@
 
 #include "keymetainfo.h"
 #include <iostream>
+using namespace std;
 
 #include <sys/stat.h>
 
@@ -56,6 +57,12 @@ QPixmap KeyMetaInfo::getIcon ( const QString & key )
 
 QPixmap KeyMetaInfo::getIcon ( const Key * key )
 {
+	if ( !key )
+	{
+		cout << "nono theres no icon for this key" << endl;
+		return NULL;
+	}
+		
 	Key *iconKey = 0;
 	
 	if ( canRead ( key ) )
@@ -80,7 +87,9 @@ QPixmap KeyMetaInfo::getIcon ( const Key * key )
 				break;
 			default:
 				//should not happen
-				std::cout << "getIconSet: should not happen" << std::endl;
+				
+				iconKey = keyNew( QString ( SYS_PREFIX ) + "icons/undefined", KEY_SWITCH_END );
+				std::cout << "getIconSet: should not happen; type is: " << ( int ) keyGetType ( key ) << std::endl;
 		}
 	}
 	else

@@ -39,15 +39,21 @@ class EditorView : public EditorViewUI
 		EditorView ( EditorController * controller );
 		void saveState ( );
 		void restoreState ( );
+		void addItem ( QListViewItem *parent, ::Key *key, bool dummy = false);
+		void removeItem ( QListViewItem *item );
+		const QString selectedKey ( );
+		
 	public slots:
 		void update ( ::Key * current );
+		void openKeyDir ( QListViewItem *item );
 		
 	signals:
 		void keySelected ( const QString &key );
 	
 	private slots:
-		void openKeyDir ( QListViewItem *item );
+		void updateKeyTree (  );
 		void propagateKeyChange ( QListViewItem *item );
+		void closeKeyDir ( QListViewItem *item );
 		
 	private:
 		void showKey ( ::Key *key );
@@ -55,9 +61,9 @@ class EditorView : public EditorViewUI
 		void lockGui ( bool lock );
 		void updateActions ( const ::Key *current );
 		QString keyName ( const QListViewItem *item ) const;
-		void updateKeyTree ( bool firstTime = false );
-		void closeEvent ( QCloseEvent * e );
+		QListViewItem *getItem ( const QString & key ) const;
 		
+		void closeEvent ( QCloseEvent * e );
 		
 	private:
  		EditorController *controller;

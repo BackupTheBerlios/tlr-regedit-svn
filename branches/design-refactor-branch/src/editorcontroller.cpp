@@ -21,8 +21,11 @@
 #include "editorview.h"
 #include "newkeywizard.h"
 
+#include <errno.h>
+
 #include <qapplication.h>
 #include <qdialog.h>
+#include <qlistview.h>
 #include <errno.h>
 #include <stdio.h>
 #include <iostream>
@@ -41,6 +44,7 @@ EditorController::EditorController ( )
 	connect ( view->newAction, SIGNAL ( activated ( ) ), this, SLOT ( newKey ( ) ) );
 	connect ( view->deleteAction, SIGNAL ( activated ( ) ), this, SLOT ( delKey ( ) ) );
 	connect ( view->modifyAction, SIGNAL ( activated ( ) ), this, SLOT ( modifyKey ( ) ) );
+	
 	
 	emit notifyView ( 0 );
 	
@@ -64,7 +68,21 @@ void EditorController::newKey ( )
 	NewKeyWizard wiz( _current, view );
 	if ( wiz.exec ( ) == QDialog::Accepted )
 	{
-		cout << "yes" << endl;
+		//TODO implement with undo/redo
+		KeySet *keys = wiz.getNewKeys ( );
+		
+		cout << "adding " << ksGetSize ( keys ) << " new Keys" << endl;
+		
+		view->openKeyDir ( view->keyTree->currentItem ( ) );
+		
+		ksRewind ( keys );
+		::Key *key = ksNext ( keys );
+		while ( key )
+		{
+			view->addItem ( view->keyTree->currentItem ( ), key );
+			key = ksNext ( keys );
+		}
+		kdbSetKeys ( keys );
 	} 
 	else
 		cout << "no" << endl;
@@ -73,12 +91,48 @@ void EditorController::newKey ( )
 
 void EditorController::delKey ( )
 {
+	delRecursive ( _current );
+	view->removeItem ( view->keyTree->currentItem ( ) );
+}
+
+void EditorController::delRecursive ( ::Key *key )
+{
+	KeySet *childKeys = ksNew ( );
+	kdbGetKeyChildKeys ( key, childKeys, KDB_O_DIR | KDB_O_INACTIVE );
 	
+	if ( ksGetSize ( childKeys ) )
+	{
+		ksRewind ( childKeys );
+		::Key *temp = ksNext ( childKeys );
+		delRecursive ( temp );
+		temp = ksNext ( childKeys );
+	}
+	
+	if ( kdbRemove ( key->key ) )
+		perror ( "removing key" );
+	
+	ksDel ( childKeys );
 }
 
 void EditorController::modifyKey ( )
 {
 	
+}
+
+void EditorController::undo ( )
+{
+	
+}
+
+void EditorController::redo ( )
+{
+
+}
+
+void EditorController::addCommand ( Command * cmd )
+{
+	redoStack.clear ( );
+	undoStack.push ( cmd );
 }
 
 void EditorController::changeCurrent ( const QString & key )

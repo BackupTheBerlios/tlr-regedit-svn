@@ -626,6 +626,9 @@
         <property name="text">
             <string>undo</string>
         </property>
+        <property name="accel">
+            <string>Ctrl+Z</string>
+        </property>
     </action>
     <action>
         <property name="name">
@@ -641,7 +644,7 @@
             <string>redo</string>
         </property>
         <property name="accel">
-            <string>Ctrl+Z</string>
+            <string>Ctrl+Y</string>
         </property>
     </action>
     <action>
@@ -656,6 +659,9 @@
         </property>
         <property name="text">
             <string>reload key database</string>
+        </property>
+        <property name="accel">
+            <string>F5</string>
         </property>
     </action>
     <action>

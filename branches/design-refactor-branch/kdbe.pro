@@ -3,6 +3,8 @@
 # Subdir relative project main directory: .
 # Target is a subdirs project 
 
+QMAKESPEC = linux-g++
+
 !system( pkg-config --version > /dev/null ) {
 	error ( "install the pkg-config software found at http://www.freedesktop.org" )
 }

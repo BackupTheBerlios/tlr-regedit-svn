@@ -22,18 +22,44 @@
 
 #include "newkeywizardui.h"
 
+#include <qobjectlist.h>
+
 extern "C"
 {
 	#include <kdb.h>
 }
 
 class QWidget;
+class QVBoxLayout;
 
 class NewKeyWizard : public NewKeyWizardUI
 {
 	Q_OBJECT
 public:
 	NewKeyWizard ( ::Key *top, QWidget *parent );
+	~NewKeyWizard ( );
+	KeySet * getNewKeys ( );
+	
+private slots:
+	void switchToNextPage ( );
+	void switchToLastPage ( );
+	void checkDirKeyName ( const QString & );
+	//void checkStringKeyName ( const QString & );
+	void updateSummaryPage ( const QString & );
+	void backToStart ( );
+	
+	void checkBinaryKeyName ( const QString & );
+	void checkBinaryKeyFile ( );
+	
+	
+private:
+	::Key *parent;
+	KeySet *newKeys;
+	QVBoxLayout *groupNewKeysLayout;
+	
+	bool binaryKeyNameSet;
+	bool binaryKeyFileSet;
+	QObjectList radioButtons;
 };
 
 #endif

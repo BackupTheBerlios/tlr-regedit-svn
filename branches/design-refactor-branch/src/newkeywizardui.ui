@@ -26,9 +26,34 @@
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
+            <spacer>
+                <property name="name">
+                    <cstring>spacer4_2</cstring>
+                </property>
+                <property name="orientation">
+                    <enum>Vertical</enum>
+                </property>
+                <property name="sizeType">
+                    <enum>Expanding</enum>
+                </property>
+                <property name="sizeHint">
+                    <size>
+                        <width>20</width>
+                        <height>51</height>
+                    </size>
+                </property>
+            </spacer>
             <widget class="QLabel">
                 <property name="name">
                     <cstring>textLabel5</cstring>
+                </property>
+                <property name="sizePolicy">
+                    <sizepolicy>
+                        <hsizetype>5</hsizetype>
+                        <vsizetype>4</vsizetype>
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                    </sizepolicy>
                 </property>
                 <property name="text">
                     <string>&lt;font size="+2"&gt;Choose the type of Key you want to create under:&lt;/font&gt;</string>
@@ -36,7 +61,7 @@
             </widget>
             <widget class="QLineEdit">
                 <property name="name">
-                    <cstring>lineEdit14</cstring>
+                    <cstring>lineParent</cstring>
                 </property>
                 <property name="readOnly">
                     <bool>true</bool>
@@ -55,7 +80,7 @@
                     </property>
                     <widget class="QRadioButton" row="0" column="1">
                         <property name="name">
-                            <cstring>radioButton5_4</cstring>
+                            <cstring>radioString</cstring>
                         </property>
                         <property name="enabled">
                             <bool>true</bool>
@@ -72,7 +97,7 @@
                     </widget>
                     <widget class="QRadioButton" row="1" column="1" rowspan="2" colspan="1">
                         <property name="name">
-                            <cstring>radioButton5_3</cstring>
+                            <cstring>radioDir</cstring>
                         </property>
                         <property name="text">
                             <string>create a new Key &amp;directory</string>
@@ -159,7 +184,7 @@
                     </widget>
                     <widget class="QRadioButton" row="4" column="1">
                         <property name="name">
-                            <cstring>radioButton5_2</cstring>
+                            <cstring>radioBinary</cstring>
                         </property>
                         <property name="text">
                             <string>create a new Key with binary content</string>
@@ -170,7 +195,7 @@
                     </widget>
                     <widget class="QRadioButton" row="3" column="1">
                         <property name="name">
-                            <cstring>radioButton5</cstring>
+                            <cstring>radioLink</cstring>
                         </property>
                         <property name="text">
                             <string>set a Link to another Key</string>
@@ -229,7 +254,7 @@
                     </widget>
                     <widget class="QLineEdit">
                         <property name="name">
-                            <cstring>lineEdit1</cstring>
+                            <cstring>dirName</cstring>
                         </property>
                     </widget>
                 </hbox>
@@ -328,11 +353,11 @@
         <attribute name="title">
             <string>New Binary Key</string>
         </attribute>
-        <vbox>
+        <grid>
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
-            <widget class="QLabel">
+            <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
                 <property name="name">
                     <cstring>textLabel9</cstring>
                 </property>
@@ -340,64 +365,57 @@
                     <string>&lt;h2&gt;Load binary values from a file&lt;/h2&gt;</string>
                 </property>
             </widget>
-            <widget class="QLayoutWidget">
+            <widget class="QLabel" row="1" column="0">
                 <property name="name">
-                    <cstring>layout11</cstring>
+                    <cstring>textLabel10</cstring>
                 </property>
-                <grid>
+                <property name="text">
+                    <string>Name of the File</string>
+                </property>
+            </widget>
+            <widget class="QLayoutWidget" row="1" column="1">
+                <property name="name">
+                    <cstring>layout7</cstring>
+                </property>
+                <hbox>
                     <property name="name">
                         <cstring>unnamed</cstring>
                     </property>
-                    <widget class="QLabel" row="0" column="0">
+                    <widget class="QLineEdit">
                         <property name="name">
-                            <cstring>textLabel10</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Name of the File</string>
-                        </property>
-                    </widget>
-                    <widget class="QLayoutWidget" row="0" column="1">
-                        <property name="name">
-                            <cstring>layout7</cstring>
-                        </property>
-                        <hbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QLineEdit">
-                                <property name="name">
-                                    <cstring>lineEdit3</cstring>
-                                </property>
-                            </widget>
-                            <widget class="QPushButton">
-                                <property name="name">
-                                    <cstring>pushButton1</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>...</string>
-                                </property>
-                            </widget>
-                        </hbox>
-                    </widget>
-                    <widget class="QLineEdit" row="1" column="1">
-                        <property name="name">
-                            <cstring>lineEdit15</cstring>
+                            <cstring>binaryFile</cstring>
                         </property>
                         <property name="readOnly">
-                            <bool>false</bool>
+                            <bool>true</bool>
                         </property>
                     </widget>
-                    <widget class="QLabel" row="1" column="0">
+                    <widget class="QPushButton">
                         <property name="name">
-                            <cstring>textLabel11</cstring>
+                            <cstring>chooseFile</cstring>
                         </property>
                         <property name="text">
-                            <string>Name of the Key</string>
+                            <string>...</string>
                         </property>
                     </widget>
-                </grid>
+                </hbox>
             </widget>
-        </vbox>
+            <widget class="QLineEdit" row="2" column="1">
+                <property name="name">
+                    <cstring>binaryKeyName</cstring>
+                </property>
+                <property name="readOnly">
+                    <bool>false</bool>
+                </property>
+            </widget>
+            <widget class="QLabel" row="2" column="0">
+                <property name="name">
+                    <cstring>textLabel11</cstring>
+                </property>
+                <property name="text">
+                    <string>Name of the Key</string>
+                </property>
+            </widget>
+        </grid>
     </widget>
     <widget class="QWidget">
         <property name="name">
@@ -406,42 +424,11 @@
         <attribute name="title">
             <string>New String Key</string>
         </attribute>
-        <vbox>
+        <grid>
             <property name="name">
                 <cstring>unnamed</cstring>
             </property>
-            <widget class="QLabel">
-                <property name="name">
-                    <cstring>textLabel2</cstring>
-                </property>
-                <property name="text">
-                    <string>&lt;h2&gt;Create new string key&lt;/h2&gt;</string>
-                </property>
-            </widget>
-            <widget class="QLayoutWidget">
-                <property name="name">
-                    <cstring>layout12</cstring>
-                </property>
-                <hbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QLabel">
-                        <property name="name">
-                            <cstring>textLabel3</cstring>
-                        </property>
-                        <property name="text">
-                            <string>Name of the key</string>
-                        </property>
-                    </widget>
-                    <widget class="QLineEdit">
-                        <property name="name">
-                            <cstring>stringKeyName</cstring>
-                        </property>
-                    </widget>
-                </hbox>
-            </widget>
-            <spacer>
+            <spacer row="3" column="1">
                 <property name="name">
                     <cstring>spacer3</cstring>
                 </property>
@@ -454,18 +441,58 @@
                 <property name="sizeHint">
                     <size>
                         <width>21</width>
-                        <height>41</height>
+                        <height>40</height>
                     </size>
                 </property>
             </spacer>
-        </vbox>
+            <widget class="QLabel" row="0" column="0" rowspan="1" colspan="2">
+                <property name="name">
+                    <cstring>textLabel2</cstring>
+                </property>
+                <property name="text">
+                    <string>&lt;h2&gt;Create new string key&lt;/h2&gt;</string>
+                </property>
+            </widget>
+            <widget class="QLabel" row="1" column="0">
+                <property name="name">
+                    <cstring>textLabel3</cstring>
+                </property>
+                <property name="text">
+                    <string>Keyname</string>
+                </property>
+                <property name="buddy" stdset="0">
+                    <cstring>stringKeyName</cstring>
+                </property>
+            </widget>
+            <widget class="QLineEdit" row="1" column="1">
+                <property name="name">
+                    <cstring>stringKeyName</cstring>
+                </property>
+            </widget>
+            <widget class="QTextEdit" row="2" column="1">
+                <property name="name">
+                    <cstring>stringKeyText</cstring>
+                </property>
+            </widget>
+            <widget class="QLabel" row="2" column="0">
+                <property name="name">
+                    <cstring>textLabel1</cstring>
+                </property>
+                <property name="text">
+                    <string>Keytext</string>
+                </property>
+                <property name="buddy" stdset="0">
+                    <cstring>textEdit1</cstring>
+                </property>
+            </widget>
+        </grid>
     </widget>
     <widget class="QWidget">
         <property name="name">
             <cstring>WizardPage</cstring>
         </property>
         <attribute name="title">
-            <string>Ende</string>
+            <string>Summary</string>
         </attribute>
         <vbox>
             <property name="name">
@@ -473,7 +500,7 @@
             </property>
             <widget class="QButtonGroup">
                 <property name="name">
-                    <cstring>buttonGroup3</cstring>
+                    <cstring>groupNewKeys</cstring>
                 </property>
                 <property name="title">
                     <string>keys to create</string>
@@ -489,7 +516,10 @@
                     </property>
                     <widget class="QPushButton">
                         <property name="name">
-                            <cstring>pushButton5</cstring>
+                            <cstring>deleteKeyButton</cstring>
+                        </property>
+                        <property name="enabled">
+                            <bool>false</bool>
                         </property>
                         <property name="text">
                             <string>delete</string>
@@ -497,7 +527,10 @@
                     </widget>
                     <widget class="QPushButton">
                         <property name="name">
-                            <cstring>pushButton6</cstring>
+                            <cstring>addCommentButton</cstring>
+                        </property>
+                        <property name="enabled">
+                            <bool>false</bool>
                         </property>
                         <property name="text">
                             <string>add Comment</string>
@@ -505,7 +538,7 @@
                     </widget>
                     <widget class="QPushButton">
                         <property name="name">
-                            <cstring>pushButton7</cstring>
+                            <cstring>anotherKeyButton</cstring>
                         </property>
                         <property name="text">
                             <string>add another Key</string>

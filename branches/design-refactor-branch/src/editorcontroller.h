@@ -21,6 +21,9 @@
 #define EDITORCONTROLLER_H
 
 #include <qobject.h>
+#include <qptrstack.h>
+
+#include <command.h>
 
 extern "C"
 {
@@ -44,14 +47,22 @@ public slots:
 	void newKey ( );
 	void delKey ( );
 	void modifyKey ( );
+	
+	void undo ( );
+	void redo ( );
 
 signals:
 	void notifyView( ::Key *current );
+	
+private:
+	void addCommand ( Command * );
+	void delRecursive ( ::Key *key );
 
 private:
 	::Key *_current;
 	EditorView *view;
-	
+	QPtrStack<Command> undoStack;
+	QPtrStack<Command> redoStack;
 };
 
 #endif

@@ -47,12 +47,15 @@ extern "C"
 EditorView::EditorView ( EditorController *econtroller ) 
 	: EditorViewUI ( 0, "the editor view", WType_TopLevel ), controller ( econtroller )
 {
-	updateKeyTree ( true );
 	
-	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
-	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), this, SLOT ( propagateKeyChange ( QListViewItem * ) ) );
+	
+	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), SLOT ( openKeyDir ( QListViewItem * ) ) );
+	connect ( keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), SLOT ( closeKeyDir ( QListViewItem * ) ) );
+	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), SLOT ( propagateKeyChange ( QListViewItem * ) ) );
+	connect ( reloadAction, SIGNAL ( activated ( ) ), SLOT ( updateKeyTree ( ) ) );
 	
 	restoreState ( );
+	updateKeyTree ( );
 	
 	show();
 }
@@ -91,6 +94,13 @@ void EditorView::lockGui ( bool lock )
 
 void EditorView::updateActions ( const ::Key *current )
 {
+	if ( !current )
+	{
+		newAction->setEnabled ( false );
+		deleteAction->setEnabled ( false );
+		return;
+	}
+	
 	if ( !KeyMetaInfo::canWrite ( current ) )
 	{
 		newAction->setEnabled ( false );
@@ -156,42 +166,63 @@ void EditorView::showKey ( ::Key * current )
 	}
 }
 
-void EditorView::updateKeyTree ( bool firstTime )
+void EditorView::updateKeyTree ( )
 {
-	if (firstTime)
+	QValueList<QString> temp = openedKeys;
+	openedKeys.clear ( );
+	keyTree->clear ( );
+		
+	KeySet *roots = ksNew ( );
+	if ( kdbGetRootKeys ( roots ) )
 	{
-		openedKeys.clear();
-		
-		KeySet *roots = ksNew ( );
-		if ( kdbGetRootKeys ( roots ) )
-		{
-			perror ( "opening roots" );
-		}
-		
-		
-		ksSort ( roots );
-		ksRewind ( roots );
-		
-		::Key *k = ksNext ( roots );
-		
-		while ( k )
-		{
-			QListViewItem *item  = new QListViewItem ( keyTree, k->key);
-			item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
-			keyTree->insertItem ( item );
-			
-			if (KeyMetaInfo::hasChildKeys ( k ) )
-			{
-				QListViewItem *dummy = new QListViewItem ( item, "dummy" );
-				item->insertItem ( dummy );
-			}
-			
-			k = ksNext ( roots );
-		}
+		perror ( "opening roots" );
 	}
-	else
+	
+	
+	ksSort ( roots );
+	ksRewind ( roots );
+	
+	::Key *k = ksNext ( roots );
+	
+	while ( k )
 	{
+		/*bool dummy = false;
 		
+		if  ( KeyMetaInfo::hasChildKeys ( k ) )
+			dummy = true;
+		addItem ( k, dummy );*/
+		QListViewItem *item  = new QListViewItem ( keyTree, k->key);
+		item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
+		keyTree->insertItem ( item );
+		
+		if (KeyMetaInfo::hasChildKeys ( k ) )
+		{
+			QListViewItem *dummy = new QListViewItem ( item, "dummy" );
+			item->insertItem ( dummy );
+		}
+		
+		k = ksNext ( roots );
+	}
+
+	if ( temp.isEmpty ( ) )
+		return;
+	
+	QValueList<QString>::iterator it = temp.begin ( );
+	
+	while ( it != temp.end ( ) )
+	{
+		QListViewItem * item = getItem ( *it );
+		if ( *it == keyName ( item ) )
+		{
+			keyTree->setOpen ( item, true );
+			//cout << "ok" << endl;
+		}
+		else
+			cout << "fuck " << keyName ( item ) << " != " << *it << endl;
+		/*if ( item->isOpen ( ) )
+			cout << "not open" << endl;*/
+		//openKeyDir ( item );
+		++it;
 	}
 }
 
@@ -199,22 +230,32 @@ void EditorView::openKeyDir ( QListViewItem *item )
 {
 	if ( openedKeys.contains ( keyName ( item ) ) ) //allready opened
 		return;
-		
-	if ( item->firstChild ( ) -> text ( 0 ) == "dummy" )
-	{
-		delete item->firstChild ( );
-	}
-	else
-		cout << "implementation error no dummy found" << endl;
 	
+	if ( item->firstChild ( ) )
+	{
+		QListViewItem *ss = item->firstChild ( );
+		
+		while ( ss )
+		{
+			if ( ss->text ( 0 ) == "dummy" )
+			{
+				delete item->firstChild ( );
+				//cout << "found dummy" << endl;
+				break;
+			}
+			
+			ss = ss->nextSibling ( );
+		}
+	}
+	
+	openedKeys.push_back ( keyName ( item ) );
 	::Key *toOpen = keyNew ( keyName ( item ) );
 	kdbGetKey ( toOpen );
-	openedKeys.push_back ( toOpen->key );
 	
 	KeySet *childs = ksNew ( );
 	if ( kdbGetKeyChildKeys ( toOpen, childs, KDB_O_DIR  | KDB_O_INACTIVE ) )
 	{
-		perror ( "opening key tree" );
+		perror ( QString ( "opening key tree " ) + toOpen->key );
 	}
 	
 	keyDel ( toOpen );
@@ -226,22 +267,39 @@ void EditorView::openKeyDir ( QListViewItem *item )
 	
 	while ( child )
 	{
-
-		QString absolutName ( child->key );
-		QString name = absolutName.right ( absolutName.length() - absolutName.findRev ( RG_KEY_DELIM ) - 1 );
-
-		QListViewItem *childItem = new QListViewItem ( item, name );
-		childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
+		bool dummy = false;
 		
 		if ( KeyMetaInfo::hasChildKeys ( child ) )
-		{
-			QListViewItem *dummy = new QListViewItem ( childItem, "dummy" );
-			childItem->insertItem ( dummy );
-		}
-		
+			dummy = true;
+			
+		addItem ( item, child, dummy );
+		 
 		child = ksNext ( childs );
 	}
 	ksDel ( childs );
+}
+
+void EditorView::closeKeyDir ( QListViewItem * item )
+{
+	QListViewItem *parent = item->parent ( );
+	
+	::Key *key = keyNew ( keyName ( item ), KEY_SWITCH_END );
+	kdbGetKey ( key );
+	
+	delete item;
+	
+	QValueList<QString>::iterator it = openedKeys.begin ( );
+	
+	while ( it != openedKeys.end ( ) )
+	{
+		if ( (*it).startsWith ( key->key ) )
+			openedKeys.remove ( *it );
+	}
+	
+	if ( KeyMetaInfo::hasChildKeys ( key ) )
+		addItem ( parent, key, true );
+	else
+		addItem ( parent, key, false );
 }
 
 void EditorView::propagateKeyChange ( QListViewItem *item )
@@ -264,6 +322,46 @@ QString EditorView::keyName ( const QListViewItem * item ) const
         return key;
 
 }
+ 
+QListViewItem * EditorView::getItem ( const QString & keyName ) const
+{
+	//cout << "getting " << keyName << endl;
+	QListViewItem *parent = keyTree->firstChild ( );
+	
+	QString match;
+	
+	if ( !keyName.contains ( RG_KEY_DELIM ) )
+	{
+		//cout << "ah roooot " << parent->text ( 0 ) << " searching for " << keyName << endl;
+		while ( parent->text ( 0 ) != keyName )
+		{
+			parent = parent->nextSibling ( );
+		}
+		return parent;
+	}
+	
+	for ( int i = 0; i < keyName.contains ( RG_KEY_DELIM ) + 1; i++)
+	{
+		if ( !parent )
+		{
+			cout  << "getItem: parent is null wrong input: "  << keyName << endl;
+			return 0;
+		}
+		while ( parent->text ( 0 ) != keyName.section ( RG_KEY_DELIM, i, i ) )
+			parent = parent->nextSibling ( );
+		if ( keyName.contains ( RG_KEY_DELIM )  == i ) 
+			break;
+		//cout << parent->text ( 0 ) << "/";
+		parent = parent->firstChild ( );
+	}
+	//cout << endl;
+	QListViewItem * item = parent;
+	
+	if ( item == 0 )
+		cout << "getItem ( " << keyName << " ) null" << endl;
+	
+	return item;
+}
 
 void EditorView::closeEvent ( QCloseEvent * e )
 {
@@ -281,6 +379,32 @@ void EditorView::saveState ( )
 	kdbSetValueByParent ( guiKeyPrefix , "y", QString ( ).setNum ( y ( ) ) );
 	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "left", QString ( ).setNum ( splitter->sizes()[0]) );
 	kdbSetValueByParent ( guiKeyPrefix + "splitter/", "right", QString ( ).setNum ( splitter->sizes()[1]) );
+
+	int i = 0;
+	
+	QValueList<QString>::iterator it = openedKeys.begin ( );
+	
+	KeySet *toDel = ksNew ( );
+	
+	kdbGetChildKeys ( guiKeyPrefix + "openedKeys/", toDel, KDB_O_RECURSIVE );
+	ksRewind ( toDel );
+	
+	::Key *key = ksNext ( toDel );
+	
+	while ( key )
+	{
+		kdbRemove ( key->key );
+		key = ksNext ( toDel );
+	}
+	
+	//kdbGetChild
+	
+	while ( it != openedKeys.end ( ) )
+	{
+		kdbSetValueByParent ( guiKeyPrefix + "openedKeys/", QString ( ).setNum ( i ), *it );
+		i++;
+		it++;
+	}
 }
 
 void EditorView::restoreState ( )
@@ -314,4 +438,46 @@ void EditorView::restoreState ( )
 	
 	move ( vx, vy );
 	resize ( vwidth, vheight );
+	
+	openedKeys.clear ( );
+	
+	KeySet *opened = ksNew ( );
+	kdbGetChildKeys ( guiKeyPrefix + "openedKeys", opened, KDB_O_RECURSIVE );
+	
+	for ( size_t i = 0; i < ksGetSize ( opened ); i++)
+	{
+		kdbGetValueByParent ( guiKeyPrefix + "openedKeys", QString ( ).setNum ( i ), buf, 300 );
+		//cout << "pushing back " << buf << endl;
+		openedKeys.push_back ( buf );
+	}
+	ksDel ( opened );
+}
+
+void EditorView::addItem ( QListViewItem *item, ::Key *child, bool dummy )
+{
+	int bnlength = keyGetBaseNameSize ( child );
+	char baseName[bnlength];
+	keyGetBaseName ( child, baseName, bnlength );
+
+	QListViewItem *childItem = new QListViewItem ( item, baseName );
+	//childItem->setName ( child->key );
+	childItem->setPixmap ( 0,  KeyMetaInfo::getIcon ( child ) );
+	
+	if ( dummy )
+	{
+		QListViewItem *dummy = new QListViewItem ( childItem, "dummy" );
+		childItem->insertItem ( dummy );
+	}
+}
+
+const QString EditorView::selectedKey ( )
+{
+	return keyName ( keyTree->currentItem ( ) );
+}
+
+void EditorView::removeItem ( QListViewItem *item )
+{
+	if ( openedKeys.contains ( keyName ( item ) ) )
+		openedKeys.remove ( keyName ( item ) );
+	delete item;
 }
