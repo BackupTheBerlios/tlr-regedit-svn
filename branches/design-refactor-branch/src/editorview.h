@@ -22,21 +22,19 @@
 
 #include <qvaluelist.h>
 
-#include "observable.h"
-#include "iobserver.h"
 #include "editorviewui.h"
 
 class EditorController;
 
-class EditorView : public EditorViewUI, public IObserver
+class EditorView : public EditorViewUI
 {
-	
+	Q_OBJECT
 	public:
 		EditorView ( EditorController * controller );
 		void saveState ( );
 		void restoreState ( );
 	public slots:
-		void update ( const Observable * subject );
+		void update (  );
 		
 	signals:
 		void keySelected ( const QString &key );
@@ -44,7 +42,7 @@ class EditorView : public EditorViewUI, public IObserver
 	private slots:
 		void openKeyDir ( QListViewItem *item );
 		void closeKeyDir ( QListViewItem *item );
-		void propagetKeyChange ( QListViewItem *item );
+		void propagteKeyChange ( QListViewItem *item );
 		
 	private:
 		QString keyName ( const QListViewItem &item ) const;

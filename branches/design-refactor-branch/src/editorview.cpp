@@ -22,6 +22,7 @@
 #include "keymetainfo.h"
 
 #include <iostream>
+using namespace std;
 
 #include <qlistview.h>
 
@@ -34,10 +35,14 @@ EditorView::EditorView ( EditorController *econtroller )
 	: EditorViewUI ( 0, "the editor view", WType_TopLevel ), controller ( econtroller )
 {
 	updateKeyTree ( true );
+	
+	EditorViewUI::connect (keyTree, SIGNAL ( expanded ( QListViewItem * ) ), this, SLOT ( openKeyDir ( QListViewItem * ) ) );
+	EditorViewUI::connect (keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), this, SLOT ( closeKeyDir ( QListViewItem * ) ) );
+	
 	show();
 }
 
-void EditorView::update ( const Observable *subject )
+void EditorView::update (  )
 {
 	std::cout << "update" << std::endl;
 }
@@ -73,5 +78,25 @@ void EditorView::updateKeyTree ( bool firstTime )
 			k = ksNext ( roots );
 		}
 	}
+	//TODO run through the openedKey list and add QListViewItems
+}
+
+void EditorView::openKeyDir ( QListViewItem *item )
+{
+	if ( item->firstChild ( ) -> text ( 0 ) == "dummy" )
+		delete item->firstChild ( );
+	else
+		cout << "implementation error no dummy found" << endl;
+	
+	//TODO implement
+}
+
+void EditorView::closeKeyDir ( QListViewItem *item )
+{
+	//TODO implement
+}
+
+void EditorView::propagteKeyChange ( QListViewItem *item )
+{
 
 }

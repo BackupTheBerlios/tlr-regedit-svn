@@ -22,9 +22,8 @@
 #include "qapplication.h"
 
 EditorController::EditorController ( )
-	: Observable ( 0, "controller of the editor" )
 {
 	view = new EditorView ( this );
 	qApp->setMainWidget ( view );
-	add ( view );
+	connect ( this, SIGNAL ( notifiyView () ), view, SLOT ( update ( ) ) );
 }

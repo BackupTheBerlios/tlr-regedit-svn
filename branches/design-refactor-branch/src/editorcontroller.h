@@ -19,8 +19,8 @@
  
 #ifndef EDITORCONTROLLER_H
 #define EDITORCONTROLLER_H
- 
-#include "observable.h"
+
+#include <qobject.h>
 
 extern "C"
 {
@@ -29,16 +29,19 @@ extern "C"
 
 class EditorView;
 
-class EditorController : Observable
+class EditorController : public QObject
 {
 	Q_OBJECT
 	
-	public:
-		EditorController ( );
-		QString currentKey() const;
-	
-	private:
-		EditorView *view;
+public:
+	EditorController ( );
+	QString currentKey() const;
+
+signals:
+	void notifyView();
+
+private:
+	EditorView *view;
 };
 
 #endif
