@@ -35,11 +35,17 @@ Q_OBJECT
 
 public:
 	MainWindowImpl(QWidget *parent = 0, const char *name = 0, WFlags f = WType_TopLevel);
+	QAction *getUndoAction();
+	QAction *getRedoAction();
+	QAction *getReloadAction();
+	QAction *getDeleteAction();
+	QAction *getNewKeyAction();
 
 public slots:
 	void updateActions();
 
 private:
+	void makeActions();
 	void setUpGui();
 	void closeEvent(QCloseEvent *e);
 	MainWidgetImpl *mainWidget;

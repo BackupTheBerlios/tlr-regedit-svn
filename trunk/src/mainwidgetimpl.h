@@ -32,6 +32,7 @@ extern "C"
 #include "command.h"
 #include <qpoint.h>
 #include <qpixmap.h>
+#include <qpopupmenu.h>
 #include <qptrstack.h>
 
 #define COMBO_POS_UND 0
@@ -73,6 +74,7 @@ private:
 	void setWidgetsEnabled(bool enabled);
 	void pushUndo(Command *cmd);
 	
+	QPopupMenu keyPopupMenu;
 	bool ignoreTextChanges;
 	::Key *selected;
 	mode_t selectedAccess;	

@@ -107,6 +107,8 @@ void MainWidgetImpl::setUpGui()
 		if (binaryIcon.isNull())
 			cout << "icon is null" << endl;
 	}
+	parent->getNewKeyAction()->addTo(&keyPopupMenu);
+	parent->getDeleteAction()->addTo(&keyPopupMenu);
 }
 
 /*QListView *MainWidgetImpl::getKeyTree()
@@ -461,7 +463,7 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
-	item->parent();
+	/*item->parent();
 	b = 0;	//suppress warnings
 	
 	
@@ -507,7 +509,8 @@ void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 		pop->insertItem("copy Value to Clipboard", this, SLOT(copyValueToClipboard()));
 	
 	pop->exec(p);
-	keyClose(&key);
+	keyClose(&key);*/
+	keyPopupMenu.exec(p);
 }
 
 /**
