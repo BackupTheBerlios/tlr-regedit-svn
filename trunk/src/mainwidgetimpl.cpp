@@ -417,10 +417,21 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	if (!item)
 	{
+		cout << " item null " << endl;
+		selected = 0;
+		selectedAccess = 0;
 		emit keyChanged();
 		return;
 	}
 	
+	if (!item->isVisible())
+	{
+		cout << " item not visible " << endl;
+		selected = 0;
+		selectedAccess = 0;
+		emit keyChanged();
+		return;
+ 	}
 	
 	selected = strdup(getKeyNameFromItem(item));
 	
