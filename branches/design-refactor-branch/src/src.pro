@@ -8,8 +8,10 @@ kdbe.files += kdbe
 kdbe.path = /usr/bin/ 
 FORMS += editorviewui.ui \
          newkeywizardui.ui \
-         keycommentui.ui 
-IDLS += keycommentui.ui 
+         keycommentui.ui \
+         usergroupdialogui.ui \
+         permissiondialogui.ui 
+IDLS += permissiondialogui.ui 
 HEADERS += editorview.h \
            editorcontroller.h \
            keymetainfo.h \
@@ -18,7 +20,9 @@ HEADERS += editorview.h \
            keyaddcommand.h \
            keymodifycommand.h \
            keyremovecommand.h \
-           keycomment.h 
+           keycomment.h \
+           usergroupdialog.h \
+           permissiondialog.h 
 SOURCES += main.cpp \
            editorview.cpp \
            editorcontroller.cpp \
@@ -28,7 +32,9 @@ SOURCES += main.cpp \
            keyaddcommand.cpp \
            keymodifycommand.cpp \
            keyremovecommand.cpp \
-           keycomment.cpp 
+           keycomment.cpp \
+           usergroupdialog.cpp \
+           permissiondialog.cpp 
 LIBS += $$system(pkg-config --libs elektra) -lmagic -L./xdgmime/ -lxdgmime
 TARGET = kdbe
 CONFIG += debug \

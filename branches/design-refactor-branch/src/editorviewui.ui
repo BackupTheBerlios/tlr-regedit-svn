@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>543</width>
-            <height>475</height>
+            <width>614</width>
+            <height>534</height>
         </rect>
     </property>
     <property name="caption">
@@ -57,6 +57,9 @@
                 </property>
                 <property name="rootIsDecorated">
                     <bool>true</bool>
+                </property>
+                <property name="treeStepSize">
+                    <number>14</number>
                 </property>
             </widget>
             <widget class="QLayoutWidget">
@@ -519,7 +522,7 @@
                                     </widget>
                                     <widget class="QPushButton" row="2" column="2">
                                         <property name="name">
-                                            <cstring>editButton</cstring>
+                                            <cstring>editAccessButton</cstring>
                                         </property>
                                         <property name="text">
                                             <string>&amp;Edit</string>
@@ -528,12 +531,42 @@
                                             <string>Alt+E</string>
                                         </property>
                                     </widget>
+                                    <widget class="QPushButton" row="0" column="2">
+                                        <property name="name">
+                                            <cstring>setUserButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Set</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton" row="1" column="2">
+                                        <property name="name">
+                                            <cstring>setGroupButton</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Set</string>
+                                        </property>
+                                    </widget>
                                 </grid>
                             </widget>
                         </hbox>
                     </widget>
                 </vbox>
             </widget>
+        </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">

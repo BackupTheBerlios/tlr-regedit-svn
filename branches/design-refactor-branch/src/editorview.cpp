@@ -37,9 +37,13 @@ using namespace std;
 #include <qaction.h>
 #include <qdatetime.h>
 #include <qpopupmenu.h>
+#include <qtimer.h>
+#include <qtextedit.h>
 
 //#include <magic.h>
 #include "xdgmime/xdgmime.h"
+#include "usergroupdialog.h"
+#include "permissiondialog.h"
 
 extern "C"
 {
@@ -57,6 +61,10 @@ EditorView::EditorView ( EditorController *econtroller )
 		SLOT ( showPopupMenu( QListViewItem *, const QPoint &, int ) ) );
 	
 	connect ( reloadAction, SIGNAL ( activated ( ) ), SLOT ( updateKeyTree ( ) ) );
+	
+	connect ( setUserButton, SIGNAL ( clicked ( ) ), SLOT ( setUser ( ) ) );
+	connect ( setGroupButton, SIGNAL ( clicked ( ) ), SLOT ( setGroup ( ) ) );
+	connect ( editAccessButton, SIGNAL ( clicked ( ) ), SLOT ( setAccess ( ) ) );
 
 	popupMenu = new QPopupMenu ( this, "right click menu" );
 	
@@ -77,16 +85,32 @@ void EditorView::update ( ::Key *current  )
 	else
 		lockGui ( true );
 	
+	//TODO fast hack should go into lockGui ( ) with lockGui ( ::Key *key );
+	if ( keyGetType ( current ) == KEY_TYPE_DIR )
+	{
+		keyComment->setEnabled ( false );
+		keyValue->setEnabled ( false );
+	}
+	else
+	{
+		keyComment->setEnabled ( true );
+		keyValue->setEnabled ( true );
+	}
+		
 	clearGui ( );
 	
 	if ( KeyMetaInfo::canRead ( current ) ) 
 		showKey ( current );
 		
 	updateActions ( current );
+	keyUID = keyGetUID ( current );
+	keyGID = keyGetGID ( current );
+	keyAccess = keyGetAccess ( current );
 }
 
 void EditorView::clearGui ( )
 {
+	//cout << "clearing gui" << endl;
 	radioUndefined->setChecked ( true );
 	keyNam->clear ( );
 	keyValue->clear ( );
@@ -105,7 +129,9 @@ void EditorView::lockGui ( bool lock )
 {
 	keyValue->setReadOnly ( !lock );
 	keyComment->setReadOnly ( !lock );
-	editButton->setEnabled ( lock );
+	editAccessButton->setEnabled ( lock );
+	setGroupButton->setEnabled ( lock );
+	setUserButton->setEnabled ( lock );
 }
 
 void EditorView::updateActions ( const ::Key *current )
@@ -114,6 +140,7 @@ void EditorView::updateActions ( const ::Key *current )
 	{
 		newAction->setEnabled ( false );
 		deleteAction->setEnabled ( false );
+		//lockGui ( false );
 		return;
 	}
 	
@@ -121,12 +148,16 @@ void EditorView::updateActions ( const ::Key *current )
 	{
 		newAction->setEnabled ( false );
 		deleteAction->setEnabled ( false );
+		//lockGui ( true );
 	}
 	else
 	{
+		//lockGui ( false );
 		deleteAction->setEnabled ( true );
 		if ( keyGetType ( current ) == KEY_TYPE_DIR )
 			newAction->setEnabled ( true );
+		else
+			newAction->setEnabled ( false );
 	}
 }
 
@@ -236,10 +267,22 @@ void EditorView::updateKeyTree ( )
 	}
 }
 
+
+
 void EditorView::openKeyDir ( QListViewItem *item )
 {
 	if ( openedKeys.contains ( keyName ( item ) ) ) //allready opened
+	{	
+		cout << "key allready opened" << endl;
 		return;
+	}
+	
+	/*if ( closedKeys.contains ( keyName ( item ) ) )
+	{
+		cout << "key allready opened" << endl;
+		openedKeys.push_back ( keyName ( item ) );
+		return; 
+	}*/
 	
 	if ( item->firstChild ( ) )
 	{
@@ -286,6 +329,8 @@ void EditorView::openKeyDir ( QListViewItem *item )
 
 void EditorView::closeKeyDir ( QListViewItem * item )
 {
+	//closedKeys.push_back ( keyName ( item ) );
+	
 	QListViewItem *parent = item->parent ( );
 	
 	::Key *key = keyNew ( keyName ( item ), KEY_SWITCH_END );
@@ -308,7 +353,7 @@ void EditorView::closeKeyDir ( QListViewItem * item )
 		{
 			if ( keyGetType ( temp ) == KEY_TYPE_DIR )
 			{
-				cout << "removing key: " << temp->key << endl;
+				//cout << "removing key: " << temp->key << endl;
 				openedKeys.remove( temp->key );
 			}
 			temp = ksNext( ks );
@@ -322,8 +367,11 @@ void EditorView::closeKeyDir ( QListViewItem * item )
 		keyTree->setCurrentItem ( parent );
 	else
 		keyTree->setCurrentItem ( 0 );
+
+	toDel = item;
 	
-	delete item;
+	//found this hack against segfaulting in qt documentation
+	QTimer::singleShot( 1, this, SLOT ( delItemLater ( ) ) );
 	
 	if ( KeyMetaInfo::isRoot ( key ) )
 		addRootItem ( key );
@@ -333,6 +381,41 @@ void EditorView::closeKeyDir ( QListViewItem * item )
 	
 		
 	keyDel ( key );
+	
+}
+
+void EditorView::setUser ( )
+{
+	UserGroupDialog dlg ( UserGroupDialog::User, this, "change user dialog" );
+	
+	if ( dlg.exec ( ) == QDialog::Accepted )
+	{
+		keyUID = dlg.getUID ( );
+		userID->setText ( dlg.getUser ( ) );
+	}
+}
+
+void EditorView::setGroup ( )
+{
+	UserGroupDialog dlg ( UserGroupDialog::Group, this, "change group dialog" );
+	
+	if ( dlg.exec ( ) == QDialog::Accepted )
+	{
+		keyGID = dlg.getGID ( );
+		groupID->setText ( dlg.getGroup ( ) );
+	}
+}
+
+void EditorView::setAccess ( )
+{
+	PermissionDialog dlg ( keyAccess, this, "change permission dialog" );
+	
+	if ( dlg.exec ( ) == QDialog::Accepted )
+	{
+		keyAccess = dlg.getAccess ( );
+		permission->setText ( KeyMetaInfo::getAccess ( keyAccess ) );
+		
+	}
 }
 
 void EditorView::propagateKeyChange ( QListViewItem *item )
@@ -401,6 +484,37 @@ QListViewItem * EditorView::getItem ( const QString & keyName )
 		cout << "getItem ( " << keyName << " ) null" << endl;
 	
 	return item;
+}
+
+QString EditorView::getKeyStringValue ( )
+{
+	return keyValue->text ( );
+}
+
+QByteArray EditorView::getKeyBinaryValue ( )
+{
+	cout << "unimplemented" << endl;
+	return QByteArray ( );
+}
+
+QString EditorView::getKeyComment ( )
+{
+	return keyComment->text ( );
+}
+
+uid_t EditorView::getKeyOwner ( )
+{
+	return keyUID;
+}
+
+gid_t EditorView::getKeyGroup ( )
+{
+	return keyGID;
+}
+
+mode_t EditorView::getKeyAccess ( )
+{
+	return keyAccess;
 }
 
 void EditorView::closeEvent ( QCloseEvent * e )
@@ -550,4 +664,12 @@ void EditorView::removeItem ( QListViewItem *item )
 	if ( openedKeys.contains ( keyName ( item ) ) )
 		openedKeys.remove ( keyName ( item ) );
 	delete item;
+}
+
+void EditorView::delItemLater ( )
+{
+	if ( toDel )
+		delete toDel;
+	else
+		cout << "already delted" << endl;
 }

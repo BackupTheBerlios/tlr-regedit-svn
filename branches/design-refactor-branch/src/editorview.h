@@ -45,10 +45,22 @@ class EditorView : public EditorViewUI
 		void removeItem ( QListViewItem *item );
 		const QString selectedKey ( );
 		QListViewItem *getItem ( const QString & key );
+		QString keyName ( const QListViewItem *item ) const;
+		
+		QString getKeyStringValue ( );
+		QByteArray getKeyBinaryValue ( );
+		QString getKeyComment ( );
+		uid_t getKeyOwner ( );
+		gid_t getKeyGroup ( );
+		mode_t getKeyAccess ( );
 		
 	public slots:
 		void update ( ::Key * current );
 		void openKeyDir ( QListViewItem *item );
+		
+		void setUser ( );
+		void setGroup ( );
+		void setAccess ( );
 		
 	signals:
 		void keySelected ( const QString &key );
@@ -58,20 +70,27 @@ class EditorView : public EditorViewUI
 		void updateKeyTree (  );
 		void propagateKeyChange ( QListViewItem *item );
 		void closeKeyDir ( QListViewItem *item );
+		void delItemLater ( );
 		
 	private:
 		void showKey ( ::Key *key );
 		void clearGui ( );
 		void lockGui ( bool lock );
 		void updateActions ( const ::Key *current );
-		QString keyName ( const QListViewItem *item ) const;
+		
 		
 		void closeEvent ( QCloseEvent * e );
 		
 	private:
  		EditorController *controller;
+		QListViewItem *toDel;
 		QValueList<QString> openedKeys;
+		//QValueList<QString> closedKeys;	//keys witch are loaded but the item is closed
 		QPopupMenu *popupMenu;
+
+		uid_t keyUID;
+		gid_t keyGID;
+		mode_t keyAccess;
 };
  
 #endif

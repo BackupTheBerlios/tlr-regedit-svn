@@ -35,7 +35,7 @@ class KeyModifyCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyModifyCommand ( EditorController *con, KeySet *ks, const char *name );
+    KeyModifyCommand ( EditorController *con, KeySet *ks, KeySet *, const char *name );
     ~KeyModifyCommand();
     
 public slots:
@@ -43,11 +43,7 @@ public slots:
 	virtual bool unexecute();
 
 private:
-	::Key *oldKey;
-	::Key *newKey;
-	QPixmap *oldIcon;
-	QPixmap *newIcon;
-	QListViewItem *item;
+	KeySet *oldKeys;
 };
 
 #endif

@@ -30,6 +30,7 @@ extern "C"
 }
 
 class EditorView;
+class QListViewItem;
 
 class EditorController : public QObject
 {
@@ -51,19 +52,38 @@ public slots:
 	
 	void undo ( );
 	void redo ( );
+	
+	void keyFieldChanged ( );
+	void keyFieldChanged ( const QString & );
+	void keyNameChanged ( QListViewItem *item, int column, const QString & newName );
+	
+	void revokeChangedKeys ( );	//called by Button revoke -> delete changedKeys and do nothing
+	//void applyChangedKeys ( );	//called by Button apply -> store all keys in changedKeys
 
 signals:
 	void notifyView( ::Key *current );
 	
 private:
 	void addCommand ( Command * );
-	void delRecursive ( ::Key *key );
 
 private:
 	::Key *_current;
 	EditorView *view;
 	QPtrStack<Command> undoStack;
 	QPtrStack<Command> redoStack;
+	bool ignoreChanges;
+	
+	//the values which were changed in the key
+	KeySet *changedKeys;
+	KeySet *oldKeys;
+	
+	QString keyComment;
+	QString keyName;
+	QString stringKeyValue;
+	QByteArray binaryKeyValue;	//good idea how to implement binary key value changin?
+	uid_t keyUser;
+	gid_t keyGroup;
+	mode_t keyAccess;
 };
 
 #endif

@@ -18,6 +18,8 @@
  */
 
 #include "keymodifycommand.h"
+#include "editorcontroller.h"
+#include "editorview.h"
 
 #include <qlistview.h>
 #include <qpixmap.h>
@@ -28,26 +30,63 @@
 #include <iostream>
 using namespace std;
 
-KeyModifyCommand::KeyModifyCommand ( EditorController *con, KeySet *ks, const char *name )
- : Command ( con, ks, name )
+KeyModifyCommand::KeyModifyCommand ( EditorController *con, KeySet *newKeys, KeySet *_oldKeys, const char *name )
+ : Command ( con, newKeys, name )
 {
+	ksRewind ( _oldKeys );
+	::Key *walker = ksNext ( _oldKeys );
+	oldKeys = ksNew ( );
 	
+	while ( walker )
+	{
+		::Key *key = keyNew ( walker->key, KEY_SWITCH_END );
+		keyDup ( walker, key );
+		ksAppend ( oldKeys, key );
+		walker = ksNext ( _oldKeys ); 
+	}
 }
 
 
 KeyModifyCommand::~KeyModifyCommand()
 {
-	
+	cout << "before delete" << endl;
+	ksDel ( oldKeys );
+	cout << "after delete" << endl;
 }
 
 bool KeyModifyCommand::execute()
 {
+	ksRewind ( subject ( ) );
 	
+	cout << "setting " << ksGetSize ( subject ( ) ) << " keys " << endl;
+
+	::Key *key = ksNext ( subject ( ) );
+	
+	while ( key ) 
+	{
+		cout << "set key " << key->key << endl;
+		kdbSetKey ( key );
+		key = ksNext ( subject ( ) );
+	}
 }
 
 bool KeyModifyCommand::unexecute()
 {
+	char buf [300];
+	char name [600];
+	ksRewind ( oldKeys );
+	::Key *key = ksNext ( oldKeys );
 	
+	while ( key ) 
+	{
+		keyGetBaseName ( key, buf, 300 );
+		keyGetName ( key, name, 600 );
+		QString oldName ( buf );
+		kdbSetKey ( key );
+		keyGetBaseName ( key, buf, 300 );
+		controller ( )->getView ( )->getItem( name )->setText ( 0, buf );
+		key = ksNext ( oldKeys );
+	}
 }
 
 

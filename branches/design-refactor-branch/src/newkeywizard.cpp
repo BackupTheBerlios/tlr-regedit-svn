@@ -109,19 +109,21 @@ void NewKeyWizard::switchToNextPage ( )
 			char buf [ file.size ( ) ];
 			Q_LONG bread = file.readBlock ( buf, file.size ( ) );
 			cout << "read " << bread << " bytes" << endl;
-			if ( file.readAll ( ).size ( ) == file.size ( ) )
+			if ( bread == file.size ( ) )
 				cout << "file size is: " << file.size ( ) << endl;
-			if ( file.readAll ( ).data ( ) == 0 )
+			if ( bread == 0 )
 				cout << "shit happens" << endl;
+			int drei = 3;
+			int *pdrei = &drei;
 			::Key *temp = keyNew ( QString ( parent->key ) + "/" + binaryKeyName->text ( ),
-				/*KEY_SWITCH_TYPE, KEY_TYPE_BINARY, file.size ( ),
-				KEY_SWITCH_VALUE, buf,*/
+				KEY_SWITCH_TYPE, KEY_TYPE_BINARY, bread, 
+				KEY_SWITCH_VALUE, (void *) buf,
 				KEY_SWITCH_END );
 				
 			
-			keySetRaw ( temp, file.readAll ( ).data ( ), file.readAll ( ).size ( ) );
+			//keySetRaw ( temp, file.readAll ( ).data ( ), file.readAll ( ).size ( ) );
 			keySetType ( temp, KEY_TYPE_BINARY );
-			cout << keyGetValueSize ( temp ) << endl;
+			cout << keyGetDataSize ( temp ) << endl;
 			ksAppend ( newKeys, temp );
 		}
 		
