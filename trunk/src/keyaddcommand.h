@@ -22,20 +22,25 @@ extern "C"
 /**
 @author Gregor Burger
 */
+class QListViewItem;
+class NewKeyDialogImpl;
+
 class KeyAddCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyAddCommand(::Key *key, MainWidgetImpl *mainWidget, const char *name = 0);
+    KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidget, const char *name = 0);
 
     ~KeyAddCommand();
     
 public slots:
-	virtual void execute();
-	virtual void unexecute();
+	virtual bool execute();
+	virtual bool unexecute();
 	
 private:
-	::Key *addedKey;
+	::Key *key;
+	NewKeyDialogImpl *newDialog;
+	QListViewItem *item;
 };
 
 #endif

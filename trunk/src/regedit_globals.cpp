@@ -58,16 +58,17 @@ QString getIconDir()
 }
 
 
-bool checkForPermission(int access, mode_t mode, uid_t user, gid_t group)
+bool checkForPermission(enum access mode, ::Key *key)
 {
+	uid_t keyOwner = keyGetUID(key);
 	uid_t uid = getuid();
 	size_t ng = getgroups(0, 0);
 	gid_t groups[ng];
 	
-	if (user == 0)
+	if (uid == 0)
 		return true;
 	
-	if (mode & access)
+	/*if (mode & access)
 	{
 		if (user == uid)
 			return true;
@@ -80,7 +81,7 @@ bool checkForPermission(int access, mode_t mode, uid_t user, gid_t group)
 			if (group == groups[i])
 				return true;
 		}
-	}
+	}*/
 	
 	return false;
 }

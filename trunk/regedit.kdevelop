@@ -11,7 +11,7 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <ignoreparts/>
     <secondaryLanguages/>
   </general>
@@ -76,12 +76,12 @@
   </kdevdoctreeview>
   <kdevdebugger>
     <general>
-      <dbgshell/>
-      <programargs/>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <dbgshell></dbgshell>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -102,22 +102,22 @@
   </kdevfilecreate>
   <kdevtrollproject>
     <general>
-      <activedir></activedir>
+      <activedir>src</activedir>
     </general>
     <run>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
       <mainprogram>src/regedit</mainprogram>
-      <programargs/>
+      <programargs></programargs>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
       <envvars/>
     </run>
     <make>
-      <abortonerror>false</abortonerror>
-      <numberofjobs>1</numberofjobs>
+      <abortonerror>true</abortonerror>
+      <numberofjobs>2</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
       <envvars/>
       <prio>0</prio>
     </make>
@@ -144,6 +144,14 @@
     </codecompletion>
     <references>
       <pcs>Qt</pcs>
+      <pcs>reg</pcs>
     </references>
   </kdevcppsupport>
+  <kdevdocumentation>
+    <projectdoc>
+      <docsystem></docsystem>
+      <docurl></docurl>
+      <usermanualurl></usermanualurl>
+    </projectdoc>
+  </kdevdocumentation>
 </kdevelop>

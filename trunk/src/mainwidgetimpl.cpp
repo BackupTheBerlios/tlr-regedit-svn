@@ -63,6 +63,14 @@ using namespace std;
 MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl) 
 	: MainWidget(parent, name, fl), ignoreTextChanges(false), selected(0), selectedAccess(0), parent( (MainWindowImpl *) parentWidget())
 {
+	types = new int[5];
+	types[0] = RG_KEY_TYPE_UNDEFINED;
+	types[1] = RG_KEY_TYPE_LINK;
+	types[2] = RG_KEY_TYPE_STRING;
+	types[3] = RG_KEY_TYPE_BINARY;
+	types[4] = RG_KEY_TYPE_DIR;
+	int *t;
+	t = new int[4];
 	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
 	
 	undoStack.setAutoDelete(false);
@@ -246,7 +254,7 @@ void MainWidgetImpl::showKeyValues(bool update)
 	
 	
 	if (!update)
-		parent->statusBar()->clear();
+		showInStatusBar(QString(""));
 	
 	char *buffer;
 	
@@ -260,7 +268,7 @@ void MainWidgetImpl::showKeyValues(bool update)
 	
 	if (selected == 0)
 	{
-		parent->statusBar()->message("permission denied");
+		showInStatusBar(strerror(errno));
 		setWidgetsEnabled(false);
 		return;
 	}
@@ -420,7 +428,7 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	if (registryGetKey(selected))
 	{
-		parent->statusBar()->message(strerror(errno));
+		showInStatusBar(strerror(errno));
 		delete selected;
 		selected = 0;
 		selectedAccess = 0;
@@ -463,53 +471,7 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
-	/*item->parent();
-	b = 0;	//suppress warnings
-	
-	
-	if (selected == 0)
-		return;
-	
-	QPopupMenu *pop = new QPopupMenu(this, "key righclick popupmenu");
-	
-	::Key key;
-	
-	char *name = strdup(selected->key);
-	
-	keyInit(&key);
-	keySetName(&key, name);
-	
-	registryGetKey(&key);
-	
-	if (keyGetType(&key) == RG_KEY_TYPE_DIR)
-	{
-		pop->insertItem("new Key", this, SLOT(addNewKey()), CTRL+Key_N);
-		pop->insertItem("new Directory", this, SLOT(addNewDir()), CTRL+Key_D);
-		
-		KeySet ks;
-		
-		ksInit(&ks);
-		
-		registryGetChildKeys(name, &ks, RG_O_DIR);
-		
-		if (ks.size < 1)
-			pop->insertItem("delete Directory", this, SLOT(deleteKey()), CTRL+Key_E);
-			
-		ksClose(&ks);
-	}
-	else
-	{
-		pop->insertItem("delete Key", this, SLOT(deleteKey()), CTRL+Key_E);
-	}
-	
-	pop->insertSeparator();
-	pop->insertItem("copy Name to Clipboard", this, SLOT(copyNameToClipboard()));
-	
-	if (keyGetType(&key) != RG_KEY_TYPE_DIR)
-		pop->insertItem("copy Value to Clipboard", this, SLOT(copyValueToClipboard()));
-	
-	pop->exec(p);
-	keyClose(&key);*/
+	cout << "right click menu on item: " << getKeyNameFromItem(keyTree->currentItem()) << endl;
 	keyPopupMenu.exec(p);
 }
 
@@ -530,80 +492,6 @@ void MainWidgetImpl::revokeChanges()
  */
 void MainWidgetImpl::applyChanges()
 {
-	/*registryOpen();
-	::Key oldKey;
-	QString qsoldName = getKeyNameFromItem(keyTree->currentItem());
-	char *oldName;
-
-	keyInit(&oldKey);
-	
-	oldName = strdup(qsoldName);
-	
-	keySetName(&oldKey, oldName);	
-	
-	registryGetKey(&oldKey);keyAttributesChanged("");
-	
-	char *comment = strdup(keyComment->text());
-	keySetComment(&oldKey, comment);
-	
-	char *value = strdup(keyValue->text());
-	keySetString(&oldKey, value);
-	
-	
-	switch (typeCombo->currentItem())
-	{
-		case COMBO_POS_UND:
-			keySetType(&oldKey, RG_KEY_TYPE_UNDEFINED);
-			//keyTree->currentItem()->setPixmap(0, undefinedIcon);
-			break;
-		case COMBO_POS_DIR:
-			keySetType(&oldKey, RG_KEY_TYPE_DIR);
-			//keyTree->currentItem()->setPixmap(0, dirIcon);
-			break;
-		case COMBO_POS_LNK:
-			keySetType(&oldKey, RG_KEY_TYPE_LINK);
-			//keyTree->currentItem()->setPixmap(0, linkOverlay);
-			break;
-		case COMBO_POS_STR:
-			keySetType(&oldKey, RG_KEY_TYPE_STRING);
-			//keyTree->currentItem()->setPixmap(0, stringIcon);
-			break;
-		case COMBO_POS_BIN:
-			keySetType(&oldKey, RG_KEY_TYPE_BINARY);
-			//keyTree->currentItem()->setPixmap(0, binaryIcon);
-			break;keyAttributesChanged("");showKeyValues();
-	}
-	
-	int ret = registrySetKey(&oldKey);
-	
-	if (ret)
-	{
-		parent->statusBar()->message(strerror(errno));
-		showKeyValues(true);
-	}
-	else
-	{	
-		switch (typeCombo->currentItem())
-		{
-			case COMBO_POS_UND:
-				//keyTree->currentItem()->setPixmap(0, undefinedIcon);
-				break;
-			case COMBO_POS_DIR:
-				keyTree->currentItem()->setPixmap(0, dirIcon);
-				break;
-			case COMBO_POS_LNK:
-				keyTree->currentItem()->setPixmap(0, linkOverlay);
-				break;
-			case COMBO_POS_STR:
-				keyTree->currentItem()->setPixmap(0, stringIcon);
-				break;
-			case COMBO_POS_BIN:
-				keyTree->currentItem()->setPixmap(0, binaryIcon);
-				break;
-		}
-	}
-	
-	keyClose(&oldKey);*/
 	
 	registryOpen();
 	
@@ -623,35 +511,13 @@ void MainWidgetImpl::applyChanges()
 	
 	keySetAccess(selected, selectedAccess);
 	
-	switch (typeCombo->currentItem())
-	{
-		case COMBO_POS_UND:
-			keySetType(selected, RG_KEY_TYPE_UNDEFINED);
-			//keyTree->currentItem()->setPixmap(0, undefinedIcon);
-			break;
-		case COMBO_POS_DIR:
-			keySetType(selected, RG_KEY_TYPE_DIR);
-			//keyTree->currentItem()->setPixmap(0, dirIcon);
-			break;
-		case COMBO_POS_LNK:
-			keySetType(selected, RG_KEY_TYPE_LINK);
-			//keyTree->currentItem()->setPixmap(0, linkOverlay);
-			break;
-		case COMBO_POS_STR:
-			keySetType(selected, RG_KEY_TYPE_STRING);
-			//keyTree->currentItem()->setPixmap(0, stringIcon);
-			break;
-		case COMBO_POS_BIN:
-			keySetType(selected, RG_KEY_TYPE_BINARY);
-			//keyTree->currentItem()->setPixmap(0, binaryIcon);
-			break;//keyAttributesChanged("");
-	}
+	keySetType(selected, types[typeCombo->currentItem()]);
 	
 	int ret = registrySetKey(selected);
 	
 	if (ret)
 	{
-		parent->statusBar()->message(strerror(errno));
+		showInStatusBar(strerror(errno));
 		showKeyValues(true);
 	}
 	else
@@ -746,72 +612,29 @@ void MainWidgetImpl::keyTypeChanged(int id)
  */
 void MainWidgetImpl::deleteKey()
 {
-	QString name = getKeyNameFromItem(keyTree->currentItem());
-	registryOpen();
+	if (!selected)
+		return;
 	
-	char *ncname = strdup(name);
-	
-	// delete semi disabled 
-	int ret = registryRemove(ncname);
-	if (ret)
-		perror("removing key failed");
-	delete keyTree->currentItem();
-	
-	registryClose();
+	KeyRemoveCommand *cmd = new KeyRemoveCommand(this, QString("remove command: ") + selected->key);
+	cmd->execute();
+	pushUndo(cmd);
+	clearRedoStack();
+	emit keyChanged();
 }
 
 void MainWidgetImpl::addNewKey()
 {
+	if (!selected)
+		return;
+		
 	NewKeyDialogImpl *newDialog = new NewKeyDialogImpl(getKeyNameFromItem(keyTree->currentItem()), this);
 	if (newDialog->exec())
 	{
-		registryOpen();
-		
-		::Key key;
-		keyInit(&key);
-		
-		keySetType(&key, newDialog->getType());
-		
-		if (newDialog->getName().length())
-			keySetName(&key, strdup(newDialog->getName()));
-		
-		if (newDialog->getComment().length())
-			keySetComment(&key, strdup(newDialog->getComment()));
-	
-		QListViewItem *item = new QListViewItem(keyTree->currentItem(), newDialog->getName().section(RG_KEY_DELIM, -1));
-		
-		int vlength = newDialog->getValue().length();
-		
-		switch (newDialog->getType())
-		{
-			case RG_KEY_TYPE_STRING:
-				item->setPixmap(0, stringIcon);
-				if (vlength) keySetString(&key, strdup(newDialog->getValue()));
-				break;
-			case RG_KEY_TYPE_BINARY:
-				item->setPixmap(0, binaryIcon);
-				if (vlength) keySetBinary(&key, strdup(newDialog->getValue()), vlength);
-				break;
-			case RG_KEY_TYPE_LINK:
-				item->setPixmap(0, linkOverlay);
-				if (vlength) keySetLink(&key, strdup(newDialog->getValue()));
-				break;
-			case RG_KEY_TYPE_DIR:
-				item->setPixmap(0, dirIcon);
-				break;
-		}
-		
-		if (registrySetKey(&key))
-		{
-			parent->statusBar()->message(strerror(errno));
-			delete item;
-		}
-		else
-			keyTree->setSelected(item, true);
-		
-		keyClose(&key);
-		
-		registryClose();
+		KeyAddCommand *cmd = new KeyAddCommand(newDialog, this, QString("add command: ") + selected->key);
+		cmd->execute();
+		pushUndo(cmd);
+		clearRedoStack();
+		emit keyChanged();
 	}
 }
 
@@ -903,4 +726,9 @@ void MainWidgetImpl::clearRedoStack()
 {
 	cout << "clearing redo stack" << endl;
 	redoStack.clear();
+}
+
+void MainWidgetImpl::showInStatusBar( QString str )
+{
+	parent->statusBar()->message(str);
 }

@@ -31,7 +31,7 @@ KeyModifyCommand::~KeyModifyCommand()
 	delete newKey;
 }
 
-void KeyModifyCommand::execute()
+bool KeyModifyCommand::execute()
 {
 	registryOpen();
 	registrySetKey(newKey);
@@ -39,7 +39,7 @@ void KeyModifyCommand::execute()
 	emit commandPerformed();
 }
 
-void KeyModifyCommand::unexecute()
+bool KeyModifyCommand::unexecute()
 {
 	registryOpen();
 	registrySetKey(oldKey);

@@ -1,38 +1,33 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="9" >
-  <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.h" >
+ <DocsAndViews NumberOfDocuments="6" >
+  <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.h" >
    <View0 Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
+  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.cpp" >
    <View0 Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.cpp" >
+  <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
    <View0 Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.h" >
+  <Doc3 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.h" >
    <View0 Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:/usr/include/registry.h" >
+  <Doc4 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/regedit_globals.h" >
    <View0 Type="Source" />
   </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:/opt/qt/doc/html/qt.html#Key-enum" >
-   <View0 Type="Documentation" />
+  <Doc5 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/regedit_globals.cpp" >
+   <View0 line="83" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:/opt/qt/doc/html/qtoolbar.html" >
-   <View0 Type="Documentation" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:/opt/qt/doc/html/qaction.html#setDisabled" >
-   <View0 Type="Documentation" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/regedit_globals.cpp" >
-   <View0 line="21" Type="Source" />
-  </Doc8>
  </DocsAndViews>
  <pluginList>
   <kdevbookmarks>
-   <bookmarks/>
+   <bookmarks>
+    <bookmark url="/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
+     <mark line="51" />
+    </bookmark>
+   </bookmarks>
   </kdevbookmarks>
   <kdevsubversion>
    <subversion recurseresolve="1" recurserelocate="1" recursemerge="1" recursecommit="1" base="" recursepropget="1" recurseswitch="1" recurseupdate="1" recursepropset="1" recursediff="1" recurserevert="1" forcemove="1" recursecheckout="1" forceremove="1" recurseadd="1" recurseproplist="1" forcemerge="1" />

@@ -41,6 +41,8 @@ extern "C"
 #define COMBO_POS_BIN 3
 #define COMBO_POS_DIR 4
 
+ 
+
 class QCloseEvent;
 class QListViewItem;
 class MainWindowImpl;
@@ -55,7 +57,13 @@ public:
 	bool canUndo();
 	bool canRedo();
 	::Key *getSelected();
-	//QListView *getKeyTree();
+	void showInStatusBar(QString str);
+	QPixmap dirIcon;
+	QPixmap stringIcon;
+	QPixmap binaryIcon;
+	QPixmap linkOverlay;
+	QPixmap lockOverlay;
+	QPixmap deniedIcon;
 	
 signals:
 	void keyChanged();
@@ -78,16 +86,11 @@ private:
 	bool ignoreTextChanges;
 	::Key *selected;
 	mode_t selectedAccess;	
-	QPixmap dirIcon;
-	QPixmap stringIcon;
-	QPixmap binaryIcon;
-	QPixmap linkOverlay;
-	QPixmap lockOverlay;
-	QPixmap deniedIcon;
 	MainWindowImpl *parent;
 	
 	QPtrStack<Command> undoStack;
 	QPtrStack<Command> redoStack;
+	int *types;
 	
 private slots:
 
@@ -98,7 +101,6 @@ private slots:
 	void commentAttributeChanged();
 	void keyTypeChanged(int id);
 	void changeAccessMode();
-	
 	void copyNameToClipboard();
 	void copyValueToClipboard();
 	void revokeChanges();

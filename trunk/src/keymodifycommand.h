@@ -30,8 +30,8 @@ public:
     ~KeyModifyCommand();
     
 public slots:
-	virtual void execute();
-	virtual void unexecute();
+	virtual bool execute();
+	virtual bool unexecute();
 
 private:
 	::Key *oldKey;

@@ -30,8 +30,8 @@ signals:
 	void commandPerformed();
 	
 public slots:
-	virtual void execute() = 0;
-	virtual void unexecute() = 0;
+	virtual bool execute() = 0;
+	virtual bool unexecute() = 0;
 private:
 	MainWidgetImpl *m_mainWidget;
 };

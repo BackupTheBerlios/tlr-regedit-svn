@@ -18,6 +18,9 @@ extern "C"
 {
 #include <registry.h>
 }
+
+class QListViewItem;
+
 /**
 @author Gregor Burger
 */
@@ -25,16 +28,17 @@ class KeyRemoveCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyRemoveCommand(::Key *removedKey, MainWidgetImpl *parent, const char *name = 0);
+    KeyRemoveCommand(MainWidgetImpl *parent, const char *name = 0);
 
     ~KeyRemoveCommand();
     
 public slots:
-	virtual void execute();
-	virtual void unexecute();
+	virtual bool execute();
+	virtual bool unexecute();
     
 private:
-	::Key *removed;
+	::Key *key;
+	QListViewItem *item;
 };
 
 #endif

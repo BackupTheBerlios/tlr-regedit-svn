@@ -10,37 +10,55 @@
 //
 //
 #include "keyremovecommand.h"
+#include "mainwidgetimpl.h"
 
-KeyRemoveCommand::KeyRemoveCommand(::Key *removedKey, MainWidgetImpl *parent, const char *name)
- : Command(parent, name)
+#include <qlistview.h>
+
+KeyRemoveCommand::KeyRemoveCommand(MainWidgetImpl *mainWidget, const char *name)
+ : Command(mainWidget, name), item(mainWidget->keyTree->currentItem())
 {
-	keyDup(removedKey, removed);
+	key = new ::Key;
+	keyDup(mainWidget->getSelected(), key);
 }
 
 
 KeyRemoveCommand::~KeyRemoveCommand()
 {
-	keyClose(removed);
-	delete(removed);
+	keyClose(key);
+	delete key;
+	delete item;
 }
 
-void KeyRemoveCommand::execute( )
+bool KeyRemoveCommand::execute( )
 {
 	registryOpen();
-	char *name = new char[keyGetNameSize(removed)];
-	keyGetName(removed, name, keyGetNameSize(removed));
-	registryRemove(name);
-	delete name;
+	
+	char *name = new char[keyGetNameSize(key)];
+	keyGetName(key, name, keyGetNameSize(key));
+	
+	if (registryRemove(name))
+	{
+		mainWidget()->showInStatusBar(strerror(errno));
+		return false;
+	}
+	
+	item->setVisible(false);
 	registryClose();
-	emit commandPerformed();
+	return true;
 }
 
-void KeyRemoveCommand::unexecute( )
+bool KeyRemoveCommand::unexecute( )
 {
 	registryOpen();
-	registrySetKey(removed);
+	if (registrySetKey(key))
+	{
+		mainWidget()->showInStatusBar(strerror(errno));
+		return false;
+	}
+	
+	item->setVisible(true);
 	registryClose();
-	emit commandPerformed();
+	return true;
 }
 
 

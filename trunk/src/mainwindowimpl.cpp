@@ -52,6 +52,8 @@ MainWindowImpl::MainWindowImpl (QWidget *parent, const char *name, WFlags fl)
 	connect(reload, SIGNAL(activated()), mainWidget, SLOT(updateKeyTree()));
 	connect(undo, SIGNAL(activated()), mainWidget, SLOT(undo()));
 	connect(redo, SIGNAL(activated()), mainWidget, SLOT(redo()));
+	connect(del, SIGNAL(activated()), mainWidget, SLOT(deleteKey()));
+	connect(newkey, SIGNAL(activated()), mainWidget, SLOT(addNewKey()));
 	
 	show();
 }
@@ -64,9 +66,6 @@ MainWindowImpl::MainWindowImpl (QWidget *parent, const char *name, WFlags fl)
 void MainWindowImpl::setUpGui()
 {
 	statusBar()->clear();
-	
-	
-	
 	
 	registryOpen();
 	
@@ -205,6 +204,7 @@ void MainWindowImpl::updateActions( )
 	
 	if (keyGetType(selected) == RG_KEY_TYPE_DIR)
 	{
+	
 		newkey->setEnabled(true);
 		
 		KeySet childs;
@@ -219,7 +219,10 @@ void MainWindowImpl::updateActions( )
 	else
 	{
 		newkey->setEnabled(false);
-		del->setEnabled(true);
+		if (keyGetUID(selected) == getuid())
+			del->setEnabled(true);
+		else
+			del->setEnabled(false);
 	}
 	
 }

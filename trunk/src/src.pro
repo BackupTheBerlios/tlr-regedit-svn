@@ -3,6 +3,13 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  regedit
 
+LIBS += -lregistry 
+TARGET = regedit 
+CONFIG += debug \
+          warn_on \
+          qt \
+          thread 
+TEMPLATE = app 
 FORMS += mainwidget.ui \
          newdialog.ui \
          permissiondialog.ui 
@@ -25,7 +32,3 @@ SOURCES += newkeydialogimpl.cpp \
            keyremovecommand.cpp \
            keymodifycommand.cpp \
            keyaddcommand.cpp 
-TEMPLATE = app
-CONFIG += qt debug thread
-TARGET = regedit
-LIBS += -lregistry
