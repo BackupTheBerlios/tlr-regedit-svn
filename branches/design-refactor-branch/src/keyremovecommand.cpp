@@ -88,6 +88,7 @@ bool KeyRemoveCommand::execute( )
 		parent->takeItem ( item );
 	else
 		cout << "item is null" << endl;
+	return true;
 }
 
 bool KeyRemoveCommand::unexecute( )
@@ -108,6 +109,7 @@ bool KeyRemoveCommand::unexecute( )
 		key = ksNext ( all );
 	}
 	parent->insertItem ( item );
+	return true;
 }
 
 

@@ -3,9 +3,7 @@
 # Unterverzeichnis relativ zum Projektverzeichnis: ./src
 # Das Target ist eine Anwendung:  kdbe
 
-INSTALLS += kdbe 
-kdbe.files += kdbe 
-kdbe.path = /usr/bin/ 
+
 FORMS += editorviewui.ui \
          newkeywizardui.ui \
          keycommentui.ui \
@@ -35,10 +33,16 @@ SOURCES += main.cpp \
            keycomment.cpp \
            usergroupdialog.cpp \
            permissiondialog.cpp 
+
+kdbe.files += kdbe 
+kdbe.path = /usr/bin/ 
+INSTALLS += kdbe 
+
+
 LIBS += $$system(pkg-config --libs elektra) -lmagic -L./xdgmime/ -lxdgmime
 TARGET = kdbe
 CONFIG += debug \
 warn_on \
 qt \
 thread
-TEMPLATE = app subdirs
+TEMPLATE = app

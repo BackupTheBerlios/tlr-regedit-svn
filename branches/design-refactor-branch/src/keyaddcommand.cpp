@@ -58,6 +58,7 @@ bool KeyAddCommand::execute()
 		key = ksNext ( keys );
 	}
 	kdbSetKeys ( keys );
+	return true;
 }
 
 bool KeyAddCommand::unexecute()
@@ -76,4 +77,5 @@ bool KeyAddCommand::unexecute()
 		kdbRemove ( key->key );
 		key = ksNext ( keys );
 	}
+	return true;
 }

@@ -68,6 +68,7 @@ bool KeyModifyCommand::execute()
 		kdbSetKey ( key );
 		key = ksNext ( subject ( ) );
 	}
+	return true;
 }
 
 bool KeyModifyCommand::unexecute()
@@ -87,6 +88,7 @@ bool KeyModifyCommand::unexecute()
 		controller ( )->getView ( )->getItem( name )->setText ( 0, buf );
 		key = ksNext ( oldKeys );
 	}
+	return true;
 }
 
 

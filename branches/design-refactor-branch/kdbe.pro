@@ -22,3 +22,7 @@ CONFIG += debug \
           x11 
 TEMPLATE = subdirs 
 SUBDIRS += src/xdgmime src icons
+
+dfiles.path = /usr/share/applications
+dfiles.files = kdbe.desktop
+INSTALLS += dfiles

@@ -109,12 +109,13 @@ void NewKeyWizard::switchToNextPage ( )
 			char buf [ file.size ( ) ];
 			Q_LONG bread = file.readBlock ( buf, file.size ( ) );
 			cout << "read " << bread << " bytes" << endl;
-			if ( bread == file.size ( ) )
+			/*if ( bread == file.size ( ) )
 				cout << "file size is: " << file.size ( ) << endl;
 			if ( bread == 0 )
 				cout << "shit happens" << endl;
+			
 			int drei = 3;
-			int *pdrei = &drei;
+			int *pdrei = &drei;*/
 			::Key *temp = keyNew ( QString ( parent->key ) + "/" + binaryKeyName->text ( ),
 				KEY_SWITCH_TYPE, KEY_TYPE_BINARY, bread, 
 				KEY_SWITCH_VALUE, (void *) buf,

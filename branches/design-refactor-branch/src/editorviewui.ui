@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>614</width>
-            <height>534</height>
+            <width>616</width>
+            <height>525</height>
         </rect>
     </property>
     <property name="caption">
@@ -325,6 +325,14 @@
                                 <property name="name">
                                     <cstring>groupBox2</cstring>
                                 </property>
+                                <property name="sizePolicy">
+                                    <sizepolicy>
+                                        <hsizetype>5</hsizetype>
+                                        <vsizetype>4</vsizetype>
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                    </sizepolicy>
+                                </property>
                                 <property name="title">
                                     <string>Access Dates</string>
                                 </property>
@@ -332,28 +340,6 @@
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLineEdit" row="0" column="1">
-                                        <property name="name">
-                                            <cstring>keyATime</cstring>
-                                        </property>
-                                        <property name="enabled">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>3</hsizetype>
-                                                <vsizetype>0</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="lineWidth">
-                                            <number>2</number>
-                                        </property>
-                                        <property name="readOnly">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
                                     <widget class="QLineEdit" row="1" column="1">
                                         <property name="name">
                                             <cstring>keyMTime</cstring>
@@ -414,6 +400,28 @@
                                         </property>
                                         <property name="text">
                                             <string>Last Change</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLineEdit" row="0" column="1">
+                                        <property name="name">
+                                            <cstring>keyATime</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>3</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="lineWidth">
+                                            <number>2</number>
+                                        </property>
+                                        <property name="readOnly">
+                                            <bool>true</bool>
                                         </property>
                                     </widget>
                                 </grid>
@@ -484,23 +492,7 @@
                                         <property name="sizePolicy">
                                             <sizepolicy>
                                                 <hsizetype>4</hsizetype>
-                                                <vsizetype>5</vsizetype>
-                                                <horstretch>0</horstretch>
-                                                <verstretch>0</verstretch>
-                                            </sizepolicy>
-                                        </property>
-                                        <property name="readOnly">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QLineEdit" row="0" column="1">
-                                        <property name="name">
-                                            <cstring>userID</cstring>
-                                        </property>
-                                        <property name="sizePolicy">
-                                            <sizepolicy>
-                                                <hsizetype>4</hsizetype>
-                                                <vsizetype>5</vsizetype>
+                                                <vsizetype>0</vsizetype>
                                                 <horstretch>0</horstretch>
                                                 <verstretch>0</verstretch>
                                             </sizepolicy>
@@ -524,6 +516,14 @@
                                         <property name="name">
                                             <cstring>editAccessButton</cstring>
                                         </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>1</hsizetype>
+                                                <vsizetype>2</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
                                         <property name="text">
                                             <string>&amp;Edit</string>
                                         </property>
@@ -535,6 +535,14 @@
                                         <property name="name">
                                             <cstring>setUserButton</cstring>
                                         </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>1</hsizetype>
+                                                <vsizetype>2</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
                                         <property name="text">
                                             <string>Set</string>
                                         </property>
@@ -543,8 +551,32 @@
                                         <property name="name">
                                             <cstring>setGroupButton</cstring>
                                         </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>1</hsizetype>
+                                                <vsizetype>2</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
                                         <property name="text">
                                             <string>Set</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLineEdit" row="0" column="1">
+                                        <property name="name">
+                                            <cstring>userID</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>4</hsizetype>
+                                                <vsizetype>0</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="readOnly">
+                                            <bool>true</bool>
                                         </property>
                                     </widget>
                                 </grid>
