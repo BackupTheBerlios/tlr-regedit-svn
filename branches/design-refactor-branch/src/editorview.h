@@ -21,6 +21,7 @@
 #define EDITOR_VIEW_H
 
 #include <qvaluelist.h>
+#include <qpoint.h>
 
 extern "C"
 {
@@ -53,6 +54,7 @@ class EditorView : public EditorViewUI
 		void keySelected ( const QString &key );
 	
 	private slots:
+		void showPopupMenu ( QListViewItem *item, const QPoint & poing, int column );
 		void updateKeyTree (  );
 		void propagateKeyChange ( QListViewItem *item );
 		void closeKeyDir ( QListViewItem *item );
@@ -69,6 +71,7 @@ class EditorView : public EditorViewUI
 	private:
  		EditorController *controller;
 		QValueList<QString> openedKeys;
+		QPopupMenu *popupMenu;
 };
  
 #endif

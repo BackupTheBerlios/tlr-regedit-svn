@@ -35,6 +35,8 @@ using namespace std;
 #include <qradiobutton.h>
 #include <qpushbutton.h>
 #include <qaction.h>
+#include <qdatetime.h>
+#include <qpopupmenu.h>
 
 //#include <magic.h>
 #include "xdgmime/xdgmime.h"
@@ -47,13 +49,19 @@ extern "C"
 EditorView::EditorView ( EditorController *econtroller ) 
 	: EditorViewUI ( 0, "the editor view", WType_TopLevel ), controller ( econtroller )
 {
-	
-	
 	connect ( keyTree, SIGNAL ( expanded ( QListViewItem * ) ), SLOT ( openKeyDir ( QListViewItem * ) ) );
 	connect ( keyTree, SIGNAL ( collapsed ( QListViewItem * ) ), SLOT ( closeKeyDir ( QListViewItem * ) ) );
 	connect ( keyTree, SIGNAL ( selectionChanged ( QListViewItem * ) ), SLOT ( propagateKeyChange ( QListViewItem * ) ) );
+	connect ( 
+		keyTree, SIGNAL ( rightButtonClicked ( QListViewItem *, const QPoint &, int ) ), 
+		SLOT ( showPopupMenu( QListViewItem *, const QPoint &, int ) ) );
 	
 	connect ( reloadAction, SIGNAL ( activated ( ) ), SLOT ( updateKeyTree ( ) ) );
+
+	popupMenu = new QPopupMenu ( this, "right click menu" );
+	
+	newAction->addTo ( popupMenu );
+	deleteAction->addTo ( popupMenu );
 	
 	restoreState ( );
 	updateKeyTree ( );
@@ -83,6 +91,13 @@ void EditorView::clearGui ( )
 	keyNam->clear ( );
 	keyValue->clear ( );
 	keyComment->clear ( );
+	userID->clear ( );
+	groupID->clear ( );
+	permission->clear ( );
+	keyATime->clear ( );
+	keyCTime->clear ( );
+	keyMTime->clear ( );
+	
 	//TODO there are more
 }
 
@@ -119,8 +134,23 @@ void EditorView::showKey ( ::Key * current )
 {	
 	if ( current )
 	{
+		keyComment->setText ( QString ( current->comment ) );
 		keyNam->setText ( QString ( current->key ) );
 		keyLength->setText ( QString ( ).setNum ( keyGetValueSize ( current ) ) );
+		userID->setText ( KeyMetaInfo::getOwner( current ) );
+		groupID->setText ( KeyMetaInfo::getGroup ( current ) );
+		permission->setText ( KeyMetaInfo::getAccess( current ) );
+		
+		QDateTime dt;
+	
+		dt.setTime_t ( keyGetATime ( current ) );
+		keyATime->setText ( dt.toString ( ) );
+	
+		dt.setTime_t( keyGetMTime ( current ) );
+		keyMTime->setText ( dt.toString ( ) );
+		
+		dt.setTime_t ( keyGetCTime ( current ) );
+		keyCTime->setText ( dt.toString ( ) );
 		
 		switch ( keyGetType ( current ) )
 		{
@@ -147,18 +177,6 @@ void EditorView::showKey ( ::Key * current )
 			const char *mime = xdg_mime_get_mime_type_for_data (buf, keyGetValueSize ( current ) );
 			
 			keyValue->setText ( mime );
-			
-			/*magic_t mag = magic_open ( MAGIC_CHECK | MAGIC_MIME | MAGIC_PRESERVE_ATIME );
-			magic_load ( mag, "/usr/share/misc/file/magic" );
-			
-			const char * mime = magic_buffer ( mag, buf, keyGetValueSize ( current ) );
-			
-			//cout << "magic string is " << strlen ( mime ) << " " << mime << endl;
-			
-			keyValue->setText ( mime );
-			//delete mime;
-			
-			magic_close ( mag );*/
 		}
 	}
 	else
@@ -297,26 +315,12 @@ void EditorView::closeKeyDir ( QListViewItem * item )
 		}
 		openedKeys.remove( key->key );
 		ksDel ( ks );
-		/*
-		QValueList<QString>::iterator it = openedKeys.begin ( );
-		
-		while ( it != openedKeys.end ( ) )
-		{
-			cout << (*it) << endl;
-			if ( (*it).startsWith ( key->key ) )
-			{
-				cout << "removing " << (*it) << endl;
-				it  = openedKeys.remove ( it );
-			}
-			else
-				it++;
-		}
-		*/
+	
 	}
 	
-// 	if ( parent )
-// 		keyTree->setCurrentItem ( parent );
-// 	else
+	if ( parent )
+		keyTree->setCurrentItem ( parent );
+	else
 		keyTree->setCurrentItem ( 0 );
 	
 	delete item;
@@ -403,6 +407,11 @@ void EditorView::closeEvent ( QCloseEvent * e )
 {
 	saveState ( );
 	e->accept ( );
+}
+
+void EditorView::showPopupMenu ( QListViewItem *item, const QPoint & poing, int column )
+{
+	popupMenu->exec( poing, 0 );
 }
 
 void EditorView::saveState ( )
