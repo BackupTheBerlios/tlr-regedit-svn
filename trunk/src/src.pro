@@ -3,7 +3,7 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  regedit
 
-LIBS += -lregistry 
+LIBS += -lkdb
 TARGET = regedit 
 CONFIG += debug \
           warn_on \

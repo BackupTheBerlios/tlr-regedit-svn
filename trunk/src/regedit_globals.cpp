@@ -10,25 +10,25 @@ using namespace std;
 
 void checkKeyMake(Key *key, u_int8_t type)
 {	
-	int ret = registryGetKey(key);
+	int ret = kdbGetKey(key);
 	
-	if (errno == RG_KEY_RET_NOTFOUND)
+	if (errno == KDB_RET_NOTFOUND)
 	{
 		keySetType(key, type);
-		registrySetKey(key);
+		kdbSetKey(key);
 	}	
 }
 
 QString getIconDir()
 {
-	registryOpen();
+	kdbOpen();
 	::Key iconDir;
 	
 	keyInit(&iconDir);
 	
 	keySetName(&iconDir, "system/sw/regedit/gui/iconDir");
 	
-	int ret = registryGetKey(&iconDir);
+	int ret = kdbGetKey(&iconDir);
 	
 	if (ret)
 	{
@@ -36,7 +36,7 @@ QString getIconDir()
 		keyClose(&iconDir);
 		keyInit(&iconDir);
 		keySetName(&iconDir, "user/sw/regedit/gui/iconDir");
-		checkKeyMake(&iconDir, RG_KEY_TYPE_STRING);
+		checkKeyMake(&iconDir, KEY_TYPE_STRING);
 	}
 	else
 		//cout << "using system namespace iconDir" << endl;
@@ -47,12 +47,12 @@ QString getIconDir()
 		keyGetString(&iconDir, buf, keyGetDataSize(&iconDir));
 		
 		keyClose(&iconDir);
-		registryClose();
+		kdbClose();
 		return QString(buf);
 	}
 
 	keyClose(&iconDir);
-	registryClose();
+	kdbClose();
 	return QString::null;
 
 }

@@ -21,7 +21,7 @@
 #define NEWDIALOGIMPL_H
 
 
-#include <registry.h>
+#include <kdb.h>
 
 #include <qdialog.h>
 #include "newdialog.h"

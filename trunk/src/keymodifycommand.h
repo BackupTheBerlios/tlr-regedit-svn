@@ -25,7 +25,7 @@
 
 extern "C"
 {
-	#include <registry.h>
+	#include <kdb.h>
 }
 /**
 @author Gregor Burger

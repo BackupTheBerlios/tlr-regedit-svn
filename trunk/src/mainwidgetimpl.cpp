@@ -64,11 +64,11 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	: MainWidget(parent, name, fl), ignoreTextChanges(false), selected(0), selectedAccess(0), parent( (MainWindowImpl *) parentWidget())
 {
 	types = new int[5];
-	types[0] = RG_KEY_TYPE_UNDEFINED;
-	types[1] = RG_KEY_TYPE_LINK;
-	types[2] = RG_KEY_TYPE_STRING;
-	types[3] = RG_KEY_TYPE_BINARY;
-	types[4] = RG_KEY_TYPE_DIR;
+	types[0] = KEY_TYPE_UNDEFINED;
+	types[1] = KEY_TYPE_LINK;
+	types[2] = KEY_TYPE_STRING;
+	types[3] = KEY_TYPE_BINARY;
+	types[4] = KEY_TYPE_DIR;
 	int *t;
 	t = new int[4];
 	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
@@ -128,12 +128,12 @@ void MainWidgetImpl::setUpGui()
 void MainWidgetImpl::updateKeyTree()
 {
 	keyTree->clear();
-	registryOpen();
+	kdbOpen();
 	
 	KeySet roots;	
 	ksInit(&roots);
 	
-	registryGetRootKeys(&roots);
+	kdbGetRootKeys(&roots);
 	::Key *mover;
 	
 	mover = roots.start;
@@ -145,23 +145,23 @@ void MainWidgetImpl::updateKeyTree()
 		
 		switch (keyGetType(mover))
 		{
-			case RG_KEY_TYPE_DIR:
+			case KEY_TYPE_DIR:
 				item->setPixmap(0, dirIcon);	
 				break;
-			case RG_KEY_TYPE_LINK:
+			case KEY_TYPE_LINK:
 				item->setPixmap(0, linkOverlay);
 				break;
-			case RG_KEY_TYPE_STRING:
+			case KEY_TYPE_STRING:
 				item->setPixmap(0, stringIcon);
 				break;
-			case RG_KEY_TYPE_BINARY:
+			case KEY_TYPE_BINARY:
 				item->setPixmap(0, binaryIcon);
 		}
 		mover = mover->next;
 	}
 	
 	ksClose(&roots);
-	registryClose();
+	kdbClose();
 }
 
 /**
@@ -175,7 +175,7 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 	
 	ksInit(&keys);
 	
-	registryGetChildKeys(root->key, &keys, RG_O_DIR|RG_O_SORT);
+	kdbGetChildKeys(root->key, &keys, KEY_TYPE_DIR|KDB_O_SORT);
 	
 	::Key *mover = keys.start;
 	
@@ -192,17 +192,17 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 	
 			switch (type)
 			{
-				case RG_KEY_TYPE_DIR:
+				case KEY_TYPE_DIR:
 					subItem->setPixmap(0, dirIcon);
 					isDir = true;
 					break;
-				case RG_KEY_TYPE_LINK:
+				case KEY_TYPE_LINK:
 					subItem->setPixmap(0, linkOverlay);
 					break;
-				case RG_KEY_TYPE_STRING:
+				case KEY_TYPE_STRING:
 					subItem->setPixmap(0, stringIcon);
 					break;
-				case RG_KEY_TYPE_BINARY:
+				case KEY_TYPE_BINARY:
 					subItem->setPixmap(0, binaryIcon);
 					break;
 				default:
@@ -282,29 +282,29 @@ void MainWidgetImpl::showKeyValues(bool update)
 	
 	switch (keyGetType(selected))
 	{
-		case RG_KEY_TYPE_BINARY: 
+		case KEY_TYPE_BINARY: 
 			typeCombo->setCurrentItem(COMBO_POS_BIN);
 			keyValue->setEnabled(true);
 			keyComment->setEnabled(true);
 			typeCombo->setEnabled(true);
 			break;
-		case RG_KEY_TYPE_STRING:
+		case KEY_TYPE_STRING:
 			typeCombo->setCurrentItem(COMBO_POS_STR);
 			keyValue->setEnabled(true);
 			keyComment->setEnabled(true);
 			typeCombo->setEnabled(true);
 			break;
-		case RG_KEY_TYPE_DIR:
+		case KEY_TYPE_DIR:
 			typeCombo->insertItem("Directory");
 			typeCombo->setCurrentItem(COMBO_POS_DIR);
 			typeCombo->setEnabled(false);
 			keyValue->setEnabled(false);
 			keyComment->setEnabled(false);
 			break;
-		case RG_KEY_TYPE_LINK:
+		case KEY_TYPE_LINK:
 			typeCombo->setCurrentItem(COMBO_POS_LNK);
 			break;
-		case RG_KEY_TYPE_UNDEFINED:
+		case KEY_TYPE_UNDEFINED:
 			typeCombo->setCurrentItem(COMBO_POS_UND);
 			keyValue->setEnabled(false);
 			keyName->setEnabled(false);
@@ -321,17 +321,17 @@ void MainWidgetImpl::showKeyValues(bool update)
 		int size = keyGetDataSize(selected);
 		switch (keyGetType(selected))
 		{
-			case RG_KEY_TYPE_BINARY: 
+			case KEY_TYPE_BINARY: 
 				keyGetBinary(selected, buffer, size);
 				break;
-			case RG_KEY_TYPE_STRING:
+			case KEY_TYPE_STRING:
 				keyGetString(selected, buffer, size);
 				break;
-			case RG_KEY_TYPE_DIR:
+			case KEY_TYPE_DIR:
 				break;
-			case RG_KEY_TYPE_LINK:
+			case KEY_TYPE_LINK:
 				break;
-			case RG_KEY_TYPE_UNDEFINED:
+			case KEY_TYPE_UNDEFINED:
 				break;
 			default:
 				buffer = "";
@@ -413,7 +413,7 @@ void MainWidgetImpl::setWidgetsEnabled(bool enabled)
  
 void MainWidgetImpl::changeSelected(QListViewItem *item)
 {
-	registryOpen();
+	kdbOpen();
 	if (!item)
 		return;
 	
@@ -428,7 +428,7 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	keyInit(selected);
 	keySetName(selected, strdup(getKeyNameFromItem(item)));
 	
-	if (registryGetKey(selected))
+	if (kdbGetKey(selected))
 	{
 		showInStatusBar(strerror(errno));
 		delete selected;
@@ -439,7 +439,7 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	selectedAccess = keyGetAccess(selected);
 	
-	registryClose();
+	kdbClose();
 	emit keyChanged();
 	
 }
@@ -495,7 +495,7 @@ void MainWidgetImpl::revokeChanges()
 }
 
 /**
- * writes back the changes into the registry made by the user
+ * writes back the changes into the kdb made by the user
  * gets called when the user hits the apply button
  */
 void MainWidgetImpl::applyChanges()
@@ -604,17 +604,17 @@ void MainWidgetImpl::copyNameToClipboard()
 
 void MainWidgetImpl::copyValueToClipboard()
 {
-	registryOpen();
+	kdbOpen();
 	char *name = strdup(getKeyNameFromItem(keyTree->currentItem()));
 	char *buf;
 	::Key key;
 	keySetName(&key, name);
 	
-	registryGetKey(&key);
+	kdbGetKey(&key);
 	
 	buf = new char[keyGetDataSize(&key)];
 	
-	if (keyGetType(&key) == RG_KEY_TYPE_STRING)
+	if (keyGetType(&key) == KEY_TYPE_STRING)
 		keyGetString(&key, buf, keyGetDataSize(&key));
 	else
 		keyGetBinary(&key, (void *)buf, keyGetDataSize(&key));
@@ -622,7 +622,7 @@ void MainWidgetImpl::copyValueToClipboard()
 	QClipboard *cp = QApplication::clipboard();
 	cp->setText(buf, QClipboard::Clipboard);
 	keyClose(&key);
-	registryClose();
+	kdbClose();
 }
 
 bool MainWidgetImpl::canUndo()

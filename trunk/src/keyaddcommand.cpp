@@ -50,19 +50,19 @@ KeyAddCommand::KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidge
 	
 	switch (newDialog->getType())
 	{
-		case RG_KEY_TYPE_STRING:
+		case KEY_TYPE_STRING:
 			item->setPixmap(0, mainWidget->stringIcon);
 			if (vlength) keySetString(key, strdup(newDialog->getValue()));
 			break;
-		case RG_KEY_TYPE_BINARY:
+		case KEY_TYPE_BINARY:
 			item->setPixmap(0, mainWidget->binaryIcon);
 			if (vlength) keySetBinary(key, strdup(newDialog->getValue()), vlength);
 			break;
-		case RG_KEY_TYPE_LINK:
+		case KEY_TYPE_LINK:
 			item->setPixmap(0, mainWidget->linkOverlay);
 			if (vlength) keySetLink(key, strdup(newDialog->getValue()));
 			break;
-		case RG_KEY_TYPE_DIR:
+		case KEY_TYPE_DIR:
 			item->setPixmap(0, mainWidget->dirIcon);
 			break;
 	}
@@ -71,17 +71,17 @@ KeyAddCommand::KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidge
 
 KeyAddCommand::~KeyAddCommand()
 {
-	registryOpen();
+	kdbOpen();
 	keyClose(key);
 	delete key;
 	delete item;
-	registryClose();
+	kdbClose();
 }
 
 bool KeyAddCommand::execute()
 {
-	registryOpen();
-	if (registrySetKey(key))
+	kdbOpen();
+	if (kdbSetKey(key))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		return false;
@@ -92,15 +92,15 @@ bool KeyAddCommand::execute()
 		//mainWidget()->keyTree->setSelected(item, true);
 		return true;
 	}
-	registryClose();
+	kdbClose();
 }
 
 bool KeyAddCommand::unexecute()
 {
-	registryOpen();
+	kdbOpen();
 	char *name = new char[keyGetNameSize(key)];
 	keyGetName(key, name, keyGetNameSize(key));
-	if (registryRemove(name))
+	if (kdbRemove(name))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		return false;
@@ -111,5 +111,5 @@ bool KeyAddCommand::unexecute()
 		return true;
 		
 	}
-	registryClose();
+	kdbClose();
 }

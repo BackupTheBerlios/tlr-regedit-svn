@@ -29,7 +29,7 @@
 using namespace std;
 
 NewKeyDialogImpl::NewKeyDialogImpl(QString parentKey, QWidget *parent)
-: NewKeyDialog(parent, "new key dialog2", true), type(RG_KEY_TYPE_STRING)
+: NewKeyDialog(parent, "new key dialog2", true), type(KEY_TYPE_STRING)
 {
 	keyName->setText(parentKey + RG_KEY_DELIM);
 	
@@ -88,22 +88,22 @@ void NewKeyDialogImpl::updateType(int id)
 	switch (id)
 	{
 		case 0: 
-			type = RG_KEY_TYPE_BINARY;
+			type = KEY_TYPE_BINARY;
 			keyComment->setEnabled(true);
 			keyValue->setEnabled(true);
 			break;
 		case 1:
-			type = RG_KEY_TYPE_STRING;
+			type = KEY_TYPE_STRING;
 			keyComment->setEnabled(true);
 			keyValue->setEnabled(true);
 			break;
 		case 2:
-			type = RG_KEY_TYPE_LINK;
+			type = KEY_TYPE_LINK;
 			keyComment->setEnabled(false);
 			keyValue->setEnabled(true);
 			break;
 		case 3:
-			type = RG_KEY_TYPE_DIR;
+			type = KEY_TYPE_DIR;
 			keyComment->setEnabled(false);
 			keyValue->setEnabled(false);
 	}

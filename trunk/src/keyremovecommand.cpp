@@ -39,33 +39,33 @@ KeyRemoveCommand::~KeyRemoveCommand()
 
 bool KeyRemoveCommand::execute( )
 {
-	registryOpen();
+	kdbOpen();
 		
 	char *name = new char[keyGetNameSize(key)];
 	keyGetName(key, name, keyGetNameSize(key));
 	
-	if (registryRemove(name))
+	if (kdbRemove(name))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		return false;
 	}
 	
 	item->setVisible(false);
-	registryClose();
+	kdbClose();
 	return true;
 }
 
 bool KeyRemoveCommand::unexecute( )
 {
-	registryOpen();
-	if (registrySetKey(key))
+	kdbOpen();
+	if (kdbSetKey(key))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		return false;
 	}
 	
 	item->setVisible(true);
-	registryClose();
+	kdbClose();
 	return true;
 }
 

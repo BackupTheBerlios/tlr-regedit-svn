@@ -24,7 +24,7 @@
 
 extern "C"
 {
-	#include <registry.h>
+	#include <kdb.h>
 }
 
 /**

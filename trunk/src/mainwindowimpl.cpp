@@ -23,7 +23,7 @@
 
 extern "C"
 {
-	#include <registry.h>
+	#include <kdb.h>
 }
 #include <errno.h>
 #include <string.h>
@@ -69,7 +69,7 @@ void MainWindowImpl::setUpGui()
 {
 	statusBar()->clear();
 	
-	registryOpen();
+	kdbOpen();
 	
 	::Key width;
 	::Key height;
@@ -89,11 +89,11 @@ void MainWindowImpl::setUpGui()
 	keySetName(&y, strdup(keyPrefix + "/gui/y"));
 	//keySetName(&splitter, strdup(keyPrefix + "/gui/splitter"));
 	
-	checkKeyMake(&width, RG_KEY_TYPE_STRING);
-	checkKeyMake(&height, RG_KEY_TYPE_STRING);
-	checkKeyMake(&x, RG_KEY_TYPE_STRING);
-	checkKeyMake(&y, RG_KEY_TYPE_STRING);
-	//checkKeyMake(&splitter, RG_KEY_TYPE_STRING);
+	checkKeyMake(&width, KEY_TYPE_STRING);
+	checkKeyMake(&height, KEY_TYPE_STRING);
+	checkKeyMake(&x, KEY_TYPE_STRING);
+	checkKeyMake(&y, KEY_TYPE_STRING);
+	//checkKeyMake(&splitter, KEY_TYPE_STRING);
 	
 	int vwidth = this->width();
 	int vheight = this->height();
@@ -136,12 +136,12 @@ void MainWindowImpl::setUpGui()
 		char *w = new char[keyGetDataSize(&splitter)];
 		splitter->moveSplitter(atoi(keyGetString(&splitter, w, keyGetSize(&splitter), 
 	}*/
-	registryClose();
+	kdbClose();
 }
 
 void MainWindowImpl::closeEvent(QCloseEvent *e)
 {
-	registryOpen();
+	kdbOpen();
 	
 	::Key width;
 	::Key height;
@@ -160,31 +160,31 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 	keySetName(&x, strdup(guiKeyPrefix + "x"));
 	keySetName(&y, strdup(guiKeyPrefix + "y"));
 	
-	registryGetKey(&width);
+	kdbGetKey(&width);
 	keySetString(&width, strdup(QString().setNum(this->width())));
 	keySetComment(&width, "This is where regedit stores the width of the window");
-	registrySetKey(&width);
+	kdbSetKey(&width);
 	keyClose(&width);
 	
-	registryGetKey(&height);
+	kdbGetKey(&height);
 	keySetString(&height, strdup(QString().setNum(this->height())));
 	keySetComment(&height, "This is where regedit stores the height of the window");
-	registrySetKey(&height);
+	kdbSetKey(&height);
 	keyClose(&height);
 	
-	registryGetKey(&x);
+	kdbGetKey(&x);
 	keySetString(&x, strdup(QString().setNum(this->x())));
 	keySetComment(&x, "This is where regedit stores the x position of the window");
-	registrySetKey(&x);
+	kdbSetKey(&x);
 	keyClose(&x);
 	
-	registryGetKey(&y);
+	kdbGetKey(&y);
 	keySetString(&y, strdup(QString().setNum(this->y())));
 	keySetComment(&y, "This is where regedit stores the y position of the window");
-	registrySetKey(&y);
+	kdbSetKey(&y);
 	keyClose(&y);
 	
-	registryClose();
+	kdbClose();
 	
 	QMainWindow::closeEvent(e);
 }
@@ -211,14 +211,14 @@ void MainWindowImpl::updateActions( )
 	
 	::Key *selected = mainWidget->getSelected();
 	
-	if (keyGetType(selected) == RG_KEY_TYPE_DIR)
+	if (keyGetType(selected) == KEY_TYPE_DIR)
 	{
 	
 		newkey->setEnabled(true);
 		
 		KeySet childs;
 		ksInit(&childs);
-		if (registryGetChildKeys(selected->key, &childs, RG_O_DIR|RG_O_SORT))
+		if (kdbGetChildKeys(selected->key, &childs, KEY_TYPE_DIR|KDB_O_SORT))
 		{
 			statusBar()->message(strerror(errno));
 		}
@@ -276,9 +276,9 @@ void MainWindowImpl::makeActions( )
 	QPixmap undoIcon(iconDir + "/undo.png");
 	QPixmap redoIcon(iconDir + "/redo.png");
 	
-	newkey = new QAction(QString("add new key to registry"), QIconSet(newIcon), QString("new key"), QKeySequence(CTRL + Key_N), this, "newkey action");
-	del = new QAction(QString("delete key from registry"), QIconSet(delIcon), QString("delet key"), QKeySequence(Key_Delete), this, "delete action");
-	reload = new QAction(QString("load the registry"), QIconSet(reloadIcon), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
+	newkey = new QAction(QString("add new key to kdb"), QIconSet(newIcon), QString("new key"), QKeySequence(CTRL + Key_N), this, "newkey action");
+	del = new QAction(QString("delete key from kdb"), QIconSet(delIcon), QString("delet key"), QKeySequence(Key_Delete), this, "delete action");
+	reload = new QAction(QString("load the kdb"), QIconSet(reloadIcon), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
 	undo = new QAction(QString("undo last modification"), QIconSet(undoIcon), QString("undo"), QKeySequence(CTRL + Key_Z), this, "undo action");
 	redo = new QAction(QString("redo last modification"), QIconSet(redoIcon), QString("redo"), QKeySequence(CTRL + Key_R), this, "redo action");
 	

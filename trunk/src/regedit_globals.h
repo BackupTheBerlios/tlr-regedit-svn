@@ -23,7 +23,7 @@
 
 extern "C"
 {
-	#include <registry.h>
+	#include <kdb.h>
 }
 #include <qstring.h>
 

@@ -32,7 +32,7 @@ using namespace std;
 KeyModifyCommand::KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name)
  : Command(mainWidget, name), item(mainWidget->keyTree->currentItem())
 {
-	registryOpen();
+	kdbOpen();
 	
 	::Key *selected = this->mainWidget()->getSelected();
 	
@@ -75,7 +75,7 @@ KeyModifyCommand::KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name)
 			break;
 	}
 	
-	registryClose();
+	kdbClose();
 }
 
 
@@ -90,8 +90,8 @@ KeyModifyCommand::~KeyModifyCommand()
 
 bool KeyModifyCommand::execute()
 {
-	registryOpen();
-	if (registrySetKey(newKey))
+	kdbOpen();
+	if (kdbSetKey(newKey))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		mainWidget()->showKeyValues(true);
@@ -104,8 +104,8 @@ bool KeyModifyCommand::execute()
 
 bool KeyModifyCommand::unexecute()
 {
-	registryOpen();
-	if (registrySetKey(oldKey))
+	kdbOpen();
+	if (kdbSetKey(oldKey))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
 		mainWidget()->showKeyValues(true);
@@ -113,7 +113,7 @@ bool KeyModifyCommand::unexecute()
 	}
 	item->setPixmap(0, oldIcon);
 	mainWidget()->changeSelected(item);
-	registryClose();
+	kdbClose();
 	return true;
 }
 
