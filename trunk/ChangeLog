@@ -3,6 +3,7 @@
 	moved window attribute storing to MainWindowImpl
 	moved keyCheckMake to regedit_globals.cpp so that every class can use it
 	started implementing MainWindowImpl
+	added a few icons for undo/redo and refresh
 
 * Sunday 25 July 2004
 	added autopackage spec file
