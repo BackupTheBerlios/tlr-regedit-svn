@@ -22,6 +22,7 @@
 
 #include <qstring.h>
 #include <qpixmap.h>
+#include <sys/types.h>
 
 extern "C"
 {
@@ -54,6 +55,7 @@ class KeyMetaInfo
 		
 		static QString getAccess ( const QString & key );
 		static QString getAccess ( const ::Key * key );
+		static QString getAccess ( mode_t mode );
 		
 	private:
 

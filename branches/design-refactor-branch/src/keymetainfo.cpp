@@ -128,6 +128,8 @@ bool KeyMetaInfo::canRead ( const QString & key )
 
 bool KeyMetaInfo::canRead ( const ::Key * key )
 {
+	if ( !key )
+		return false;
 	mode_t mode = keyGetAccess ( key );
 	
 	if ( mode & S_IROTH )
@@ -153,6 +155,9 @@ bool KeyMetaInfo::canWrite ( const QString & key )
 
 bool KeyMetaInfo::canWrite ( const ::Key * key )
 {
+	if ( !key )
+		return false;
+		
 	mode_t mode = keyGetAccess ( key );
 	
 	if ( mode & S_IWOTH )
@@ -238,12 +243,9 @@ QString KeyMetaInfo::getAccess ( const QString & key )
 	return temp;
 }
 
-
-QString KeyMetaInfo::getAccess ( const ::Key * key )
+QString KeyMetaInfo::getAccess ( const mode_t mode )
 {
-	mode_t mode = keyGetAccess ( key );
-
-        char *readable = new char[10];
+	char *readable = new char[10];
 
         if (S_ISDIR(mode))
                 readable[0]='d';
@@ -264,4 +266,9 @@ QString KeyMetaInfo::getAccess ( const ::Key * key )
 	QString tmp ( readable );
 	delete readable;
 	return tmp;
+}
+
+QString KeyMetaInfo::getAccess ( const ::Key * key )
+{
+	return KeyMetaInfo::getAccess ( keyGetAccess ( key ) );
 }
