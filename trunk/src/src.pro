@@ -10,9 +10,11 @@ LIBS += -lregistry
 SOURCES += newkeydialogimpl.cpp \
            main.cpp \
            mainwidgetimpl.cpp \
-           mainwindowimpl.cpp 
+           mainwindowimpl.cpp \
+	   regedit_globals.cpp
 HEADERS += newkeydialogimpl.h \
            mainwidgetimpl.h \
-           mainwindowimpl.h 
+           mainwindowimpl.h \
+	   regedit_globals.h
 FORMS += mainwidget.ui \
          newdialog.ui 
