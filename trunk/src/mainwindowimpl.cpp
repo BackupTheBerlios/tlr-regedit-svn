@@ -136,12 +136,12 @@ void MainWindowImpl::setUpGui()
 		char *w = new char[keyGetDataSize(&splitter)];
 		splitter->moveSplitter(atoi(keyGetString(&splitter, w, keyGetSize(&splitter), 
 	}*/
-	kdbClose();
+	//kdbClose();
 }
 
 void MainWindowImpl::closeEvent(QCloseEvent *e)
 {
-	kdbOpen();
+	//kdbOpen();
 	
 	::Key width;
 	::Key height;
@@ -192,7 +192,9 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 void MainWindowImpl::updateActions( )
 {
 	//cout << "updating actions" << endl;
-	if (!mainWidget->getSelected())
+	::Key *selected = mainWidget->getSelected();
+	
+	if (!selected)
 	{
 		cout << "can not update actions on null key" << endl;
 		return;
@@ -209,7 +211,7 @@ void MainWindowImpl::updateActions( )
 	else
 		undo->setEnabled(false);
 	
-	::Key *selected = mainWidget->getSelected();
+	
 	
 	if (keyGetType(selected) == KEY_TYPE_DIR)
 	{
@@ -218,17 +220,24 @@ void MainWindowImpl::updateActions( )
 		
 		KeySet childs;
 		ksInit(&childs);
-		if (kdbGetChildKeys(selected->key, &childs, KEY_TYPE_DIR|KDB_O_SORT))
+		
+		char *keyname = new char[keyGetNameSize(selected)];
+		keyGetName(selected, keyname, keyGetNameSize(selected));
+		
+		cout << keyname << endl;
+		
+		if (kdbGetChildKeys(keyname, &childs, KDB_O_DIR|KDB_O_SORT))
 		{
 			statusBar()->message(strerror(errno));
 		}
 		else
 		{
-			if (childs.size)
+			if (ksGetSize(&childs))
 				del->setEnabled(false);
 			else
 				del->setEnabled(true);
 		}
+		delete keyname;
 	}
 	else
 	{

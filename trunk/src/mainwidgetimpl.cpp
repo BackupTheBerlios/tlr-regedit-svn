@@ -128,7 +128,7 @@ void MainWidgetImpl::setUpGui()
 void MainWidgetImpl::updateKeyTree()
 {
 	keyTree->clear();
-	kdbOpen();
+	//kdbOpen();
 	
 	KeySet roots;	
 	ksInit(&roots);
@@ -136,17 +136,17 @@ void MainWidgetImpl::updateKeyTree()
 	kdbGetRootKeys(&roots);
 	::Key *mover;
 	
-	mover = roots.start;
+	mover = ksNext(&roots);
 	
-	while (mover != 0)
+	while (mover)
 	{
 		QListViewItem *item = new QListViewItem(keyTree, mover->key);
-		fillUpKeyTree(mover, item);
 		
 		switch (keyGetType(mover))
 		{
 			case KEY_TYPE_DIR:
-				item->setPixmap(0, dirIcon);	
+				item->setPixmap(0, dirIcon);
+				fillUpKeyTree(mover, item);
 				break;
 			case KEY_TYPE_LINK:
 				item->setPixmap(0, linkOverlay);
@@ -157,11 +157,11 @@ void MainWidgetImpl::updateKeyTree()
 			case KEY_TYPE_BINARY:
 				item->setPixmap(0, binaryIcon);
 		}
-		mover = mover->next;
+		mover = ksNext(&roots);
 	}
-	
+	//keyClose(mover);
 	ksClose(&roots);
-	kdbClose();
+	//kdbClose();
 }
 
 /**
@@ -174,10 +174,14 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 	KeySet keys;
 	
 	ksInit(&keys);
+	char *keyname = new char[keyGetNameSize(root)];
+	keyGetName(root, keyname, keyGetNameSize(root));
+	if (keyGetType(root) != KEY_TYPE_DIR)
+		return;
+	kdbGetChildKeys(keyname, &keys, KDB_O_DIR|KDB_O_SORT);
 	
-	kdbGetChildKeys(root->key, &keys, KEY_TYPE_DIR|KDB_O_SORT);
-	
-	::Key *mover = keys.start;
+	delete keyname;
+	::Key *mover = ksNext(&keys);;
 	
 	while (mover)
 	{
@@ -185,16 +189,14 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 		QListViewItem *subItem = new QListViewItem(item, QString(mover->key).section(RG_KEY_DELIM, -1));
 		
 		int type = keyGetType(mover);
-		bool isDir = false;
 			
 		if (type)
 		{
-	
 			switch (type)
 			{
 				case KEY_TYPE_DIR:
 					subItem->setPixmap(0, dirIcon);
-					isDir = true;
+					fillUpKeyTree(mover, subItem);
 					break;
 				case KEY_TYPE_LINK:
 					subItem->setPixmap(0, linkOverlay);
@@ -216,11 +218,7 @@ void MainWidgetImpl::fillUpKeyTree(::Key *root, QListViewItem *item)
 			/*cout << mover->key << endl;
 			perror("fillUpKeyTree");*/
 		}
-		
-		if (isDir)
-			fillUpKeyTree(mover, subItem); 
-			
-		mover = mover->next;
+		mover = ksNext(&keys);
 	}
 	ksClose(&keys);
 }
@@ -413,7 +411,7 @@ void MainWidgetImpl::setWidgetsEnabled(bool enabled)
  
 void MainWidgetImpl::changeSelected(QListViewItem *item)
 {
-	kdbOpen();
+	//kdbOpen();
 	if (!item)
 		return;
 	
@@ -439,7 +437,6 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	selectedAccess = keyGetAccess(selected);
 	
-	kdbClose();
 	emit keyChanged();
 	
 }
@@ -604,7 +601,7 @@ void MainWidgetImpl::copyNameToClipboard()
 
 void MainWidgetImpl::copyValueToClipboard()
 {
-	kdbOpen();
+	//kdbOpen();
 	char *name = strdup(getKeyNameFromItem(keyTree->currentItem()));
 	char *buf;
 	::Key key;
@@ -622,7 +619,7 @@ void MainWidgetImpl::copyValueToClipboard()
 	QClipboard *cp = QApplication::clipboard();
 	cp->setText(buf, QClipboard::Clipboard);
 	keyClose(&key);
-	kdbClose();
+	//kdbClose();
 }
 
 bool MainWidgetImpl::canUndo()

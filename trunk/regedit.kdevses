@@ -3,29 +3,19 @@
 <KDevPrjSession>
  <DocsAndViews NumberOfDocuments="4" >
   <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.cpp" >
-   <View0 line="119" Type="Source" />
+   <View0 line="190" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.h" >
-   <View0 line="74" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
+   <View0 line="0" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keymodifycommand.cpp" >
-   <View0 Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.h" >
+   <View0 line="0" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keymodifycommand.h" >
-   <View0 line="15" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:/usr/include/kdb.h" >
+   <View0 line="0" Type="Source" />
   </Doc3>
  </DocsAndViews>
  <pluginList>
-  <kdevbookmarks>
-   <bookmarks>
-    <bookmark url="/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
-     <mark line="51" />
-    </bookmark>
-   </bookmarks>
-  </kdevbookmarks>
-  <kdevsubversion>
-   <subversion recurseresolve="1" recurserelocate="1" recursemerge="1" recursecommit="1" base="" recursepropget="1" recurseswitch="1" recurseupdate="1" recursepropset="1" recursediff="1" recurserevert="1" forcemove="1" recursecheckout="1" forceremove="1" recurseadd="1" recurseproplist="1" forcemerge="1" />
-  </kdevsubversion>
   <kdevvalgrind>
    <executable path="" params="/usr/share/apps/karamba/themes/test.theme" />
    <valgrind path="/usr/bin/valgrind" params="" />
@@ -33,7 +23,22 @@
    <kcachegrind path="" />
   </kdevvalgrind>
   <kdevdebugger>
-   <breakpointList/>
+   <breakpointList>
+    <breakpoint0 location="/home/gregor/devel/registry/tlr-regedit/trunk/src/keymodifycommand.cpp:35" type="1" condition="" enabled="1" />
+   </breakpointList>
   </kdevdebugger>
+  <kdevsubversion>
+   <subversion recurseresolve="1" recurserelocate="1" recursemerge="1" recursecommit="1" base="" recursepropget="1" recurseswitch="1" recurseupdate="1" recursepropset="1" recursediff="1" recurserevert="1" forcemove="1" recursecheckout="1" forceremove="1" recurseadd="1" recurseproplist="1" forcemerge="1" />
+  </kdevsubversion>
+  <kdevbookmarks>
+   <bookmarks>
+    <bookmark url="/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
+     <mark line="53" />
+    </bookmark>
+    <bookmark url="/home/gregor/devel/registry/tlr-regedit/trunk/src/keyremovecommand.cpp" >
+     <mark line="0" />
+    </bookmark>
+   </bookmarks>
+  </kdevbookmarks>
  </pluginList>
 </KDevPrjSession>
