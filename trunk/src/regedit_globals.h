@@ -32,4 +32,7 @@ const QString keyPrefix = "user/sw/regedit";
 void checkKeyMake(Key *key, u_int8_t type);
 QString getIconDir();
 
+bool checkForPermission(int access, mode_t mode, uid_t user, gid_t group);
+
+
 #endif 

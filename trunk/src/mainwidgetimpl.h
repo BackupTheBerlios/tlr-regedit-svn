@@ -48,6 +48,8 @@ Q_OBJECT
 public:
 	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
 	~MainWidgetImpl();
+	
+public slots:
 	void updateKeyTree();
 	
 private:
@@ -55,10 +57,10 @@ private:
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
 	void setUpGui();
 	void setWidgetsEnabled(bool enabled);
+	
 	bool ignoreTextChanges;
 	::Key *selected;
-	mode_t selectedAccess;
-	
+	mode_t selectedAccess;	
 	QPixmap dirIcon;
 	QPixmap stringIcon;
 	QPixmap binaryIcon;
@@ -71,7 +73,7 @@ private slots:
 	void showKeyValues(bool update = false);
 	void changeSelected(QListViewItem *item);
 	QString getKeyNameFromItem(QListViewItem *item);
-	void showItemMenu(QListViewItem *item, const QPoint &p, int b);
+	void showItemMenu(QListViewItem * item, const QPoint &p, int b);
 	void keyAttributesChanged(const QString &s); 
 	void commentAttributeChanged();
 	void keyTypeChanged(int id);

@@ -10,13 +10,21 @@ HEADERS += newkeydialogimpl.h \
            mainwidgetimpl.h \
            mainwindowimpl.h \
            regedit_globals.h \
-           permissiondialogimpl.h 
+           permissiondialogimpl.h \
+           command.h \
+           keyremovecommand.h \
+           keymodifycommand.h \
+           keyaddcommand.h 
 SOURCES += newkeydialogimpl.cpp \
            main.cpp \
            mainwidgetimpl.cpp \
            mainwindowimpl.cpp \
            regedit_globals.cpp \
-           permissiondialogimpl.cpp 
+           permissiondialogimpl.cpp \
+           command.cpp \
+           keyremovecommand.cpp \
+           keymodifycommand.cpp \
+           keyaddcommand.cpp 
 TEMPLATE = app
 CONFIG += qt debug thread
 TARGET = regedit

@@ -48,6 +48,7 @@ using namespace std;
 #include <qapplication.h>
 #include <qaction.h>
 #include <qstatusbar.h>
+#include <qcheckbox.h>
 
 /**
  *the main constructor
@@ -92,7 +93,7 @@ void MainWidgetImpl::setUpGui()
 		stringIcon = QPixmap(prefix + "/txt.png");
 		linkOverlay = QPixmap(prefix +"/link.png");
 		lockOverlay = QPixmap(prefix + "/lockoverlay.png");
-		deniedIcon = QPixmap(prefix + "/stop_2.png");
+		deniedIcon = QPixmap(prefix + "/lock.png");
 		if (binaryIcon.isNull())
 			cout << "icon is null" << endl;
 	}
@@ -100,6 +101,7 @@ void MainWidgetImpl::setUpGui()
 
 void MainWidgetImpl::updateKeyTree()
 {
+	keyTree->clear();
 	registryOpen();
 	
 	KeySet roots;	
@@ -246,7 +248,8 @@ void MainWidgetImpl::showKeyValues(bool update)
 		return;
 	}
 	
-	
+	if (keyGetUID(selected) != getuid())
+		editButton->setEnabled(false);
 	
 	if (typeCombo->count() - COMBO_POS_DIR)
 		typeCombo->removeItem(COMBO_POS_DIR);
@@ -397,19 +400,16 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	keyInit(selected);
 	keySetName(selected, strdup(getKeyNameFromItem(item)));
 	
-	if (registryStatKey(selected))
-	{
-		parent->statusBar()->message(strerror(errno));
-		selectedAccess = 0;
-	}
-	else
-		selectedAccess = keyGetAccess(selected);
-	
 	if (registryGetKey(selected))
 	{
+		parent->statusBar()->message(strerror(errno));
+		delete selected;
 		selected = 0;
 		selectedAccess = 0;
+		return;
 	}
+	
+	selectedAccess = keyGetAccess(selected);
 	
 	showKeyValues();
 }
@@ -442,14 +442,14 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
 	b = 0;	//suppress warnings
-	if (item == 0)
+	if (selected == 0)
 		return;
 	
 	QPopupMenu *pop = new QPopupMenu(this, "key righclick popupmenu");
 	
 	::Key key;
 	
-	char *name = strdup(getKeyNameFromItem(item));
+	char *name = strdup(selected->key);
 	
 	keyInit(&key);
 	keySetName(&key, name);
@@ -504,7 +504,7 @@ void MainWidgetImpl::revokeChanges()
  */
 void MainWidgetImpl::applyChanges()
 {
-	registryOpen();
+	/*registryOpen();
 	::Key oldKey;
 	QString qsoldName = getKeyNameFromItem(keyTree->currentItem());
 	char *oldName;
@@ -515,7 +515,7 @@ void MainWidgetImpl::applyChanges()
 	
 	keySetName(&oldKey, oldName);	
 	
-	registryGetKey(&oldKey);
+	registryGetKey(&oldKey);keyAttributesChanged("");
 	
 	char *comment = strdup(keyComment->text());
 	keySetComment(&oldKey, comment);
@@ -545,13 +545,16 @@ void MainWidgetImpl::applyChanges()
 		case COMBO_POS_BIN:
 			keySetType(&oldKey, RG_KEY_TYPE_BINARY);
 			//keyTree->currentItem()->setPixmap(0, binaryIcon);
-			break;
+			break;keyAttributesChanged("");
 	}
 	
 	int ret = registrySetKey(&oldKey);
 	
-	if (ret)		
+	if (ret)
+	{
 		parent->statusBar()->message(strerror(errno));
+		showKeyValues(true);
+	}
 	else
 	{	
 		switch (typeCombo->currentItem())
@@ -574,19 +577,107 @@ void MainWidgetImpl::applyChanges()
 		}
 	}
 	
-	keyClose(&oldKey);
+	keyClose(&oldKey);*/
+	
+	
+	char *comment = strdup(keyComment->text());
+	keySetComment(selected, comment);
+	
+	char *value = strdup(keyValue->text());
+	keySetString(selected, value);
+	
+	keySetAccess(selected, selectedAccess);
+	
+	switch (typeCombo->currentItem())
+	{
+		case COMBO_POS_UND:
+			keySetType(selected, RG_KEY_TYPE_UNDEFINED);
+			//keyTree->currentItem()->setPixmap(0, undefinedIcon);
+			break;
+		case COMBO_POS_DIR:
+			keySetType(selected, RG_KEY_TYPE_DIR);
+			//keyTree->currentItem()->setPixmap(0, dirIcon);
+			break;
+		case COMBO_POS_LNK:
+			keySetType(selected, RG_KEY_TYPE_LINK);
+			//keyTree->currentItem()->setPixmap(0, linkOverlay);
+			break;
+		case COMBO_POS_STR:
+			keySetType(selected, RG_KEY_TYPE_STRING);
+			//keyTree->currentItem()->setPixmap(0, stringIcon);
+			break;
+		case COMBO_POS_BIN:
+			keySetType(selected, RG_KEY_TYPE_BINARY);
+			//keyTree->currentItem()->setPixmap(0, binaryIcon);
+			break;keyAttributesChanged("");
+	}
+	
+	int ret = registrySetKey(selected);
+	
+	if (ret)
+	{
+		parent->statusBar()->message(strerror(errno));
+		showKeyValues(true);
+	}
+	else
+	{	
+		switch (typeCombo->currentItem())
+		{
+			case COMBO_POS_UND:
+				//keyTree->currentItem()->setPixmap(0, undefinedIcon);
+				break;
+			case COMBO_POS_DIR:
+				keyTree->currentItem()->setPixmap(0, dirIcon);
+				break;
+			case COMBO_POS_LNK:
+				keyTree->currentItem()->setPixmap(0, linkOverlay);
+				break;
+			case COMBO_POS_STR:
+				keyTree->currentItem()->setPixmap(0, stringIcon);
+				break;
+			case COMBO_POS_BIN:
+				keyTree->currentItem()->setPixmap(0, binaryIcon);
+				break;
+		}
+	}
+	
 	
 	registryClose();
 	
 	applyButton->setEnabled(false);
 	revokeButton->setEnabled(false);
-	showKeyValues(true);
+	changeSelected(keyTree->currentItem());
+	//showKeyValues(true);
 }
 
 void MainWidgetImpl::changeAccessMode()
 {
 	PermissionDialogImpl *perm = new PermissionDialogImpl(selectedAccess, this, "The Change Permission Dailog");
-	perm->exec();
+	
+	if (perm->exec() == QDialog::Accepted)
+	{
+		mode_t before = selectedAccess;
+		cout << "changing permissions" << endl;
+		if (perm->ur->isChecked()) selectedAccess |= S_IRUSR; else selectedAccess &= ~S_IRUSR;
+		if (perm->uw->isChecked()) selectedAccess |= S_IWUSR; else selectedAccess &= ~S_IWUSR;
+		if (perm->ux->isChecked()) selectedAccess |= S_IXUSR; else selectedAccess &= ~S_IXUSR;
+		
+		if (perm->gr->isChecked()) selectedAccess |= S_IRGRP; else selectedAccess &= ~S_IRGRP;
+		if (perm->gw->isChecked()) selectedAccess |= S_IWGRP; else selectedAccess &= ~S_IWGRP;
+		if (perm->gx->isChecked()) selectedAccess |= S_IXGRP; else selectedAccess &= ~S_IXGRP;
+		
+		if (perm->otr->isChecked()) selectedAccess |= S_IROTH; else selectedAccess &= ~S_IROTH;
+		if (perm->ow->isChecked()) selectedAccess |= S_IWOTH; else selectedAccess &= ~S_IWOTH;
+		if (perm->ox->isChecked()) selectedAccess |= S_IXOTH; else selectedAccess &= ~S_IXOTH;
+		
+		if (before == selectedAccess)
+			cout << "the same permissions" << endl;
+		if (ignoreTextChanges)
+			cout << "hää?" << endl;
+		cout << selectedAccess << endl; 
+		showKeyValues();
+		keyAttributesChanged("");
+	}
 }
 
 void MainWidgetImpl::commentAttributeChanged()

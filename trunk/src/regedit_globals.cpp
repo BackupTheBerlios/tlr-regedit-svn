@@ -1,4 +1,9 @@
 #include "regedit_globals.h"
+
+#include <grp.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <iostream>
 
 using namespace std;
@@ -51,3 +56,32 @@ QString getIconDir()
 	return QString::null;
 
 }
+
+
+bool checkForPermission(int access, mode_t mode, uid_t user, gid_t group)
+{
+	uid_t uid = getuid();
+	size_t ng = getgroups(0, 0);
+	gid_t groups[ng];
+	
+	if (user == 0)
+		return true;
+	
+	if (mode & access)
+	{
+		if (user == uid)
+			return true;
+	}
+	
+	if (mode & access)
+	{
+		for (unsigned int i = 0; i < ng; i++)
+		{
+			if (group == groups[i])
+				return true;
+		}
+	}
+	
+	return false;
+}
+

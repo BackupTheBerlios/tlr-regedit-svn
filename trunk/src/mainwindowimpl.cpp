@@ -54,19 +54,36 @@ MainWindowImpl::MainWindowImpl (QWidget *parent, const char *name, WFlags fl)
 void MainWindowImpl::setUpGui()
 {
 	statusBar()->clear();
-	//editToolBar = new QToolBar(this, "The Main Windows ToolBar");
-	//editToolBar->setLabel("edit Commands");
+	editToolBar = new QToolBar(this, "The Main Windows ToolBar");
+	editToolBar->setLabel("edit Commands");
 	
 	QString iconDir(getIconDir());
 	
-	QPixmap reload(iconDir + "/reload.png");
+	QPixmap newIcon(iconDir + "/filenew.png");
+	QPixmap delIcon(iconDir + "/editdelete.png");
+	QPixmap reloadIcon(iconDir + "/reload.png");
+	QPixmap undoIcon(iconDir + "/undo.png");
+	QPixmap redoIcon(iconDir + "/redo.png");
 	
-	if (reload.isNull())
-		cout << "icon Null" << endl;
+	QAction *newkey = new QAction(QIconSet(newIcon), QString("new key"), QKeySequence(CTRL + Key_N), this, "newkey action");
+	QAction *del = new QAction(QIconSet(delIcon), QString("delet key"), QKeySequence(Key_Delete), this, "delete action");
+	QAction *reload = new QAction(QIconSet(reloadIcon), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
+	QAction *undo = new QAction(QIconSet(undoIcon), QString("undo"), QKeySequence(CTRL + Key_Z), this, "undo action");
+	QAction *redo = new QAction(QIconSet(redoIcon), QString("redo"), QKeySequence(CTRL + Key_R), this, "redo action");
 	
-	//QAction *refresh = new QAction(QIconSet(reload), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
+	newkey->addTo(editToolBar);
+	del->addTo(editToolBar);
+	editToolBar->addSeparator();
+	reload->addTo(editToolBar);	
+	undo->addTo(editToolBar);
+	redo->addTo(editToolBar);
 	
-	//refresh->addTo(editToolBar);
+	newkey->setDisabled(true);
+	del->setEnabled(false);
+	undo->setEnabled(false);
+	redo->setEnabled(false);
+	
+	connect(reload, SIGNAL(activated()), mainWidget, SLOT(updateKeyTree()));
 	
 	registryOpen();
 	
