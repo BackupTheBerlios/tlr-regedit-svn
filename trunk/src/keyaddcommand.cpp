@@ -28,6 +28,7 @@ void KeyAddCommand::execute()
 	registryOpen();
 	registrySetKey(addedKey);
 	registryClose();
+	emit commandPerformed();
 }
 
 void KeyAddCommand::unexecute()
@@ -38,4 +39,5 @@ void KeyAddCommand::unexecute()
 	registryRemove(name);
 	delete name;
 	registryClose();
+	emit commandPerformed();
 }

@@ -23,6 +23,10 @@
 #include "permissiondialogimpl.h"
 #include "regedit_globals.h"
 
+#include "keyremovecommand.h"
+#include "keymodifycommand.h"
+#include "keyaddcommand.h"
+
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -72,7 +76,9 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	connect(revokeButton, SIGNAL(clicked()), this, SLOT(revokeChanges()));
 	connect(applyButton, SIGNAL(clicked()), this, SLOT(applyChanges()));
 	
-	connect(editButton, SIGNAL(clicked()), this, SLOT(changeAccessMode()));	
+	connect(editButton, SIGNAL(clicked()), this, SLOT(changeAccessMode()));
+	
+	connect(this, SIGNAL(urStacksModified()), parent, SLOT(updateUndoRedoActions()));
 	
 	setWidgetsEnabled(false);
 	setUpGui();
@@ -441,7 +447,10 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
+	item->parent();
 	b = 0;	//suppress warnings
+	
+	
 	if (selected == 0)
 		return;
 	
@@ -579,6 +588,15 @@ void MainWidgetImpl::applyChanges()
 	
 	keyClose(&oldKey);*/
 	
+	registryOpen();
+	
+	if (selected == 0)
+		cout << "fuck" << endl;
+	
+	::Key *old = new ::Key;
+	keyInit(old);
+	
+	keyDup(selected, old);
 	
 	char *comment = strdup(keyComment->text());
 	keySetComment(selected, comment);
@@ -609,7 +627,7 @@ void MainWidgetImpl::applyChanges()
 		case COMBO_POS_BIN:
 			keySetType(selected, RG_KEY_TYPE_BINARY);
 			//keyTree->currentItem()->setPixmap(0, binaryIcon);
-			break;keyAttributesChanged("");
+			break;//keyAttributesChanged("");
 	}
 	
 	int ret = registrySetKey(selected);
@@ -639,6 +657,8 @@ void MainWidgetImpl::applyChanges()
 				keyTree->currentItem()->setPixmap(0, binaryIcon);
 				break;
 		}
+		pushUndo(new KeyModifyCommand(old, selected, this, "Modify Key Command"));
+		clearRedoStack();
 	}
 	
 	
@@ -858,4 +878,59 @@ void MainWidgetImpl::copyValueToClipboard()
 	cp->setText(buf, QClipboard::Clipboard);
 	keyClose(&key);
 	registryClose();
+}
+
+bool MainWidgetImpl::canUndo()
+{
+	return !undoStack.isEmpty();
+}
+
+bool MainWidgetImpl::canRedo()
+{
+	return !redoStack.isEmpty();
+}
+
+void MainWidgetImpl::pushUndo(Command *cmd)
+{
+	undoStack.push(cmd);
+	clearRedoStack();
+	emit urStacksModified();
+}
+
+void MainWidgetImpl::undo()
+{
+	if (undoStack.isEmpty())
+	{
+		cout << "programm error please kill programmer" << endl;
+		return;
+	}	
+	Command *cmd = undoStack.pop();
+	if (undoStack.remove())	cout << "removed first element" << endl;
+	cmd->unexecute();
+	redoStack.push(cmd);
+	changeSelected(keyTree->currentItem());
+	showKeyValues();
+	emit urStacksModified();
+}
+
+void MainWidgetImpl::redo()
+{
+	if (redoStack.isEmpty())
+	{
+		cout << "programm error please kill programmer" << endl;
+		return;
+	}	
+	Command *cmd = redoStack.pop();
+	redoStack.remove();
+	cmd->execute();
+	undoStack.push(cmd);
+	changeSelected(keyTree->currentItem());
+	showKeyValues();
+	emit urStacksModified();
+}
+
+void MainWidgetImpl::clearRedoStack()
+{
+	cout << "clearing redo stack" << endl;
+	redoStack.clear();
 }

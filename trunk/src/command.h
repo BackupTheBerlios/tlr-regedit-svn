@@ -23,7 +23,9 @@ Q_OBJECT
 public:
 	Command(QObject *parent = 0, const char *name = 0);
 	virtual ~Command();
-
+signals:
+	void commandPerformed();
+	
 public slots:
 	virtual void execute() = 0;
 	virtual void unexecute() = 0;

@@ -14,6 +14,10 @@
 
 #include <command.h>
 
+extern "C"
+{
+	#include <registry.h>
+}
 /**
 @author Gregor Burger
 */
@@ -21,10 +25,17 @@ class KeyModifyCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyModifyCommand(QObject *parent = 0, const char *name = 0);
+    KeyModifyCommand(::Key *oldKey, ::Key *newKey, QObject *parent = 0, const char *name = 0);
 
     ~KeyModifyCommand();
+    
+public slots:
+	virtual void execute();
+	virtual void unexecute();
 
+private:
+	::Key *oldKey;
+	::Key *newKey;
 };
 
 #endif

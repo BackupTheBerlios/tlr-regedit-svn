@@ -27,6 +27,7 @@ class MainWidgetImpl;
 class QToolBar;
 class QCloseEvent;
 class QStatusBar;
+class QAction;
  
 class MainWindowImpl : public QMainWindow
 {
@@ -35,6 +36,9 @@ Q_OBJECT
 public:
 	MainWindowImpl(QWidget *parent = 0, const char *name = 0, WFlags f = WType_TopLevel);
 
+public slots:
+	void updateUndoRedoActions();
+
 private:
 	void setUpGui();
 	void closeEvent(QCloseEvent *e);
@@ -42,6 +46,11 @@ private:
 	QToolBar *editToolBar;
 	QToolBar *othersToolBar;
 	
+	QAction *redo;
+	QAction *undo;
+	QAction *reload;
+	QAction *del;
+	QAction *newkey;
 };
  
 #endif

@@ -11,14 +11,39 @@
 //
 #include "keymodifycommand.h"
 
-KeyModifyCommand::KeyModifyCommand(QObject *parent, const char *name)
+KeyModifyCommand::KeyModifyCommand(::Key *oKey, ::Key *nKey, QObject *parent, const char *name)
  : Command(parent, name)
 {
+	oldKey = new ::Key;
+	newKey = new ::Key;
+	keyDup(oKey, oldKey);
+	keyDup(nKey, newKey);
 }
 
 
 KeyModifyCommand::~KeyModifyCommand()
 {
+	keyClose(oldKey);
+	delete oldKey;
+	
+	keyClose(newKey);
+	delete newKey;
+}
+
+void KeyModifyCommand::execute()
+{
+	registryOpen();
+	registrySetKey(newKey);
+	registryClose();
+	emit commandPerformed();
+}
+
+void KeyModifyCommand::unexecute()
+{
+	registryOpen();
+	registrySetKey(oldKey);
+	registryClose();
+	emit commandPerformed();
 }
 
 

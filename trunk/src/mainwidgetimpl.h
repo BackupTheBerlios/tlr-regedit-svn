@@ -25,11 +25,14 @@ extern "C"
 {
 	#include <registry.h>
 }
+#include <stack>
 
 #include "regedit_globals.h"
 #include "mainwidget.h"
+#include "command.h"
 #include <qpoint.h>
 #include <qpixmap.h>
+#include <qptrstack.h>
 
 #define COMBO_POS_UND 0
 #define COMBO_POS_LNK 1
@@ -48,15 +51,21 @@ Q_OBJECT
 public:
 	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
 	~MainWidgetImpl();
+	bool canUndo();
+	bool canRedo();
+signals:
+	void urStacksModified();
 	
 public slots:
 	void updateKeyTree();
+	void undo();
+	void redo();
 	
 private:
-	
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
 	void setUpGui();
 	void setWidgetsEnabled(bool enabled);
+	void pushUndo(Command *cmd);
 	
 	bool ignoreTextChanges;
 	::Key *selected;
@@ -68,6 +77,9 @@ private:
 	QPixmap lockOverlay;
 	QPixmap deniedIcon;
 	MainWindowImpl *parent;
+	
+	QPtrStack<Command> undoStack;
+	QPtrStack<Command> redoStack;
 	
 private slots:
 	void showKeyValues(bool update = false);
@@ -85,6 +97,7 @@ private slots:
 	void deleteKey();
 	void revokeChanges();
 	void applyChanges();
+	void clearRedoStack();
 };
 
 #endif

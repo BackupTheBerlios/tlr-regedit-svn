@@ -65,11 +65,11 @@ void MainWindowImpl::setUpGui()
 	QPixmap undoIcon(iconDir + "/undo.png");
 	QPixmap redoIcon(iconDir + "/redo.png");
 	
-	QAction *newkey = new QAction(QIconSet(newIcon), QString("new key"), QKeySequence(CTRL + Key_N), this, "newkey action");
-	QAction *del = new QAction(QIconSet(delIcon), QString("delet key"), QKeySequence(Key_Delete), this, "delete action");
-	QAction *reload = new QAction(QIconSet(reloadIcon), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
-	QAction *undo = new QAction(QIconSet(undoIcon), QString("undo"), QKeySequence(CTRL + Key_Z), this, "undo action");
-	QAction *redo = new QAction(QIconSet(redoIcon), QString("redo"), QKeySequence(CTRL + Key_R), this, "redo action");
+	newkey = new QAction(QIconSet(newIcon), QString("new key"), QKeySequence(CTRL + Key_N), this, "newkey action");
+	del = new QAction(QIconSet(delIcon), QString("delet key"), QKeySequence(Key_Delete), this, "delete action");
+	reload = new QAction(QIconSet(reloadIcon), QString("refresh"), QKeySequence(Key_F5), this, "refresh action");
+	undo = new QAction(QIconSet(undoIcon), QString("undo"), QKeySequence(CTRL + Key_Z), this, "undo action");
+	redo = new QAction(QIconSet(redoIcon), QString("redo"), QKeySequence(CTRL + Key_R), this, "redo action");
 	
 	newkey->addTo(editToolBar);
 	del->addTo(editToolBar);
@@ -84,6 +84,8 @@ void MainWindowImpl::setUpGui()
 	redo->setEnabled(false);
 	
 	connect(reload, SIGNAL(activated()), mainWidget, SLOT(updateKeyTree()));
+	connect(undo, SIGNAL(activated()), mainWidget, SLOT(undo()));
+	connect(redo, SIGNAL(activated()), mainWidget, SLOT(redo()));
 	
 	registryOpen();
 	
@@ -203,4 +205,18 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 	registryClose();
 	
 	QMainWindow::closeEvent(e);
+}
+
+void MainWindowImpl::updateUndoRedoActions( )
+{
+	cout << "updating actions" << endl;
+	if (mainWidget->canRedo())
+		redo->setEnabled(true);
+	else
+		redo->setEnabled(false);
+		
+	if (mainWidget->canUndo())
+		undo->setEnabled(true);
+	else
+		undo->setEnabled(false);
 }
