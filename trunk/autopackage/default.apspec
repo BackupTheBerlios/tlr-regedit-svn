@@ -19,14 +19,19 @@ PackageVersion: 1
 The Linux Registry Editor was designed to be the graphical equivalent to the rg command. It shows you all the values of the keys including the type, comment, uid, gid, acces mode and acces times. It allows you to edit some of the attributes mentioned above.
 
 [BuildPrepare]
-cmake ./
+mkdir cmake-build
+cd cmake-build
+
 if locateCommand apgcc; then
 	export CC=apgcc;
 	export CXX=apg++;
 fi
-make CC=$CC CXX=$CXX
+cmake .. -DCMAKE_CXX_COMPILER:STRING=$CXX -DCMAKE_C_COMPILER:STRING=$CC -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+make 
+cd ..
 
 [BuildUnprepare]
+rm -R cmake-build
 unprepareBuild
 
 [Imports]
@@ -35,7 +40,7 @@ $build_root/icons/*.png
 EOF
 
 import ./bin <<EOF
-$build_root/src/regedit
+$build_root/cmake-build/src/regedit
 EOF
 
 import ./share/applications <<EOF
