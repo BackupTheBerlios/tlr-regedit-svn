@@ -1,25 +1,13 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="6" >
-  <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwidgetimpl.cpp" >
-   <View0 line="671" Type="Source" />
+ <DocsAndViews NumberOfDocuments="2" >
+  <Doc0 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keyaddcommand.cpp" >
+   <View0 line="92" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/mainwindowimpl.cpp" >
-   <View0 line="191" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keyaddcommand.h" >
+   <View0 line="42" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/usr/include/kdb.h" >
-   <View0 line="434" Type="Source" />
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/main.cpp" >
-   <View0 line="33" Type="Source" />
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keyremovecommand.cpp" >
-   <View0 line="30" Type="Source" />
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:/home/gregor/devel/registry/tlr-regedit/trunk/src/keymodifycommand.cpp" >
-   <View0 line="38" Type="Source" />
-  </Doc5>
  </DocsAndViews>
  <pluginList>
   <kdevvalgrind>
@@ -29,9 +17,7 @@
    <kcachegrind path="" />
   </kdevvalgrind>
   <kdevdebugger>
-   <breakpointList>
-    <breakpoint0 location="/home/gregor/devel/registry/tlr-regedit/trunk/src/keymodifycommand.cpp:34" type="1" condition="" enabled="1" />
-   </breakpointList>
+   <breakpointList/>
   </kdevdebugger>
   <kdevsubversion>
    <subversion recurseresolve="1" recurserelocate="1" recursemerge="1" recursecommit="1" base="" recursepropget="1" recurseswitch="1" recurseupdate="1" recursepropset="1" recursediff="1" recurserevert="1" forcemove="1" recursecheckout="1" forceremove="1" recurseadd="1" recurseproplist="1" forcemerge="1" />

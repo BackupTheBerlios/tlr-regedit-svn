@@ -42,45 +42,19 @@ KeyAddCommand::KeyAddCommand(NewKeyDialogImpl *dialog, MainWidgetImpl *mainWidge
 		
 	if (newDialog->getComment().length())
 		keySetComment(key, strdup(newDialog->getComment()));
-	
-	item = new QListViewItem(mainWidget->keyTree->currentItem(), newDialog->getName().section(RG_KEY_DELIM, -1));
-	item->setVisible(false);
-		
-	int vlength = newDialog->getValue().length();
-	
-	switch (newDialog->getType())
-	{
-		case KEY_TYPE_STRING:
-			item->setPixmap(0, mainWidget->stringIcon);
-			if (vlength) keySetString(key, strdup(newDialog->getValue()));
-			break;
-		case KEY_TYPE_BINARY:
-			item->setPixmap(0, mainWidget->binaryIcon);
-			if (vlength) keySetBinary(key, strdup(newDialog->getValue()), vlength);
-			break;
-		case KEY_TYPE_LINK:
-			item->setPixmap(0, mainWidget->linkOverlay);
-			if (vlength) keySetLink(key, strdup(newDialog->getValue()));
-			break;
-		case KEY_TYPE_DIR:
-			item->setPixmap(0, mainWidget->dirIcon);
-			break;
-	}
+	father = mainWidget->keyTree->currentItem();
 }
 
 
 KeyAddCommand::~KeyAddCommand()
 {
-	kdbOpen();
 	keyClose(key);
 	delete key;
 	delete item;
-	kdbClose();
 }
 
 bool KeyAddCommand::execute()
 {
-	kdbOpen();
 	if (kdbSetKey(key))
 	{
 		mainWidget()->showInStatusBar(strerror(errno));
@@ -88,16 +62,15 @@ bool KeyAddCommand::execute()
 	}
 	else
 	{
-		item->setVisible(true);
+		item = genItemForKey();
 		//mainWidget()->keyTree->setSelected(item, true);
+		kdbSetKey(key);
 		return true;
 	}
-	kdbClose();
 }
 
 bool KeyAddCommand::unexecute()
 {
-	kdbOpen();
 	char *name = new char[keyGetNameSize(key)];
 	keyGetName(key, name, keyGetNameSize(key));
 	if (kdbRemove(name))
@@ -107,9 +80,41 @@ bool KeyAddCommand::unexecute()
 	}
 	else
 	{
-		item->setVisible(false);
+		delete item;
+		kdbRemove(key->key);
+		//item->setVisible(false);
 		return true;
 		
 	}
-	kdbClose();
+}
+
+QListViewItem *KeyAddCommand::genItemForKey()
+{
+	QListViewItem *temp = new QListViewItem(father, newDialog->getName().section(RG_KEY_DELIM, -1));
+	//temp->setVisible(false);
+		
+	int vlength = newDialog->getValue().length();
+	
+	switch (newDialog->getType())
+	{
+		case KEY_TYPE_STRING:
+			temp->setPixmap(0, mainWidget()->stringIcon);
+			//if (vlength) 
+			keySetString(key, strdup(newDialog->getValue()));
+			break;
+		case KEY_TYPE_BINARY:
+			temp->setPixmap(0, mainWidget()->binaryIcon);
+			//if (vlength) 
+			keySetBinary(key, strdup(newDialog->getValue()), vlength);
+			break;
+		case KEY_TYPE_LINK:
+			temp->setPixmap(0, mainWidget()->linkOverlay);
+			//if (vlength) 
+			keySetLink(key, strdup(newDialog->getValue()));
+			break;
+		case KEY_TYPE_DIR:
+			temp->setPixmap(0, mainWidget()->dirIcon);
+			break;
+	}
+	return temp;
 }

@@ -48,7 +48,10 @@ public slots:
 private:
 	::Key *key;
 	NewKeyDialogImpl *newDialog;
-	QListViewItem *item;
+	QListViewItem *item, *father;
+	//MainWidgetImpl *mainWidget;
+	
+	QListViewItem *genItemForKey();
 };
 
 #endif
