@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>595</width>
-            <height>340</height>
+            <height>412</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -187,60 +187,58 @@
                                     <property name="title">
                                         <string>Type</string>
                                     </property>
-                                    <vbox>
+                                    <grid>
                                         <property name="name">
                                             <cstring>unnamed</cstring>
                                         </property>
-                                        <widget class="QLayoutWidget">
+                                        <widget class="QRadioButton" row="0" column="0">
                                             <property name="name">
-                                                <cstring>layout14</cstring>
+                                                <cstring>binaryRadio</cstring>
                                             </property>
-                                            <vbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QRadioButton">
-                                                    <property name="name">
-                                                        <cstring>binaryRadio</cstring>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>&amp;Binary</string>
-                                                    </property>
-                                                    <property name="accel">
-                                                        <string>Alt+B</string>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QRadioButton">
-                                                    <property name="name">
-                                                        <cstring>stringRadio</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>true</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>&amp;String</string>
-                                                    </property>
-                                                    <property name="accel">
-                                                        <string>Alt+S</string>
-                                                    </property>
-                                                    <property name="checked">
-                                                        <bool>true</bool>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QRadioButton">
-                                                    <property name="name">
-                                                        <cstring>linkRadio</cstring>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>&amp;Link</string>
-                                                    </property>
-                                                    <property name="accel">
-                                                        <string>Alt+L</string>
-                                                    </property>
-                                                </widget>
-                                            </vbox>
+                                            <property name="text">
+                                                <string>&amp;Binary</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+B</string>
+                                            </property>
                                         </widget>
-                                    </vbox>
+                                        <widget class="QRadioButton" row="1" column="0">
+                                            <property name="name">
+                                                <cstring>stringRadio</cstring>
+                                            </property>
+                                            <property name="enabled">
+                                                <bool>true</bool>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;String</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+S</string>
+                                            </property>
+                                            <property name="checked">
+                                                <bool>true</bool>
+                                            </property>
+                                        </widget>
+                                        <widget class="QRadioButton" row="2" column="0">
+                                            <property name="name">
+                                                <cstring>linkRadio</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;Link</string>
+                                            </property>
+                                            <property name="accel">
+                                                <string>Alt+L</string>
+                                            </property>
+                                        </widget>
+                                        <widget class="QRadioButton" row="3" column="0">
+                                            <property name="name">
+                                                <cstring>directoryRadio</cstring>
+                                            </property>
+                                            <property name="text">
+                                                <string>&amp;Directory</string>
+                                            </property>
+                                        </widget>
+                                    </grid>
                                 </widget>
                                 <spacer>
                                     <property name="name">
@@ -255,7 +253,7 @@
                                     <property name="sizeHint">
                                         <size>
                                             <width>21</width>
-                                            <height>57</height>
+                                            <height>125</height>
                                         </size>
                                     </property>
                                 </spacer>

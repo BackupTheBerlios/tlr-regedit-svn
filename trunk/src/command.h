@@ -17,18 +17,23 @@
 /**
 @author Gregor Burger
 */
+class MainWidgetImpl;
+
 class Command : public QObject
 {
 Q_OBJECT
 public:
-	Command(QObject *parent = 0, const char *name = 0);
+	Command(MainWidgetImpl *mainWidget, const char *name = 0);
 	virtual ~Command();
+	MainWidgetImpl *mainWidget();
 signals:
 	void commandPerformed();
 	
 public slots:
 	virtual void execute() = 0;
 	virtual void unexecute() = 0;
+private:
+	MainWidgetImpl *m_mainWidget;
 };
 
 #endif

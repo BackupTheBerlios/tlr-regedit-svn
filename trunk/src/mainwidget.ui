@@ -97,7 +97,7 @@
                                             <cstring>textLabel1</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Key Name</string>
+                                            <string>Key &amp;Name</string>
                                         </property>
                                         <property name="buddy" stdset="0">
                                             <cstring>keyName</cstring>
@@ -116,7 +116,7 @@
                                             <cstring>textLabel2</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Key Value</string>
+                                            <string>Key &amp;Value</string>
                                         </property>
                                         <property name="buddy" stdset="0">
                                             <cstring>keyValue</cstring>
@@ -132,7 +132,10 @@
                                             <cstring>textLabel1_2</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Type</string>
+                                            <string>&amp;Type</string>
+                                        </property>
+                                        <property name="buddy" stdset="0">
+                                            <cstring>typeCombo</cstring>
                                         </property>
                                     </widget>
                                     <widget class="QComboBox" row="1" column="3">
@@ -173,10 +176,10 @@
                                             <cstring>textLabel9</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Comment</string>
+                                            <string>&amp;Comment</string>
                                         </property>
                                         <property name="buddy" stdset="0">
-                                            <cstring>textEdit1</cstring>
+                                            <cstring>keyComment</cstring>
                                         </property>
                                     </widget>
                                     <widget class="QTextEdit" row="2" column="1" rowspan="1" colspan="3">
@@ -441,7 +444,7 @@
                                 <bool>false</bool>
                             </property>
                             <property name="text">
-                                <string>Revoke Changes</string>
+                                <string>&amp;Revoke Changes</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
@@ -452,7 +455,7 @@
                                 <bool>false</bool>
                             </property>
                             <property name="text">
-                                <string>Apply Changes</string>
+                                <string>&amp;Apply Changes</string>
                             </property>
                         </widget>
                     </hbox>

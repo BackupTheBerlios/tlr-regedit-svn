@@ -26,7 +26,7 @@ class KeyAddCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyAddCommand(::Key *key, QObject *parent = 0, const char *name = 0);
+    KeyAddCommand(::Key *key, MainWidgetImpl *mainWidget, const char *name = 0);
 
     ~KeyAddCommand();
     

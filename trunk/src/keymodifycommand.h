@@ -12,7 +12,7 @@
 #ifndef KEYMODIFYCOMMAND_H
 #define KEYMODIFYCOMMAND_H
 
-#include <command.h>
+#include "command.h"
 
 extern "C"
 {
@@ -25,7 +25,7 @@ class KeyModifyCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyModifyCommand(::Key *oldKey, ::Key *newKey, QObject *parent = 0, const char *name = 0);
+    KeyModifyCommand(::Key *oldKey, ::Key *newKey, MainWidgetImpl *mainWidget, const char *name = 0);
 
     ~KeyModifyCommand();
     

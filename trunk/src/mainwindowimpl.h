@@ -37,7 +37,7 @@ public:
 	MainWindowImpl(QWidget *parent = 0, const char *name = 0, WFlags f = WType_TopLevel);
 
 public slots:
-	void updateUndoRedoActions();
+	void updateActions();
 
 private:
 	void setUpGui();

@@ -10,9 +10,10 @@
 //
 //
 #include "keymodifycommand.h"
+#include "mainwidgetimpl.h"
 
-KeyModifyCommand::KeyModifyCommand(::Key *oKey, ::Key *nKey, QObject *parent, const char *name)
- : Command(parent, name)
+KeyModifyCommand::KeyModifyCommand(::Key *oKey, ::Key *nKey, MainWidgetImpl *mainWidget, const char *name)
+ : Command(mainWidget, name)
 {
 	oldKey = new ::Key;
 	newKey = new ::Key;

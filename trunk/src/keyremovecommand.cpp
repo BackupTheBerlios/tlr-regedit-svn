@@ -11,7 +11,7 @@
 //
 #include "keyremovecommand.h"
 
-KeyRemoveCommand::KeyRemoveCommand(::Key *removedKey, QObject *parent, const char *name)
+KeyRemoveCommand::KeyRemoveCommand(::Key *removedKey, MainWidgetImpl *parent, const char *name)
  : Command(parent, name)
 {
 	keyDup(removedKey, removed);

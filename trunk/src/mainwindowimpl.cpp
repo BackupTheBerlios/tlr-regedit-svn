@@ -207,7 +207,7 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 	QMainWindow::closeEvent(e);
 }
 
-void MainWindowImpl::updateUndoRedoActions( )
+void MainWindowImpl::updateActions( )
 {
 	cout << "updating actions" << endl;
 	if (mainWidget->canRedo())
@@ -219,4 +219,26 @@ void MainWindowImpl::updateUndoRedoActions( )
 		undo->setEnabled(true);
 	else
 		undo->setEnabled(false);
+	
+	::Key *selected = mainWidget->getSelected();
+	
+	if (keyGetType(selected) == RG_KEY_TYPE_DIR)
+	{
+		newkey->setEnabled(true);
+		
+		KeySet childs;
+		ksInit(&childs);
+		registryGetChildKeys(selected->key, &childs, RG_O_DIR|RG_O_SORT);
+		
+		if (childs.size)
+			del->setEnabled(false);
+		else
+			del->setEnabled(true);
+	}
+	else
+	{
+		newkey->setEnabled(false);
+		del->setEnabled(true);
+	}
+	
 }

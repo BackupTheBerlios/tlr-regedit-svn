@@ -65,6 +65,9 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 {
 	ignoreTextChanges = false;		//a flag to indicate wheater the program or the user has edited the fields
 	
+	undoStack.setAutoDelete(false);
+	redoStack.setAutoDelete(false);
+	
 	connect(keyTree, SIGNAL(selectionChanged(QListViewItem*)), this, SLOT(changeSelected(QListViewItem*)));
 	connect(keyTree, SIGNAL(rightButtonClicked(QListViewItem*, const QPoint&, int)), this, SLOT(showItemMenu(QListViewItem*, const QPoint &, int)));
 	
@@ -78,7 +81,8 @@ MainWidgetImpl::MainWidgetImpl(QWidget *parent, const char *name, WFlags fl)
 	
 	connect(editButton, SIGNAL(clicked()), this, SLOT(changeAccessMode()));
 	
-	connect(this, SIGNAL(urStacksModified()), parent, SLOT(updateUndoRedoActions()));
+	connect(this, SIGNAL(keyChanged()), parent, SLOT(updateActions()));
+	connect(this, SIGNAL(keyChanged()), this, SLOT(showKeyValues()));
 	
 	setWidgetsEnabled(false);
 	setUpGui();
@@ -104,6 +108,11 @@ void MainWidgetImpl::setUpGui()
 			cout << "icon is null" << endl;
 	}
 }
+
+/*QListView *MainWidgetImpl::getKeyTree()
+{
+	return keyTree;
+}*/
 
 void MainWidgetImpl::updateKeyTree()
 {
@@ -371,6 +380,7 @@ void MainWidgetImpl::showKeyValues(bool update)
 	delete readable;
 	
 	ignoreTextChanges = false;
+
 }
 
 void MainWidgetImpl::setWidgetsEnabled(bool enabled)
@@ -417,9 +427,13 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	selectedAccess = keyGetAccess(selected);
 	
-	showKeyValues();
+	emit keyChanged();
 }
 
+Key * MainWidgetImpl::getSelected()
+{
+	return selected;
+}
 
 /**
  * returns the full keyname from an item in the treeview
@@ -554,7 +568,7 @@ void MainWidgetImpl::applyChanges()
 		case COMBO_POS_BIN:
 			keySetType(&oldKey, RG_KEY_TYPE_BINARY);
 			//keyTree->currentItem()->setPixmap(0, binaryIcon);
-			break;keyAttributesChanged("");
+			break;keyAttributesChanged("");showKeyValues();
 	}
 	
 	int ret = registrySetKey(&oldKey);
@@ -695,7 +709,7 @@ void MainWidgetImpl::changeAccessMode()
 		if (ignoreTextChanges)
 			cout << "hää?" << endl;
 		cout << selectedAccess << endl; 
-		showKeyValues();
+		emit keyChanged();
 		keyAttributesChanged("");
 	}
 }
@@ -740,48 +754,7 @@ void MainWidgetImpl::deleteKey()
 		perror("removing key failed");
 	delete keyTree->currentItem();
 	
-	
 	registryClose();
-}
-
-void MainWidgetImpl::addNewDir()
-{
-	bool ok;
-	
-	QString name = QInputDialog::getText("new directory name", "enter the name for the new directory", QLineEdit::Normal, QString::null, &ok, this, "new key name inputdialog");
-	
-	if (ok && !name.isEmpty())
-	{
-		QString fullName = getKeyNameFromItem(keyTree->currentItem()) + RG_KEY_DELIM + name;
-		registryOpen();
-		
-		::Key key;
-		
-		
-		char *temp = strdup(fullName);
-		
-		keyInit(&key);
-
-		keySetName(&key, temp);
-		
-		keySetType(&key, RG_KEY_TYPE_DIR);
-		
-		int ret = registrySetKey(&key);
-		
-		if (ret)
-		{
-			perror("adding dir");
-		}
-		
-		keyClose(&key);
-			
-		registryClose();
-		
-		QListViewItem *item = new QListViewItem(keyTree->currentItem(), name);
-		
-		item->setPixmap(0, dirIcon);
-		delete temp;
-	}
 }
 
 void MainWidgetImpl::addNewKey()
@@ -804,43 +777,34 @@ void MainWidgetImpl::addNewKey()
 	
 		QListViewItem *item = new QListViewItem(keyTree->currentItem(), newDialog->getName().section(RG_KEY_DELIM, -1));
 		
+		int vlength = newDialog->getValue().length();
+		
 		switch (newDialog->getType())
 		{
 			case RG_KEY_TYPE_STRING:
 				item->setPixmap(0, stringIcon);
+				if (vlength) keySetString(&key, strdup(newDialog->getValue()));
 				break;
 			case RG_KEY_TYPE_BINARY:
 				item->setPixmap(0, binaryIcon);
+				if (vlength) keySetBinary(&key, strdup(newDialog->getValue()), vlength);
 				break;
 			case RG_KEY_TYPE_LINK:
 				item->setPixmap(0, linkOverlay);
+				if (vlength) keySetLink(&key, strdup(newDialog->getValue()));
+				break;
+			case RG_KEY_TYPE_DIR:
+				item->setPixmap(0, dirIcon);
 				break;
 		}
 		
-		if (newDialog->getValue().length())
+		if (registrySetKey(&key))
 		{
-			switch (newDialog->getType())
-			{
-				case RG_KEY_TYPE_STRING:
-					keySetString(&key, strdup(newDialog->getValue()));
-					item->setPixmap(0, stringIcon);
-					break;
-				case RG_KEY_TYPE_BINARY:
-					keySetBinary(&key, (void *) strdup(newDialog->getValue()), newDialog->getValue().length());
-					item->setPixmap(0, binaryIcon);
-					break;
-				case RG_KEY_TYPE_LINK:
-					keySetLink(&key, strdup(newDialog->getValue()));
-					item->setPixmap(0, linkOverlay);
-					break;
-			}
+			parent->statusBar()->message(strerror(errno));
+			delete item;
 		}
-		int ret = registrySetKey(&key);
-		
-		if (ret)
-		{
-			perror("adding new key");
-		}
+		else
+			keyTree->setSelected(item, true);
 		
 		keyClose(&key);
 		
@@ -882,19 +846,20 @@ void MainWidgetImpl::copyValueToClipboard()
 
 bool MainWidgetImpl::canUndo()
 {
-	return !undoStack.isEmpty();
+	return undoStack.count();
 }
 
 bool MainWidgetImpl::canRedo()
 {
-	return !redoStack.isEmpty();
+	return redoStack.count();
 }
 
 void MainWidgetImpl::pushUndo(Command *cmd)
 {
 	undoStack.push(cmd);
+	cout << "size of undostack " << undoStack.count() << endl;
 	clearRedoStack();
-	emit urStacksModified();
+	emit keyChanged();
 }
 
 void MainWidgetImpl::undo()
@@ -904,29 +869,31 @@ void MainWidgetImpl::undo()
 		cout << "programm error please kill programmer" << endl;
 		return;
 	}	
+		cout << "size of redostack " << redoStack.count() << endl;
 	Command *cmd = undoStack.pop();
-	if (undoStack.remove())	cout << "removed first element" << endl;
+	//if (undoStack.remove())	cout << "removed first element" << endl;
 	cmd->unexecute();
 	redoStack.push(cmd);
-	changeSelected(keyTree->currentItem());
-	showKeyValues();
-	emit urStacksModified();
+	//changeSelected(keyTree->currentItem());
+	//showKeyValues();
+	emit keyChanged();
 }
 
-void MainWidgetImpl::redo()
+void MainWidgetImpl::redo() 
 {
 	if (redoStack.isEmpty())
 	{
 		cout << "programm error please kill programmer" << endl;
 		return;
-	}	
+	}
+	cout << "size of undostack " << undoStack.count() << endl;
 	Command *cmd = redoStack.pop();
-	redoStack.remove();
+	//redoStack.remove();
 	cmd->execute();
 	undoStack.push(cmd);
-	changeSelected(keyTree->currentItem());
-	showKeyValues();
-	emit urStacksModified();
+	//changeSelected(keyTree->currentItem());
+	//showKeyValues();
+	emit keyChanged();
 }
 
 void MainWidgetImpl::clearRedoStack()

@@ -51,15 +51,21 @@ Q_OBJECT
 public:
 	MainWidgetImpl(QWidget *parent = 0, const char *name = 0, WFlags fl = 0);
 	~MainWidgetImpl();
+	void showKeyValues(bool update = false);
 	bool canUndo();
 	bool canRedo();
+	::Key *getSelected();
+	//QListView *getKeyTree();
+	
 signals:
-	void urStacksModified();
+	void keyChanged();
 	
 public slots:
 	void updateKeyTree();
 	void undo();
 	void redo();
+	void addNewKey();
+	void deleteKey();
 	
 private:
 	void fillUpKeyTree(::Key *root, QListViewItem *item);
@@ -82,7 +88,7 @@ private:
 	QPtrStack<Command> redoStack;
 	
 private slots:
-	void showKeyValues(bool update = false);
+
 	void changeSelected(QListViewItem *item);
 	QString getKeyNameFromItem(QListViewItem *item);
 	void showItemMenu(QListViewItem * item, const QPoint &p, int b);
@@ -90,11 +96,9 @@ private slots:
 	void commentAttributeChanged();
 	void keyTypeChanged(int id);
 	void changeAccessMode();
-	void addNewKey();
-	void addNewDir();
+	
 	void copyNameToClipboard();
 	void copyValueToClipboard();
-	void deleteKey();
 	void revokeChanges();
 	void applyChanges();
 	void clearRedoStack();

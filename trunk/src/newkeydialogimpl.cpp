@@ -85,17 +85,28 @@ void NewKeyDialogImpl::updateValue(const QString &nvalue)
 void NewKeyDialogImpl::updateType(int id)
 {
 	cout << "new type: " << id << endl;
+	this->setEnabled(true);
 	switch (id)
 	{
 		case 0: 
 			type = RG_KEY_TYPE_BINARY;
+			keyComment->setEnabled(true);
+			keyValue->setEnabled(true);
 			break;
 		case 1:
 			type = RG_KEY_TYPE_STRING;
+			keyComment->setEnabled(true);
+			keyValue->setEnabled(true);
 			break;
 		case 2:
 			type = RG_KEY_TYPE_LINK;
+			keyComment->setEnabled(false);
+			keyValue->setEnabled(true);
 			break;
+		case 3:
+			type = RG_KEY_TYPE_DIR;
+			keyComment->setEnabled(false);
+			keyValue->setEnabled(false);
 	}
 	checkValues();
 }

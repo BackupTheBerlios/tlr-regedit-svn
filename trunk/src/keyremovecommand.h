@@ -25,7 +25,7 @@ class KeyRemoveCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyRemoveCommand(::Key *removedKey, QObject *parent = 0, const char *name = 0);
+    KeyRemoveCommand(::Key *removedKey, MainWidgetImpl *parent, const char *name = 0);
 
     ~KeyRemoveCommand();
     

@@ -11,8 +11,8 @@
 //
 #include "keyaddcommand.h"
 
-KeyAddCommand::KeyAddCommand(::Key *key, QObject *parent, const char *name)
- : Command(parent, name)
+KeyAddCommand::KeyAddCommand(::Key *key, MainWidgetImpl *mainWidget, const char *name)
+ : Command(mainWidget, name)
 {
 	keyDup(key, addedKey);
 }

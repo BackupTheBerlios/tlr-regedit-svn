@@ -10,14 +10,22 @@
 //
 //
 #include "command.h"
+#include "mainwidgetimpl.h"
 
-Command::Command(QObject *parent, const char *name) : QObject (parent, name)
+Command::Command(MainWidgetImpl *mainWidget, const char *name) : QObject (mainWidget, name)
 {
+
 }
 
 
 Command::~Command()
 {
+
+}
+
+MainWidgetImpl * Command::mainWidget()
+{
+	return m_mainWidget;
 }
 
 
