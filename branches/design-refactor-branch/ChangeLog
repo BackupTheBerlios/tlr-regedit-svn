@@ -1,70 +1,447 @@
-* Sunday Jan 31 2005
-	refined the uml diagrams. added a sequence diagram.
-	added some new files to materialize my ideas and thoughts
+2005-02-24 12:32  gregorburger
 
-* Friday Jan 28 2005
-	added some test to the qmake project file
-	
-* Thursday Dec 30 2004
-	removed some unnecessary kdbOpens and kdbCloses
-	update actions if a newly selected key is not visible
-	restructure keyaddcommand to fix some misbehaviours
-	
-* Monday Dec 26 2004
-	fixed little undo/redo bug
-	
-* Saturday Dec 25 2004
-	changed sourcecode to kdb api
-	use pkg-config instead of hardcoded linking informations
-	now kdbOpen is called once at startup and kdbClose called once
-	at exiting. 
-	changed the global selected key to the name of the key not the key
-	instance itself
-	disabled cmake build system, no use for 2
-	
-* Monday Aug 9 2004 
-	Undo/Redo implemented. should work, but not much tested. 
-	introduced the command pattern for undo/redo. modification 
-	of the regitstry now happens in the Key*Command classes.
-	some cleanups and fixes here and there.
+	* branches/design-refactor-branch/kdbe.kdevelop,
+	  branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/keymetainfo.cpp: test msg
+	  should appear in changelog?
 
-* Tuesday 27 July 2004
-	changed QGroupEdit->selectedId() to GroupEdit->id(GroupEdit->selected()) to be compatible to qt 3.1	
-	recompiled autopackage package on older system to be compatible on more systems	
+2005-02-24 11:21  gregorburger
 
-* Monday 26 July 2004
-	cleaned up MainWidgetImpl ctor
-	moved window attribute storing to MainWindowImpl
-	moved keyCheckMake to regedit_globals.cpp so that every class can use it
-	started implementing MainWindowImpl
-	added a few icons for undo/redo and refresh
+	* branches/design-refactor-branch/CMakeLists.txt: removed toplevel
+	  cmake file
 
-* Sunday 25 July 2004
-	added autopackage spec file
-	released autopackage package
+2005-02-24 11:17  gregorburger
 
-* Wednesday 21 July 2004
-	applied the GPL as license
-	added spec file and compile.sh (maybe not functional because of the source layout change)
-	fixed type updating bug
-	check first system namespace for iconDir
-	
-* Tuesday 20 July 2004
-	restructured source code put all *.cpp and *.h into src
-	updated the build scripts to build with the new structure
-	
-* Monday 19 July 2004
-	added a qmake project file (if you have no cmake)
-	added a new dialog to add new keys 
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: implemented
+	  closeDirKey changed restore/save to use get/setValueByParent
+	  reduced code length a bit some small typo changes
 
-* Wednesday 14 July 2004
-	enabled deleting of keys. tested a little bit; so far no issues
+2005-02-24 11:13  gregorburger
 
-* Tuesday 13 July 2004
-	updated the gui
-		- added a type combobox to the value
-		- repositioned timestamps 
-		- made the comments bigger (thanx avi)
-		- fixed an issue with cmake
-		
-	do NOT use cmake 2.0.2 - QT_WRAP_UI is not working
+	* branches/design-refactor-branch/src/editorcontroller.cpp: spelled
+	  signal name notifyView wrong
+
+2005-02-24 11:12  gregorburger
+
+	* branches/design-refactor-branch/src/editorviewui.ui: changed
+	  splitter4 to splitter
+
+2005-02-24 11:11  gregorburger
+
+	* branches/design-refactor-branch/src/keymetainfo.cpp,
+	  branches/design-refactor-branch/src/keymetainfo.h: add forgotten
+	  class to repository
+
+2005-02-23 16:23  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: implemented save
+	  and restore of the window
+
+2005-02-23 14:55  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: implemented
+	  function openKeyDir
+
+2005-02-23 12:23  gregorburger
+
+	* branches/design-refactor-branch/src/iobserver.h,
+	  branches/design-refactor-branch/src/observable.cpp,
+	  branches/design-refactor-branch/src/observable.h,
+	  branches/design-refactor-branch/src/src.pro: delete observer
+	  classes
+
+2005-02-23 12:22  gregorburger
+
+	* branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/editorcontroller.h,
+	  branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: removed observer
+	  classes
+
+2005-02-23 11:28  gregorburger
+
+	* branches/design-refactor-branch/src/mainwidget.ui,
+	  branches/design-refactor-branch/src/mainwidgetimpl.cpp,
+	  branches/design-refactor-branch/src/mainwidgetimpl.h,
+	  branches/design-refactor-branch/src/mainwindowimpl.cpp,
+	  branches/design-refactor-branch/src/mainwindowimpl.h: deleted old
+	  implementation
+
+2005-02-23 11:27  gregorburger
+
+	* branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/editorcontroller.h,
+	  branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/iobserver.h,
+	  branches/design-refactor-branch/src/main.cpp,
+	  branches/design-refactor-branch/src/observable.cpp,
+	  branches/design-refactor-branch/src/observable.h,
+	  branches/design-refactor-branch/src/src.pro: started
+	  implementaition of new design
+
+2005-02-23 07:51  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/iobserver.h,
+	  branches/design-refactor-branch/src/observable.cpp,
+	  branches/design-refactor-branch/src/observable.h: add new classes
+
+2005-02-17 09:41  gregorburger
+
+	* branches/design-refactor-branch/kdbe.desktop,
+	  branches/design-refactor-branch/kdbe.kdevelop,
+	  branches/design-refactor-branch/kdbe.kdevelop.pcs,
+	  branches/design-refactor-branch/kdbe.pro,
+	  branches/design-refactor-branch/kdbe.spec,
+	  branches/design-refactor-branch/regedit.desktop,
+	  branches/design-refactor-branch/regedit.kdevelop,
+	  branches/design-refactor-branch/regedit.kdevelop.pcs,
+	  branches/design-refactor-branch/regedit.kdevses,
+	  branches/design-refactor-branch/regedit.pro,
+	  branches/design-refactor-branch/regedit.spec,
+	  branches/design-refactor-branch/src/src.pro: started renaming
+
+2005-01-30 23:49  gregorburger
+
+	* branches/design-refactor-branch/ChangeLog: ChangeLog update
+
+2005-01-30 23:47  gregorburger
+
+	* branches/design-refactor-branch/DESIGN,
+	  branches/design-refactor-branch/TODO.dnrb: added some design docs
+
+2005-01-30 23:41  gregorburger
+
+	* branches/design-refactor-branch/docs/editor.xmi: refined design,
+	  added KeyMetaInfo class
+
+2005-01-30 21:57  gregorburger
+
+	* branches/design-refactor-branch/regedit.kdevelop: name change
+
+2005-01-28 16:12  gregorburger
+
+	* branches/design-refactor-branch/regedit.pro: added some test to
+	  qmake project file
+
+2005-01-28 15:39  gregorburger
+
+	* branches/design-refactor-branch/src/CMakeLists.txt: removed the
+	  last cmake file
+
+2005-01-28 15:38  gregorburger
+
+	* branches/design-refactor-branch,
+	  branches/design-refactor-branch/ChangeLog,
+	  branches/design-refactor-branch/docs,
+	  branches/design-refactor-branch/docs/editor.xmi,
+	  branches/design-refactor-branch/regedit.kdevelop,
+	  branches/design-refactor-branch/regedit.kdevelop.pcs,
+	  branches/design-refactor-branch/regedit.kdevses,
+	  branches/design-refactor-branch/src/keyaddcommand.cpp,
+	  branches/design-refactor-branch/src/keyaddcommand.h,
+	  branches/design-refactor-branch/src/keymodifycommand.cpp,
+	  branches/design-refactor-branch/src/keymodifycommand.h,
+	  branches/design-refactor-branch/src/keyremovecommand.cpp,
+	  branches/design-refactor-branch/src/keyremovecommand.h,
+	  branches/design-refactor-branch/src/mainwidgetimpl.cpp,
+	  branches/design-refactor-branch/src/mainwidgetimpl.h,
+	  branches/design-refactor-branch/src/mainwindowimpl.cpp,
+	  branches/design-refactor-branch/src/src.pro: created new branch --
+	  redesing refactor the whole code
+
+2004-12-06 20:15  gregorburger
+
+	* trunk/src/keyaddcommand.cpp, trunk/src/keyaddcommand.h,
+	  trunk/src/keymodifycommand.cpp, trunk/src/keymodifycommand.h,
+	  trunk/src/keyremovecommand.cpp, trunk/src/keyremovecommand.h,
+	  trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/newkeydialogimpl.cpp,
+	  trunk/src/newkeydialogimpl.h, trunk/src/regedit_globals.cpp,
+	  trunk/src/regedit_globals.h, trunk/src/src.pro: moved to new kdb
+	  api
+
+2004-08-13 09:05  gregorburger
+
+	* trunk/compile.sh: removed the outdated compile.sh
+
+2004-08-13 09:04  gregorburger
+
+	* trunk/autopackage/@registry.sourceforge.net/registry/skeleton.1,
+	  trunk/autopackage/skeleton.1: moved skeleton
+
+2004-08-13 09:03  gregorburger
+
+	* trunk/autopackage/@registry.sourceforge.net,
+	  trunk/autopackage/@registry.sourceforge.net/registry,
+	  trunk/autopackage/default.apspec, trunk/autopackage/skeleton.1:
+	  adde autopackage skeleton for registry
+
+2004-08-12 12:39  gregorburger
+
+	* trunk/autopackage/default.apspec: check for libregistry in
+	  installer
+
+2004-08-12 12:17  gregorburger
+
+	* trunk/INSTALL: INSTALL file update
+
+2004-08-11 09:25  gregorburger
+
+	* trunk/src/keyaddcommand.cpp, trunk/src/keymodifycommand.cpp,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/newkeydialogimpl.cpp:
+	  remove debug output
+
+2004-08-11 08:15  gregorburger
+
+	* trunk/src/command.cpp, trunk/src/command.h,
+	  trunk/src/keyaddcommand.cpp, trunk/src/keyaddcommand.h,
+	  trunk/src/keymodifycommand.cpp, trunk/src/keymodifycommand.h,
+	  trunk/src/keyremovecommand.cpp, trunk/src/keyremovecommand.h:
+	  added gpl license header to command classes
+
+2004-08-11 08:06  gregorburger
+
+	* trunk/regedit.spec: spec file update
+
+2004-08-10 12:41  gregorburger
+
+	* trunk/TODO, trunk/autopackage/default.apspec,
+	  trunk/regedit.kdevelop, trunk/regedit.kdevelop.pcs,
+	  trunk/regedit.kdevses, trunk/src/CMakeLists.txt,
+	  trunk/src/command.cpp, trunk/src/keymodifycommand.cpp,
+	  trunk/src/keymodifycommand.h, trunk/src/keyremovecommand.cpp,
+	  trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h,
+	  trunk/src/mainwindowimpl.cpp: * src/mainwindowimpl.cpp: added a
+	  few checks if something went wrong. QAction::setDisabled(bool) is
+	  not available in qt 3.1.x changed to setEnabled() *
+	  src/keymodifycommand: fully implemented keymodify command class. *
+	  src/mainwidgetimpl.cpp: added getSelectedAccess function.
+	  applyChanges logic transfered to keymodifycommand.cpp. removed log
+	  messages. * src/CMakeLists.txt: added new command classes to
+	  compile correctly. * TDOD: todo update
+
+2004-08-09 12:14  gregorburger
+
+	* trunk/TODO: TODO update - very small now
+
+2004-08-09 12:08  gregorburger
+
+	* trunk/ChangeLog, trunk/regedit.kdevelop,
+	  trunk/regedit.kdevelop.pcs, trunk/regedit.kdevses,
+	  trunk/src/command.h, trunk/src/keyaddcommand.cpp,
+	  trunk/src/keyaddcommand.h, trunk/src/keymodifycommand.cpp,
+	  trunk/src/keymodifycommand.h, trunk/src/keyremovecommand.cpp,
+	  trunk/src/keyremovecommand.h, trunk/src/mainwidgetimpl.cpp,
+	  trunk/src/mainwidgetimpl.h, trunk/src/mainwindowimpl.cpp,
+	  trunk/src/regedit_globals.cpp, trunk/src/regedit_globals.h,
+	  trunk/src/src.pro: implemented the rest of the Key*Command classes
+
+2004-08-07 17:57  gregorburger
+
+	* trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h: started
+	  adding QActions to the right click key-menu
+
+2004-08-06 10:59  gregorburger
+
+	* trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h: forgot
+	  to change the showKeyValue to a slot
+
+2004-08-06 10:38  gregorburger
+
+	* trunk/src/command.cpp, trunk/src/command.h,
+	  trunk/src/keyaddcommand.cpp, trunk/src/keyaddcommand.h,
+	  trunk/src/keymodifycommand.cpp, trunk/src/keymodifycommand.h,
+	  trunk/src/keyremovecommand.cpp, trunk/src/keyremovecommand.h,
+	  trunk/src/mainwidget.ui, trunk/src/mainwidgetimpl.cpp,
+	  trunk/src/mainwidgetimpl.h, trunk/src/mainwindowimpl.cpp,
+	  trunk/src/mainwindowimpl.h, trunk/src/newdialog.ui,
+	  trunk/src/newkeydialogimpl.cpp: implemented automatic
+	  enable/disable of actions added mainWidget member to the command
+	  classes so they can undo/redo the changes to the gui also added
+	  key shortcuts to maindialog newkeydialog now support adding of
+	  dirs changed the ui file to support dirs simplified the addNewKey
+	  function fixed stack handling - do not call remoce with pop (pop
+	  calls it internally) made the main slots (addNewKey, deleteKey,
+	  ...) global
+
+2004-08-04 17:01  gregorburger
+
+	* trunk/src/command.h, trunk/src/keyaddcommand.cpp,
+	  trunk/src/keymodifycommand.cpp, trunk/src/keymodifycommand.h,
+	  trunk/src/keyremovecommand.cpp, trunk/src/keyremovecommand.h,
+	  trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h: changed
+	  the commands to get the right parameters added undo, redo,
+	  canUndo, canRedo functions implemented keymodified undo/redo in
+	  application
+
+2004-08-03 20:44  gregorburger
+
+	* trunk/icons/editdelete.png, trunk/icons/filenew.png,
+	  trunk/icons/lock.png, trunk/icons/reload_3.png,
+	  trunk/regedit.kdevelop.pcs, trunk/regedit.kdevses,
+	  trunk/src/command.cpp, trunk/src/command.h,
+	  trunk/src/keyaddcommand.cpp, trunk/src/keyaddcommand.h,
+	  trunk/src/keymodifycommand.cpp, trunk/src/keymodifycommand.h,
+	  trunk/src/keyremovecommand.cpp, trunk/src/keyremovecommand.h,
+	  trunk/src/mainwidget.ui, trunk/src/mainwidgetimpl.cpp,
+	  trunk/src/mainwidgetimpl.h, trunk/src/mainwindowimpl.cpp,
+	  trunk/src/regedit_globals.cpp, trunk/src/regedit_globals.h,
+	  trunk/src/src.pro: started undo/redo stuff added Command class.
+	  Base class for all undoable commands. follows the command pattern
+	  add KeyAddCommand, KeyModifyCommand and KeyRemoveCommand classes
+	  some smaller mainwidget.ui tweaks implemented access mode setting
+	  started rightclickmenu overhoul. check for permissions changed
+	  permission denied icon added a few actions (disabled) added
+	  checkForPermission function in regedit_globals.cpp updated qmake
+	  project file
+
+2004-07-29 22:48  gregorburger
+
+	* trunk/src/permissiondialogimpl.cpp,
+	  trunk/src/permissiondialogimpl.h, trunk/src/src.pro: added gpl
+	  header to new files
+
+2004-07-29 22:11  gregorburger
+
+	* trunk/src/CMakeLists.txt, trunk/src/list.cpp, trunk/src/test.cpp:
+	  removed test and list targets
+
+2004-07-29 21:36  gregorburger
+
+	* trunk/autopackage/default.apspec, trunk/icons/stop_2.png,
+	  trunk/regedit.kdevelop, trunk/regedit.kdevelop.pcs,
+	  trunk/regedit.kdevses, trunk/regedit.pro,
+	  trunk/src/CMakeLists.txt, trunk/src/main.cpp,
+	  trunk/src/mainwidget.ui, trunk/src/mainwidgetimpl.cpp,
+	  trunk/src/mainwidgetimpl.h, trunk/src/mainwindowimpl.cpp,
+	  trunk/src/mainwindowimpl.h, trunk/src/newdialog.ui,
+	  trunk/src/permissiondialog.ui, trunk/src/permissiondialogimpl.cpp,
+	  trunk/src/permissiondialogimpl.h, trunk/src/regedit_globals.cpp,
+	  trunk/src/regedit_globals.h, trunk/src/src.pro,
+	  trunk/src/test.cpp: major code clean up added a permission dialog
+	  integrated permissiong dialog into the main gui qmake project file
+	  update added status bar added permission denied icon improvement
+	  of permission checking all over the place
+
+2004-07-27 19:20  gregorburger
+
+	* trunk/ChangeLog: ChangeLog update
+
+2004-07-27 18:34  gregorburger
+
+	* trunk/src/newkeydialogimpl.cpp: changed selectedId ot
+	  id(seleceted()) for qt 3.1 compatability
+
+2004-07-27 18:29  gregorburger
+
+	* trunk/src/src.pro: added regedit_global.h .cpp to qmake project
+	  file
+
+2004-07-26 22:35  gregorburger
+
+	* trunk/ChangeLog: ChangeLog update
+
+2004-07-26 22:23  gregorburger
+
+	* trunk/icons/editdelete.png, trunk/icons/redo.png,
+	  trunk/icons/reload.png, trunk/icons/undo.png: added more icons for
+	  undo/redo and reload
+
+2004-07-26 17:48  gregorburger
+
+	* trunk/ChangeLog: ChangeLog update
+
+2004-07-26 17:47  gregorburger
+
+	* trunk/regedit.kdevelop, trunk/regedit.kdevelop.pcs,
+	  trunk/regedit.kdevses, trunk/src/CMakeLists.txt,
+	  trunk/src/main.cpp, trunk/src/mainwidgetimpl.cpp,
+	  trunk/src/mainwidgetimpl.h, trunk/src/mainwindowimpl.cpp,
+	  trunk/src/mainwindowimpl.h, trunk/src/regedit_globals.cpp,
+	  trunk/src/regedit_globals.h: cleaned up MainWidgetImpl ctor moved
+	  window attribute storing to MainWindowImpl moved keyCheckMake to
+	  regedit_globals.cpp so that every class can use it started
+	  implementing MainWindowImpl
+
+2004-07-26 11:43  gregorburger
+
+	* trunk/Doxyfile, trunk/regedit.kdevelop,
+	  trunk/regedit.kdevelop.pcs, trunk/regedit.kdevses: added kdevelop
+	  project files
+
+2004-07-26 11:40  gregorburger
+
+	* trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h,
+	  trunk/src/src.pro: added mainwindowimpl to the project this class
+	  will be the window - mainwidget will be the central widget
+
+2004-07-26 11:33  gregorburger
+
+	* trunk/src/mainwidgetimpl.cpp, trunk/src/mainwidgetimpl.h,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h:
+	  refactor: renamed mainwindowimpl to mainwidgetimpl
+
+2004-07-26 11:32  gregorburger
+
+	* trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h: start of
+	  refactor
+
+2004-07-25 23:34  gregorburger
+
+	* trunk/CMakeLists.txt: added make svndist - creates tar.gz file in
+	  build dir
+
+2004-07-25 20:14  gregorburger
+
+	* trunk/CMakeLists.txt, trunk/autopackage/default.apspec: started
+	  adding make dist target
+
+2004-07-25 20:00  gregorburger
+
+	* trunk/autopackage/default.apspec: switched to cmake for packaging
+
+2004-07-25 10:52  gregorburger
+
+	* trunk/ChangeLog: ChangeLog update
+
+2004-07-25 10:43  gregorburger
+
+	* trunk/autopackage/default.apspec: autopackage is now working
+
+2004-07-24 19:50  gregorburger
+
+	* trunk/autopackage, trunk/autopackage/default.apspec: added
+	  autopackage build spec
+
+2004-07-24 17:48  gregorburger
+
+	* trunk/regedit.desktop, trunk/regedit.spec: spec file update; added
+	  regedit.desktop file; thanks avi
+
+2004-07-24 17:34  gregorburger
+
+	* branches, tags, trunk, trunk/AUTHORS, trunk/CMakeLists.txt,
+	  trunk/COPYING, trunk/ChangeLog, trunk/INSTALL, trunk/NEWS,
+	  trunk/README, trunk/TODO, trunk/compile.sh, trunk/icons,
+	  trunk/icons/binary.png, trunk/icons/folder.png,
+	  trunk/icons/folder_open.png, trunk/icons/font.png,
+	  trunk/icons/kwrite_2.png, trunk/icons/link.png,
+	  trunk/icons/lockoverlay.png, trunk/icons/txt.png,
+	  trunk/icons/unknown.png, trunk/regedit.pro, trunk/regedit.spec,
+	  trunk/src, trunk/src/CMakeLists.txt, trunk/src/list.cpp,
+	  trunk/src/main.cpp, trunk/src/mainwidget.ui,
+	  trunk/src/mainwindowimpl.cpp, trunk/src/mainwindowimpl.h,
+	  trunk/src/newdialog.ui, trunk/src/newkeydialogimpl.cpp,
+	  trunk/src/newkeydialogimpl.h, trunk/src/regedit_globals.h,
+	  trunk/src/src.pro, trunk/src/test.cpp: initial import
+
