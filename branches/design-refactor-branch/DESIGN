@@ -1,0 +1,16 @@
+Pattern: MVC
+
+Model: 	The key database is fully implemented by the elektra software.
+View: 	The actual layout is handeled by Qt and the Qt designer.
+	The view is source of the most events. The events and their followed
+	actions should be clear defined.
+Controller:
+	The actual logic should happen in here. The Controller is the destination
+	of the most events. Delegates some of the work to the Command classes. Handles
+	undo/redo. etc. 
+
+Pattern: Observer
+	Separate the view from the controller. Opens the possibility of adding more
+	Observers (console ui, logging facilities, ...). Clean event propagation.
+
+Class layout described in docs/editor.xmi

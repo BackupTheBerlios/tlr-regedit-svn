@@ -1,0 +1,25 @@
+TODO for the design and refactor branch
+
+This file descripes what is to be done on this branch...
+
+Q: Why I opened this branch?
+A: Because the current code sucks, and is missing of any structure.
+
+Q: What should be achived by the new branch?
+A: The design should be much clearer and therefore more stable, easier to understand and easier maintain.
+
+Q: What will happen in this branch?
+Q: Clear the code up, but the logics where they belong. (seperate by mvc)
+Q: The name should be change from regedit to kdbe. 
+
+Tasks:
+	1. separate logics -> new class layout, rename stuff to be more meaningfull
+	2. handle icons better. install problem (people getting kdbe from source should have icons too)
+		icons in ui files.
+		icons stored in kdbe as binary values.
+		handled as before with link to dir containing the icons.
+	3. gui session restore. use binary values for with, height, etc.
+	   store split pane values
+	   store opened keys, of keyview
+
+
