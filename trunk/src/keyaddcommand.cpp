@@ -99,18 +99,15 @@ QListViewItem *KeyAddCommand::genItemForKey()
 	{
 		case KEY_TYPE_STRING:
 			temp->setPixmap(0, mainWidget()->stringIcon);
-			//if (vlength) 
-			keySetString(key, strdup(newDialog->getValue()));
+			if (vlength) keySetString(key, strdup(newDialog->getValue()));
 			break;
 		case KEY_TYPE_BINARY:
 			temp->setPixmap(0, mainWidget()->binaryIcon);
-			//if (vlength) 
-			keySetBinary(key, strdup(newDialog->getValue()), vlength);
+			if (vlength) keySetBinary(key, strdup(newDialog->getValue()), vlength);
 			break;
 		case KEY_TYPE_LINK:
 			temp->setPixmap(0, mainWidget()->linkOverlay);
-			//if (vlength) 
-			keySetLink(key, strdup(newDialog->getValue()));
+			if (vlength) keySetLink(key, strdup(newDialog->getValue()));
 			break;
 		case KEY_TYPE_DIR:
 			temp->setPixmap(0, mainWidget()->dirIcon);
