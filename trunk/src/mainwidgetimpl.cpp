@@ -117,6 +117,7 @@ void MainWidgetImpl::setUpGui()
 	}
 	parent->getNewKeyAction()->addTo(&keyPopupMenu);
 	parent->getDeleteAction()->addTo(&keyPopupMenu);
+	keyPopupMenu.insertSeparator();
 }
 
 /*QListView *MainWidgetImpl::getKeyTree()
@@ -412,10 +413,11 @@ void MainWidgetImpl::setWidgetsEnabled(bool enabled)
  
 void MainWidgetImpl::changeSelected(QListViewItem *item)
 {
-	if (item == 0)
+	registryOpen();
+	if (!item)
 		return;
 	
-	if (selected != 0)
+	if (selected)
 	{
 		keyClose(selected);
 		delete selected;
@@ -437,12 +439,19 @@ void MainWidgetImpl::changeSelected(QListViewItem *item)
 	
 	selectedAccess = keyGetAccess(selected);
 	
+	registryClose();
 	emit keyChanged();
+	
 }
 
-Key * MainWidgetImpl::getSelected()
+::Key * MainWidgetImpl::getSelected()
 {
 	return selected;
+}
+
+mode_t MainWidgetImpl::getSelectedAccess()
+{
+	return selectedAccess;
 }
 
 /**
@@ -471,7 +480,6 @@ QString MainWidgetImpl::getKeyNameFromItem(QListViewItem *item)
  */
 void MainWidgetImpl::showItemMenu(QListViewItem *item, const QPoint &p, int b)
 {
-	cout << "right click menu on item: " << getKeyNameFromItem(keyTree->currentItem()) << endl;
 	keyPopupMenu.exec(p);
 }
 
@@ -492,65 +500,19 @@ void MainWidgetImpl::revokeChanges()
  */
 void MainWidgetImpl::applyChanges()
 {
+	if (!selected)
+		return;
+		
+	KeyModifyCommand *cmd = new KeyModifyCommand(this, "Modify Key Command");
 	
-	registryOpen();
-	
-	if (selected == 0)
-		cout << "fuck" << endl;
-	
-	::Key *old = new ::Key;
-	keyInit(old);
-	
-	keyDup(selected, old);
-	
-	char *comment = strdup(keyComment->text());
-	keySetComment(selected, comment);
-	
-	char *value = strdup(keyValue->text());
-	keySetString(selected, value);
-	
-	keySetAccess(selected, selectedAccess);
-	
-	keySetType(selected, types[typeCombo->currentItem()]);
-	
-	int ret = registrySetKey(selected);
-	
-	if (ret)
+	if (cmd->execute())
 	{
-		showInStatusBar(strerror(errno));
-		showKeyValues(true);
-	}
-	else
-	{	
-		switch (typeCombo->currentItem())
-		{
-			case COMBO_POS_UND:
-				//keyTree->currentItem()->setPixmap(0, undefinedIcon);
-				break;
-			case COMBO_POS_DIR:
-				keyTree->currentItem()->setPixmap(0, dirIcon);
-				break;
-			case COMBO_POS_LNK:
-				keyTree->currentItem()->setPixmap(0, linkOverlay);
-				break;
-			case COMBO_POS_STR:
-				keyTree->currentItem()->setPixmap(0, stringIcon);
-				break;
-			case COMBO_POS_BIN:
-				keyTree->currentItem()->setPixmap(0, binaryIcon);
-				break;
-		}
-		pushUndo(new KeyModifyCommand(old, selected, this, "Modify Key Command"));
+		pushUndo(cmd);
 		clearRedoStack();
+		emit keyChanged();	
+		applyButton->setEnabled(false);
+		revokeButton->setEnabled(false);
 	}
-	
-	
-	registryClose();
-	
-	applyButton->setEnabled(false);
-	revokeButton->setEnabled(false);
-	changeSelected(keyTree->currentItem());
-	//showKeyValues(true);
 }
 
 void MainWidgetImpl::changeAccessMode()
@@ -559,8 +521,6 @@ void MainWidgetImpl::changeAccessMode()
 	
 	if (perm->exec() == QDialog::Accepted)
 	{
-		mode_t before = selectedAccess;
-		cout << "changing permissions" << endl;
 		if (perm->ur->isChecked()) selectedAccess |= S_IRUSR; else selectedAccess &= ~S_IRUSR;
 		if (perm->uw->isChecked()) selectedAccess |= S_IWUSR; else selectedAccess &= ~S_IWUSR;
 		if (perm->ux->isChecked()) selectedAccess |= S_IXUSR; else selectedAccess &= ~S_IXUSR;
@@ -573,11 +533,6 @@ void MainWidgetImpl::changeAccessMode()
 		if (perm->ow->isChecked()) selectedAccess |= S_IWOTH; else selectedAccess &= ~S_IWOTH;
 		if (perm->ox->isChecked()) selectedAccess |= S_IXOTH; else selectedAccess &= ~S_IXOTH;
 		
-		if (before == selectedAccess)
-			cout << "the same permissions" << endl;
-		if (ignoreTextChanges)
-			cout << "hää?" << endl;
-		cout << selectedAccess << endl; 
 		emit keyChanged();
 		keyAttributesChanged("");
 	}
@@ -683,7 +638,6 @@ bool MainWidgetImpl::canRedo()
 void MainWidgetImpl::pushUndo(Command *cmd)
 {
 	undoStack.push(cmd);
-	cout << "size of undostack " << undoStack.count() << endl;
 	clearRedoStack();
 	emit keyChanged();
 }
@@ -692,10 +646,10 @@ void MainWidgetImpl::undo()
 {
 	if (undoStack.isEmpty())
 	{
-		cout << "programm error please kill programmer" << endl;
+		cout << "programm error please report" << endl;
 		return;
-	}	
-		cout << "size of redostack " << redoStack.count() << endl;
+	}
+	
 	Command *cmd = undoStack.pop();
 	//if (undoStack.remove())	cout << "removed first element" << endl;
 	cmd->unexecute();
@@ -709,10 +663,9 @@ void MainWidgetImpl::redo()
 {
 	if (redoStack.isEmpty())
 	{
-		cout << "programm error please kill programmer" << endl;
+		cout << "programm error please report" << endl;
 		return;
 	}
-	cout << "size of undostack " << undoStack.count() << endl;
 	Command *cmd = redoStack.pop();
 	//redoStack.remove();
 	cmd->execute();
@@ -724,7 +677,6 @@ void MainWidgetImpl::redo()
 
 void MainWidgetImpl::clearRedoStack()
 {
-	cout << "clearing redo stack" << endl;
 	redoStack.clear();
 }
 

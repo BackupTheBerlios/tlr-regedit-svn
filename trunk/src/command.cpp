@@ -12,9 +12,8 @@
 #include "command.h"
 #include "mainwidgetimpl.h"
 
-Command::Command(MainWidgetImpl *mainWidget, const char *name) : QObject (mainWidget, name)
+Command::Command(MainWidgetImpl *mainWidget, const char *name) : QObject (mainWidget, name), m_mainWidget(mainWidget)
 {
-
 }
 
 

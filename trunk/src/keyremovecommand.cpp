@@ -32,7 +32,7 @@ KeyRemoveCommand::~KeyRemoveCommand()
 bool KeyRemoveCommand::execute( )
 {
 	registryOpen();
-	
+		
 	char *name = new char[keyGetNameSize(key)];
 	keyGetName(key, name, keyGetNameSize(key));
 	

@@ -2,3 +2,5 @@ TODO List for regedit:
 	
 	* XML import/export of subtrees (NOT DONE)
 	* find a way to look at other users keys (user:otheruser/key/) (NOT DONE)
+	* how to remove a linkkey which links to nothing?
+	* rework the newkey dialog. select a link not type it. load binary value from file. enter hexvalues...

@@ -13,6 +13,7 @@
 #define KEYMODIFYCOMMAND_H
 
 #include "command.h"
+#include <qpixmap.h>
 
 extern "C"
 {
@@ -21,11 +22,12 @@ extern "C"
 /**
 @author Gregor Burger
 */
+class QListViewItem;
 class KeyModifyCommand : public Command
 {
 Q_OBJECT
 public:
-    KeyModifyCommand(::Key *oldKey, ::Key *newKey, MainWidgetImpl *mainWidget, const char *name = 0);
+    KeyModifyCommand(MainWidgetImpl *mainWidget, const char *name = 0);
 
     ~KeyModifyCommand();
     
@@ -36,6 +38,9 @@ public slots:
 private:
 	::Key *oldKey;
 	::Key *newKey;
+	QPixmap oldIcon;
+	QPixmap newIcon;
+	QListViewItem *item;
 };
 
 #endif

@@ -25,6 +25,8 @@ extern "C"
 {
 	#include <registry.h>
 }
+#include <errno.h>
+#include <string.h>
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
@@ -189,7 +191,15 @@ void MainWindowImpl::closeEvent(QCloseEvent *e)
 
 void MainWindowImpl::updateActions( )
 {
-	cout << "updating actions" << endl;
+	//cout << "updating actions" << endl;
+	if (!mainWidget->getSelected())
+	{
+		cout << "can not update actions on null key" << endl;
+		return;
+	}
+	
+	cout << mainWidget->getSelected() << endl;
+	
 	if (mainWidget->canRedo())
 		redo->setEnabled(true);
 	else
@@ -209,12 +219,17 @@ void MainWindowImpl::updateActions( )
 		
 		KeySet childs;
 		ksInit(&childs);
-		registryGetChildKeys(selected->key, &childs, RG_O_DIR|RG_O_SORT);
-		
-		if (childs.size)
-			del->setEnabled(false);
+		if (registryGetChildKeys(selected->key, &childs, RG_O_DIR|RG_O_SORT))
+		{
+			statusBar()->message(strerror(errno));
+		}
 		else
-			del->setEnabled(true);
+		{
+			if (childs.size)
+				del->setEnabled(false);
+			else
+				del->setEnabled(true);
+		}
 	}
 	else
 	{
@@ -275,7 +290,7 @@ void MainWindowImpl::makeActions( )
 	undo->addTo(editToolBar);
 	redo->addTo(editToolBar);
 	
-	newkey->setDisabled(true);
+	newkey->setEnabled(false);
 	del->setEnabled(false);
 	undo->setEnabled(false);
 	redo->setEnabled(false);

@@ -57,6 +57,7 @@ public:
 	bool canUndo();
 	bool canRedo();
 	::Key *getSelected();
+	mode_t getSelectedAccess();
 	void showInStatusBar(QString str);
 	QPixmap dirIcon;
 	QPixmap stringIcon;
@@ -65,10 +66,13 @@ public:
 	QPixmap lockOverlay;
 	QPixmap deniedIcon;
 	
+	int *types;
+	
 signals:
 	void keyChanged();
 	
 public slots:
+	void changeSelected(QListViewItem *item);
 	void showKeyValues(bool update = false);
 	void updateKeyTree();
 	void undo();
@@ -90,11 +94,11 @@ private:
 	
 	QPtrStack<Command> undoStack;
 	QPtrStack<Command> redoStack;
-	int *types;
+	
 	
 private slots:
 
-	void changeSelected(QListViewItem *item);
+	
 	QString getKeyNameFromItem(QListViewItem *item);
 	void showItemMenu(QListViewItem * item, const QPoint &p, int b);
 	void keyAttributesChanged(const QString &s); 
