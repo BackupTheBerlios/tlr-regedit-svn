@@ -1,3 +1,24 @@
+2005-03-01 18:29  gregorburger
+
+	* branches/design-refactor-branch/kdbe.pro,
+	  branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/editorcontroller.h,
+	  branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/keymetainfo.cpp,
+	  branches/design-refactor-branch/src/newkeywizard.cpp,
+	  branches/design-refactor-branch/src/newkeywizard.h,
+	  branches/design-refactor-branch/src/newkeywizardui.ui: bugfixes,
+	  restoring of opened keys, newkeywizard prototype, etc.
+
+2005-02-25 19:25  gregorburger
+
+	* branches/design-refactor-branch/ChangeLog,
+	  branches/design-refactor-branch/kdbe.kdevelop,
+	  branches/design-refactor-branch/kdbe.kdevelop.pcs,
+	  branches/design-refactor-branch/kdbe.pro: updated project files
+
 2005-02-25 19:24  gregorburger
 
 	* branches/design-refactor-branch/src/editorcontroller.cpp,
