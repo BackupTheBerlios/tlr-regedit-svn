@@ -47,6 +47,7 @@ EOF
 
 [Prepare]
 require @trolltech.com/qt 3.1
+require @registry.sourceforge.net/registry 0.2
 
 [Install]
 # Put your installation script here
