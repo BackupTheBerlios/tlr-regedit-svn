@@ -1,3 +1,87 @@
+2005-02-25 19:24  gregorburger
+
+	* branches/design-refactor-branch/src/editorcontroller.cpp,
+	  branches/design-refactor-branch/src/editorcontroller.h,
+	  branches/design-refactor-branch/src/editorviewui.ui,
+	  branches/design-refactor-branch/src/newkeywizard.cpp,
+	  branches/design-refactor-branch/src/newkeywizard.h,
+	  branches/design-refactor-branch/src/src.pro: add newkeywizard
+	  implementation
+
+2005-02-25 19:23  gregorburger
+
+	* branches/design-refactor-branch/src/newkeywizard.ui: renamed
+
+2005-02-25 19:18  gregorburger
+
+	* branches/design-refactor-branch/src/keymetainfo.cpp,
+	  branches/design-refactor-branch/src/keymetainfo.h: add canWrite
+	  function
+
+2005-02-25 19:06  gregorburger
+
+	* branches/design-refactor-branch/src/newkeywizardui.ui: rename
+	  newkeywizard
+
+2005-02-25 19:03  gregorburger
+
+	* branches/design-refactor-branch/src/xdgmime/Makefile,
+	  branches/design-refactor-branch/src/xdgmime/libxdgmime.a: oops no
+	  need to be in the repository
+
+2005-02-25 19:01  gregorburger
+
+	* branches/design-refactor-branch/src/xdgmime,
+	  branches/design-refactor-branch/src/xdgmime/ChangeLog,
+	  branches/design-refactor-branch/src/xdgmime/Makefile,
+	  branches/design-refactor-branch/src/xdgmime/README,
+	  branches/design-refactor-branch/src/xdgmime/libxdgmime.a,
+	  branches/design-refactor-branch/src/xdgmime/xdgmime.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmime.h,
+	  branches/design-refactor-branch/src/xdgmime/xdgmime.pro,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimealias.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimealias.h,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeglob.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeglob.h,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeint.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeint.h,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimemagic.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimemagic.h,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeparent.c,
+	  branches/design-refactor-branch/src/xdgmime/xdgmimeparent.h: added
+	  libxdgmime from freedesktop; used to get a mimetype from binary
+	  keys
+
+2005-02-25 18:52  gregorburger
+
+	* branches/design-refactor-branch/src/newkeywizard.ui,
+	  branches/design-refactor-branch/src/src.pro: add newkeywizard.ui
+	  qmake project and repository
+
+2005-02-25 18:48  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: changed update
+	  to a push value observer splitted update into showKey, lockGui and
+	  clearGui up fixed splitter restore bug
+
+2005-02-24 15:15  gregorburger
+
+	* branches/design-refactor-branch/src/editorview.cpp,
+	  branches/design-refactor-branch/src/editorview.h: no nead for a
+	  closeKeyDir function anymore forward signal for keychanging to the
+	  controller
+
+2005-02-24 14:42  gregorburger
+
+	* branches/design-refactor-branch/src/keymetainfo.cpp,
+	  branches/design-refactor-branch/src/keymetainfo.h: added canRead
+	  memberfunction
+
+2005-02-24 12:37  gregorburger
+
+	* branches/design-refactor-branch/ChangeLog: ChangeLog update
+
 2005-02-24 12:32  gregorburger
 
 	* branches/design-refactor-branch/kdbe.kdevelop,
