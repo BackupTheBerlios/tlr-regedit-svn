@@ -102,7 +102,7 @@ void NewKeyDialogImpl::updateType(int id)
 
 void NewKeyDialogImpl::checkValues()
 {
-	if (typeGroup->selectedId())
+	if (typeGroup->id(typeGroup->selected()))
 	{
 		if (keyName->text())
 		{
