@@ -43,7 +43,8 @@ KeyRemoveCommand::KeyRemoveCommand ( EditorController *con, KeySet *ks, const ch
 	}
 	item = controller ( )->getView ( )->keyTree->currentItem ( );
 	parent = item->parent ( );
-
+	if ( parent )
+		controller ( )->changeCurrent( controller ( )->getView ( )->keyName ( parent ) );
 }
 
 
@@ -61,6 +62,7 @@ void KeyRemoveCommand::appendRecu ( ::Key *key, KeySet *set )
 	::Key *tempKey = ksNext ( temp );
 	while ( tempKey ) 
 	{
+		cout << "duping " << tempKey->key << endl;
 		appendRecu ( tempKey, set );
 		tempKey = ksNext ( temp );
 	}
@@ -79,7 +81,11 @@ bool KeyRemoveCommand::execute( )
 	while ( key )
 	{
 		if ( kdbRemove ( key->key ) )
+		{
 			perror ( QString ( key->key ) + " removing key" );
+			return false;
+		}
+		perror ( "test" );
 			
 		key = ksNext ( all );
 	}
@@ -102,6 +108,7 @@ bool KeyRemoveCommand::unexecute( )
 		if ( kdbSetKey ( key ) )
 		{
 			perror ( "remove command undo " );
+			return false;
 		}
 		else
 			cout << "undoing remove of key " << key->key << endl;

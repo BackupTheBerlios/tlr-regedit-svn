@@ -30,9 +30,9 @@ using namespace std;
 
 
 KeyAddCommand::KeyAddCommand ( EditorController *con, KeySet *ks, const char *name)
- : Command(con, ks, name)
+ : Command(con, ks, name), parent ( controller ( )->getView ( )->keyTree->currentItem ( ) )
 {
-	
+		
 }
 
 
@@ -46,7 +46,14 @@ bool KeyAddCommand::execute()
 	EditorView *view = controller ( )->getView ( );
 	KeySet *keys = subject ( ); 
 	
+	
 	cout << "adding " << ksGetSize ( keys ) << " new Keys" << endl;
+/*	ksRewind ( keys );
+	if ( !kdbSetKeys ( keys ) )
+	{
+		perror ( "(re)doing add key" );
+		return false;
+	}*/
 	
 	view->openKeyDir ( view->keyTree->currentItem ( ) );
 	
@@ -54,10 +61,15 @@ bool KeyAddCommand::execute()
 	::Key *key = ksNext ( keys );
 	while ( key )
 	{
-		view->addItem ( view->keyTree->currentItem ( ), key );
+		if ( kdbSetKey ( key ) )
+		{
+			perror ( "(re)doing add keys" );
+			return false;
+		}
+		view->addItem ( parent, key );
 		key = ksNext ( keys );
 	}
-	kdbSetKeys ( keys );
+	
 	return true;
 }
 
@@ -74,7 +86,10 @@ bool KeyAddCommand::unexecute()
 		QListViewItem * item = view->getItem( key->key );
 		if ( item )
 			delete item;
-		kdbRemove ( key->key );
+		if ( kdbRemove ( key->key ) )
+		{
+			perror ( "undoing add keys" );
+		}
 		key = ksNext ( keys );
 	}
 	return true;

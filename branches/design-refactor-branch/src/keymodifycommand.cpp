@@ -65,7 +65,11 @@ bool KeyModifyCommand::execute()
 	while ( key ) 
 	{
 		cout << "set key " << key->key << endl;
-		kdbSetKey ( key );
+		if ( kdbSetKey ( key ) )
+		{
+			perror ( "(re)do modifying key" );
+			return false;
+		}
 		key = ksNext ( subject ( ) );
 	}
 	return true;
@@ -83,7 +87,10 @@ bool KeyModifyCommand::unexecute()
 		keyGetBaseName ( key, buf, 300 );
 		keyGetName ( key, name, 600 );
 		QString oldName ( buf );
-		kdbSetKey ( key );
+		if ( kdbSetKey ( key ) )
+		{
+			perror ( "redo modifying key" );
+		}
 		keyGetBaseName ( key, buf, 300 );
 		controller ( )->getView ( )->getItem( name )->setText ( 0, buf );
 		key = ksNext ( oldKeys );

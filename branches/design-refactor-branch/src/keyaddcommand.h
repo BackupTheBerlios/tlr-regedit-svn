@@ -41,7 +41,7 @@ public slots:
 	virtual bool unexecute();
 	
 private:
-	
+	QListViewItem *parent;
 };
 
 #endif

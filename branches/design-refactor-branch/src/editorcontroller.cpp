@@ -188,25 +188,25 @@ void EditorController::changeCurrent ( const QString & key )
 	if ( _current )
 	{
 		ksRewind ( changedKeys );
-		cout << "size of changedKeys " << ksGetSize ( changedKeys ) << endl;
+		//cout << "size of changedKeys " << ksGetSize ( changedKeys ) << endl;
 		if ( ksGetSize ( changedKeys ) && !ksLookupByName ( changedKeys,  _current->key, 0 ) )
 		{
-			cout << "key " << _current->key << " is not in changedKeys delete it" << endl;
+			//cout << "key " << _current->key << " is not in changedKeys delete it" << endl;
 			keyDel ( _current );
 			_current = 0;
 		}
-		else
-			cout << "key " << _current->key << " is in changedKeys don't delete it" << endl;
+		//else
+			//cout << "key " << _current->key << " is in changedKeys don't delete it" << endl;
 	}
 	ksRewind ( changedKeys );
 	if ( temp = ksLookupByName ( changedKeys, key, 0 ) )
 	{
-		cout << "key " << key << " is in changedKeys take that as current" << endl;
+		//cout << "key " << key << " is in changedKeys take that as current" << endl;
 		_current = temp;
 	}
 	else
 	{
-		cout << "loading fresh key " << key << endl;
+		//cout << "loading fresh key " << key << endl;
 		_current = keyNew ( key, KEY_SWITCH_END );
 		if ( kdbGetKey ( _current ) )
 		{
@@ -215,7 +215,7 @@ void EditorController::changeCurrent ( const QString & key )
 			_current = 0;
 		}
 	}
-	cout << endl << endl;
+	//cout << endl << endl;
 	/*if ( !_current )
 	{
 		_current = keyNew ( key, KEY_SWITCH_END );
@@ -264,7 +264,7 @@ void EditorController::keyFieldChanged ( )
 	
 	if ( !key )
 	{
-		cout << "adding " << name << endl;
+		//cout << "adding " << name << endl;
 		::Key *old = keyNew ( name, KEY_SWITCH_END );
 		keyDup ( _current, old );
 		ksAppend ( oldKeys, old );
@@ -283,7 +283,7 @@ void EditorController::keyFieldChanged ( )
 	}
 	else
 	{
-		cout << _current->key << " is already added" << endl;
+		//cout << _current->key << " is already added" << endl;
 		//_current = key;
 		keySetComment ( key, view->getKeyComment ( ) );
 		keySetAccess ( key, view->getKeyAccess ( ) );
