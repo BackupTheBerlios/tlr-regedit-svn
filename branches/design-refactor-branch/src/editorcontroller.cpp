@@ -17,27 +17,14 @@
  *
  */
 
-
 #include "editorcontroller.h"
-#include <qapplication.h>
+#include "editorview.h"
+#include "qapplication.h"
 
-extern "C"
+EditorController::EditorController ( )
+	: Observable ( 0, "controller of the editor" )
 {
-	#include "kdb.h"
-}
-
-int main(int argc, char **argv)
-{
-	kdbOpen ( );
-	QApplication app(argc, argv);	
-	
-	new EditorController();
-	
-	//app.setMainWidget(main);
-	
-	int ret = app.exec();
-	
-	kdbClose ( );
-	return ret;
-	
+	view = new EditorView ( this );
+	qApp->setMainWidget ( view );
+	add ( view );
 }

@@ -21,17 +21,18 @@
 #define OBSERVABLE_H
 
 #include <qobject.h>
+#include "iobserver.h"
 
 class Observable : public QObject
 {
 	Q_OBJECT
 public:
-	Observable();
-	void add(IObserver &observer);
-	void remove(IObserver &observer);
+	Observable ( QObject * partent = 0, const char * name = 0 );
+	void add ( const IObserver * observer );
+	void remove( const IObserver * observer);
 	
-public signals:
-	void notify(const Observable &subject);
-}
+signals:
+	void notifyAll ( const Observable * subject );
+};
 
 #endif

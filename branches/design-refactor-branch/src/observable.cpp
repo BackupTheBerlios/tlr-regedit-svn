@@ -19,20 +19,20 @@
 
 #include "observable.h"
 
-Observable::Observable ()
-	: QObject ()
+Observable::Observable ( QObject * parent, const char * name )
+	: QObject (parent, name)
 {
-
-}
-
-void Observable::add ( IObserver observer )
-{
-	connect ( this, SIGNAL ( notify ( const Observable & ) ), observer, SLOT ( update ( const Observable & ) ) );
-	emit notify ( this );
 	
 }
 
-void Observable::remove ( IObserver observer )
+void Observable::add ( const IObserver * observer )
 {
-	disconnect ( this, SIGNAL(notify ( const Observable & ) ), observer, SLOT ( update ( const Observable & ) ) );
+	connect ( this, SIGNAL ( notifyAll ( const Observable * ) ), observer, SLOT ( update ( const Observable * ) ) );
+	emit notifyAll( this );
+	
+}
+
+void Observable::remove ( const IObserver * observer ) 
+{
+	disconnect ( this, SIGNAL(notifyAll ( const * Observable  ) ), observer, SLOT ( update ( const Observable * ) ) );
 }

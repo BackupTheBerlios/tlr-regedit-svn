@@ -17,7 +17,61 @@
  *
  */
 
-#include "editorview.h"
 
-EditorView::EditorView(const EditorController &controller) :
-	EditorViewUI(null, 
+#include "editorview.h"
+#include "keymetainfo.h"
+
+#include <iostream>
+
+#include <qlistview.h>
+
+extern "C"
+{
+	#include <kdb.h>
+}
+
+EditorView::EditorView ( EditorController *econtroller ) 
+	: EditorViewUI ( 0, "the editor view", WType_TopLevel ), controller ( econtroller )
+{
+	updateKeyTree ( true );
+	show();
+}
+
+void EditorView::update ( const Observable *subject )
+{
+	std::cout << "update" << std::endl;
+}
+
+void EditorView::updateKeyTree ( bool firstTime )
+{
+	if (firstTime)
+	{
+		std::cout << "first time" << std::endl;
+		openedKeys.clear();
+		
+		KeySet *roots = ksNew ( );
+		kdbGetRootKeys ( roots );
+		
+		ksSort ( roots );
+		ksRewind ( roots );
+		
+		::Key *k = ksNext ( roots );
+		
+		while ( k )
+		{
+			QListViewItem *item  = new QListViewItem ( keyTree, k->key);
+			item->setPixmap ( 0, KeyMetaInfo::getIcon ( k ) );
+			keyTree->insertItem ( item );
+			openedKeys.push_back ( k->key );
+			
+			if (KeyMetaInfo::hasChildKeys ( k ) )
+			{
+				QListViewItem *dummy = new QListViewItem ( item, "dummy" );
+				item->insertItem ( dummy );
+			}
+			
+			k = ksNext ( roots );
+		}
+	}
+
+}

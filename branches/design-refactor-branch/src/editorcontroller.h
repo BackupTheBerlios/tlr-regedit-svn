@@ -16,28 +16,29 @@
  *Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-
-
-#include "editorcontroller.h"
-#include <qapplication.h>
+ 
+#ifndef EDITORCONTROLLER_H
+#define EDITORCONTROLLER_H
+ 
+#include "observable.h"
 
 extern "C"
 {
-	#include "kdb.h"
+	#include <kdb.h>
 }
 
-int main(int argc, char **argv)
+class EditorView;
+
+class EditorController : Observable
 {
-	kdbOpen ( );
-	QApplication app(argc, argv);	
+	Q_OBJECT
 	
-	new EditorController();
+	public:
+		EditorController ( );
+		QString currentKey() const;
 	
-	//app.setMainWidget(main);
-	
-	int ret = app.exec();
-	
-	kdbClose ( );
-	return ret;
-	
-}
+	private:
+		EditorView *view;
+};
+
+#endif

@@ -511,6 +511,9 @@
         <property name="name">
             <cstring>reloadAction</cstring>
         </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
         <property name="iconSet">
             <iconset>image2</iconset>
         </property>

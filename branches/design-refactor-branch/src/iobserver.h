@@ -23,6 +23,8 @@
 
 #include <qobject.h>
 
+//#include "observable.h"
+
 class Observable;
 
 class IObserver : public QObject
@@ -30,8 +32,8 @@ class IObserver : public QObject
 	Q_OBJECT
 
 public slots:
-	virtual void update ( const Observable &subject  = 0;
+	virtual void update ( const Observable *subject  = 0 ) = 0;
 	
-}
+};
 
 #endif

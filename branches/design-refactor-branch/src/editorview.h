@@ -20,26 +20,39 @@
 #ifndef EDITOR_VIEW_H
 #define EDITOR_VIEW_H
 
-class EditorView : public EditorViewUI, Observer
+#include <qvaluelist.h>
+
+#include "observable.h"
+#include "iobserver.h"
+#include "editorviewui.h"
+
+class EditorController;
+
+class EditorView : public EditorViewUI, public IObserver
 {
-	Q_OBJECT
 	
 	public:
-		
+		EditorView ( EditorController * controller );
 		void saveState ( );
 		void restoreState ( );
-		
-		void update ( const Observable &subject );
+	public slots:
+		void update ( const Observable * subject );
 		
 	signals:
 		void keySelected ( const QString &key );
+	
+	private slots:
+		void openKeyDir ( QListViewItem *item );
+		void closeKeyDir ( QListViewItem *item );
+		void propagetKeyChange ( QListViewItem *item );
+		
 	private:
 		QString keyName ( const QListViewItem &item ) const;
- 
-	private slots:
-		void openKeyDir(QListViewItem *item);
-		void showKey(QListViewItem *item);
+		void updateKeyTree ( bool firstTime = false );
+		
+	private:
+ 		EditorController *controller;
+		QValueList<QString> openedKeys;
 };
  
 #endif
- 

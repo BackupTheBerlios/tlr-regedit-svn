@@ -10,25 +10,16 @@ CONFIG += debug \
           qt \
           thread 
 TEMPLATE = app 
-FORMS += mainwidget.ui \
-         newdialog.ui \
-         permissiondialog.ui 
-HEADERS += newkeydialogimpl.h \
-           mainwidgetimpl.h \
-           mainwindowimpl.h \
-           regedit_globals.h \
-           permissiondialogimpl.h \
-           command.h \
-           keyremovecommand.h \
-           keymodifycommand.h \
-           keyaddcommand.h 
-SOURCES += newkeydialogimpl.cpp \
+FORMS += editorviewui.ui
+      
+HEADERS += iobserver.h \
+           observable.h \
+           editorview.h \
+           editorcontroller.h \
+	   keymetainfo.h
+
+SOURCES += observable.cpp \
            main.cpp \
-           mainwidgetimpl.cpp \
-           mainwindowimpl.cpp \
-           regedit_globals.cpp \
-           permissiondialogimpl.cpp \
-           command.cpp \
-           keyremovecommand.cpp \
-           keymodifycommand.cpp \
-           keyaddcommand.cpp 
+           editorview.cpp \
+           editorcontroller.cpp \
+	   keymetainfo.cpp
