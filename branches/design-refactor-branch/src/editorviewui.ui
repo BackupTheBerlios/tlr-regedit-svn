@@ -624,7 +624,7 @@
             <iconset>image0</iconset>
         </property>
         <property name="text">
-            <string>undo</string>
+            <string>undo last change</string>
         </property>
         <property name="accel">
             <string>Ctrl+Z</string>
@@ -641,7 +641,7 @@
             <iconset>image1</iconset>
         </property>
         <property name="text">
-            <string>redo</string>
+            <string>redo last change</string>
         </property>
         <property name="accel">
             <string>Ctrl+Y</string>
@@ -692,7 +692,7 @@
             <iconset>image4</iconset>
         </property>
         <property name="text">
-            <string>Action</string>
+            <string>delete the key</string>
         </property>
         <property name="accel">
             <string>Del, Ctrl+S</string>
