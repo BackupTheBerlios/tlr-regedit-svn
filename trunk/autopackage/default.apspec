@@ -7,7 +7,7 @@ ShortName: tlr-regedit
 Maintainer: The tlr-regedit Developers - tlr-regedit.berlios.de
 Packager: Gregor Burger <gregor.burger@aon.at>
 Summary: FooBar is an example program.
-SoftwareVersion: 1.0
+SoftwareVersion: 0.2.1
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules
@@ -16,7 +16,7 @@ SoftwareVersion: 1.0
 PackageVersion: 1
 
 [Description]
-Put long & detailed description here.
+The Linux Registry Editor was designed to be the graphical equivalent to the rg command. It shows you all the values of the keys including the type, comment, uid, gid, acces mode and acces times. It allows you to edit some of the attributes mentioned above.
 
 [BuildPrepare]
 qmake regedit.pro
@@ -32,19 +32,26 @@ unprepareBuild
 [Imports]
 import ./share/$SHORTNAME-$SOFTWAREVERSION/icons <<EOF
 $build_root/icons/*.png
+EOF
+
 import ./bin <<EOF
 $build_root/src/regedit
 EOF
 
+import ./share/applications <<EOF
+$build_root/regedit.desktop
+EOF
+
 
 [Prepare]
-# Dependency checking
-#require @whatever.you/need 1.0
+require @trolltech.com/qt 3.1
 
 [Install]
 # Put your installation script here
 installExe bin/*
-installDesktop "System Environment/Libraries" 
+installDesktop "System Environment/Libraries" ./share/applications/regedit.desktop
+copyFiles share/$SHORTNAME-$SOFTWAREVERSION/icons $prefix/share/$SHORTNAME-$SOFTWAREVERSION/
+rg set system/sw/regedit/gui/iconDir $prefix/share/$SHORTNAME-$SOFTWAREVERSION/icons
 
 [Uninstall]
 # Usually just the following line is enough to uninstall everything
