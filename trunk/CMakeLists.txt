@@ -22,4 +22,16 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 SUBDIRS(src)
 
-#ADD_CUSTOM_TARGET(make dist
+ADD_CUSTOM_TARGET(svnexport
+svn export ${CMAKE_CURRENT_SOURCE_DIR}/ /tmp/regedit
+)
+
+ADD_CUSTOM_TARGET(targz
+tar -czf regedit.tar.gz /tmp/regedit
+DEPENDS svnexport
+)
+
+ADD_CUSTOM_TARGET(svndist
+rm -R /tmp/regedit
+DEPENDS targz
+)
