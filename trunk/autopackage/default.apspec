@@ -19,7 +19,7 @@ PackageVersion: 1
 The Linux Registry Editor was designed to be the graphical equivalent to the rg command. It shows you all the values of the keys including the type, comment, uid, gid, acces mode and acces times. It allows you to edit some of the attributes mentioned above.
 
 [BuildPrepare]
-qmake regedit.pro
+cmake ./
 if locateCommand apgcc; then
 	export CC=apgcc;
 	export CXX=apg++;
